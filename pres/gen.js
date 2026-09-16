@@ -292,6 +292,51 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
  fuente(s,"Fuente: EBA, anexo de parámetros de riesgo del Risk Dashboard Q1 2026, origen COREP C 9.02. Se usa la mediana de entidades y no la media ponderada, que se deja arrastrar por carteras grandes con parámetros extremos.");
 }
 
+/* 11b — spread PYME vs gran empresa en PD y LGD */
+{const s=pres.addSlide();
+ titulo(s,"Spread PYME frente a gran empresa en PD y LGD","Parámetros IRB, mediana de entidades · 2026-Q1 · La PYME falla más pero recupera mejor");
+ const C=D.irb_cmp;
+ s.addChart(pres.ChartType.bar, [
+   {name:"PD PYME", labels:P, values:C.pd_pyme},
+   {name:"PD gran empresa", labels:P, values:C.pd_grande}],
+   {x:M, y:1.75, w:6.5, h:2.35, barDir:"col", chartColors:[BAD,"B9C6CC"],
+    showTitle:true, title:"Probabilidad de impago (PD)", titleFontSize:12,
+    titleColor:PRIM, showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:8,
+    dataLabelColor:TXT, showLegend:true, legendPos:"b", legendFontSize:9,
+    catAxisLabelColor:TXT, catAxisLabelFontSize:9, valAxisLabelColor:MUT,
+    valAxisLabelFormatCode:'0.0"%"', valGridLine:{color:"E3E9EB", size:1},
+    catGridLine:{style:"none"}, valAxisMaxVal:2.6});
+ s.addChart(pres.ChartType.bar, [
+   {name:"LGD PYME", labels:P, values:C.lgd_pyme},
+   {name:"LGD gran empresa", labels:P, values:C.lgd_grande}],
+   {x:6.95, y:1.75, w:5.78, h:2.35, barDir:"col", chartColors:[ACC,"B9C6CC"],
+    showTitle:true, title:"Severidad de la pérdida (LGD)", titleFontSize:12,
+    titleColor:PRIM, showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:8,
+    dataLabelColor:TXT, showLegend:true, legendPos:"b", legendFontSize:9,
+    catAxisLabelColor:TXT, catAxisLabelFontSize:9, valAxisLabelColor:MUT,
+    valAxisLabelFormatCode:'0"%"', valGridLine:{color:"E3E9EB", size:1},
+    catGridLine:{style:"none"}, valAxisMaxVal:48});
+ const L=[["Spread PYME − gran empresa"].concat(P),
+   ["PD (puntos básicos)"].concat(C.spread_pd.map(v=>(v>0?"+":"")+v)),
+   ["LGD (puntos porcentuales)"].concat(C.spread_lgd.map(v=>(v>0?"+":"")+v.toFixed(1))),
+   ["PD × LGD (puntos básicos)"].concat(C.spread_cor.map(v=>(v>0?"+":"")+v))];
+ const rows=L.map((r,ri)=>r.map((c,ci)=>{
+   if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:10})};
+   const o=cel(null,{align: ci===0?"left":"center", fontSize:10.5, bold: ci===0});
+   if(ci>0){ const neg=String(c).startsWith("-");
+     o.color = neg?OK:BAD; o.bold=true; o.fill={color: neg?"EAF3EE":"FBEDEB"}; }
+   if(ri===3) o.fill={color: ci===0?LIGHT:"F3DEDA"};
+   return {text:c, options:o};}));
+ s.addTable(rows, Object.assign(tOpt(),{y:4.32, colW:[3.1].concat(Array(6).fill(1.52)), rowH:0.38}));
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:5.95, w:W-2*M, h:0.85, fill:{color:"FBF2EA"},
+   rectRadius:0.06, line:{color:MED}});
+ s.addText([{text:"Cautela con el LGD de gran empresa. ", options:{bold:true, color:"8A5A2B"}},
+   {text:"Está agrupado en el 40,0 % en los seis países y en todo el reparto (percentiles 25, 50 y 75), porque es el valor supervisor del IRB básico bajo CRR3, no una estimación propia. La ventaja de severidad de la PYME es real —viene de mayor garantía real— pero está exagerada por ese efecto: en media ponderada la brecha se reduce a la mitad (PYME 23,6–37,9 % frente a gran empresa 35,0–38,8 %). El spread de PD, en cambio, es sólido: la PD sí es estimación propia en ambas clases.",
+    options:{color:TXT}}],
+   {x:M+0.22, y:6.05, w:11.85, h:0.68, fontFace:BF, fontSize:10, isTextBox:true, margin:0});
+ fuente(s,"Fuente: EBA, anexo de parámetros de riesgo del Risk Dashboard Q1 2026, origen COREP C 9.02. Clases «Corporates – Of Which: SME» y «Corporates – Of Which: Large corporates».");
+}
+
 /* 10c — consumo de capital */
 {const s=pres.addSlide();
  titulo(s,"Consumo de capital: densidad de RWA de la cartera PYME","RWA sobre valor de exposición · EU-wide Transparency Exercise · Junio 2025 · Incorpora ya el factor de apoyo a PYME del art. 501 CRR");

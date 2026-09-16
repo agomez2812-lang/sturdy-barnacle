@@ -777,7 +777,42 @@ El Transparency Exercise **no publica PD ni LGD** en su edición 2025: solo
 exposición, RWA, exposición en default y provisiones. Los parámetros vienen
 del anexo del Risk Dashboard, que es otra fuente.
 
-### 2.35 Corrección: el ROE cambia de orden al usar datos observados
+### 2.35 Spread PYME frente a gran empresa: falla más, pero recupera mejor
+
+Mediana de entidades, 2026-Q1, clases IRB «Corporates – Of Which: SME» y
+«Corporates – Of Which: Large corporates»:
+
+| País | PD PYME / grande | LGD PYME / grande | Spread PD | Spread LGD | Spread PD×LGD |
+|---|---|---|---|---|---|
+| España | 1,73 / 0,57 % | 34,4 / 40,0 % | +116 pb | −5,6 pp | +36 pb |
+| Alemania | 1,26 / 0,50 % | 31,4 / 39,6 % | +76 pb | −8,1 pp | +20 pb |
+| Francia | 2,15 / 0,60 % | 31,5 / 40,0 % | +155 pb | −8,5 pp | +44 pb |
+| Italia | 2,26 / 0,67 % | 35,6 / 40,0 % | +159 pb | −4,4 pp | +53 pb |
+| Portugal | 1,26 / 0,33 % | 40,0 / 40,0 % | +93 pb | 0,0 pp | +37 pb |
+| Países Bajos | 1,18 / 0,52 % | 29,7 / 40,0 % | +66 pb | −10,3 pp | +14 pb |
+
+**La PD de PYME es entre dos y cuatro veces la de gran empresa** en los seis
+países. Pero **la LGD de PYME es menor en cinco de los seis**, lo que
+compensa parcialmente: el diferencial de pérdida esperada queda entre +14 y
++53 pb, muy por debajo de lo que sugeriría la PD sola.
+
+**Cautela obligatoria con la LGD de gran empresa.** Está agrupada en el
+40,0 % en los seis países y en todo el reparto: percentil 25 entre 36,5 y
+39,9, mediana entre 39,5 y 40,0, percentil 75 exactamente 40,0 en los seis.
+Es el **valor supervisor del IRB básico para exposiciones corporativas senior
+bajo CRR3**, no una estimación propia de las entidades.
+
+Consecuencia: la ventaja de severidad de la PYME es real —viene de mayor
+garantía real y aval personal— pero **está exagerada por ese efecto
+metodológico**. En media ponderada, donde pesan más las carteras con modelos
+avanzados, la brecha se reduce a la mitad: PYME entre 23,6 % y 37,9 % frente
+a gran empresa entre 35,0 % y 38,8 %. En Italia casi desaparece (37,9 frente
+a 38,8).
+
+El **spread de PD sí es sólido**: la PD es estimación propia en ambas clases,
+tanto en IRB básico como en avanzado.
+
+### 2.36 Corrección: el ROE cambia de orden al usar datos observados
 
 El modelo anterior suponía un coste del riesgo derivado del NPL de PYME con
 un factor calibrado, y una densidad de RWA uniforme del 57 %. Ambos eran
