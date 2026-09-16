@@ -30,7 +30,7 @@ todas las combinaciones existentes y se etiquetan con el título de la serie.
 Tipos oficiales (dataset `FM`): facilidad de depósito `FM.D.U2.EUR.4F.KR.DFR.LEV`,
 operaciones principales `FM.D.U2.EUR.4F.KR.MRR_FR.LEV`, Euríbor 3m.
 
-→ `python3 scripts/ecb_mir_harvest.py --desde 2022-01`
+→ `python3 scripts/ecb_mir_harvest.py --desde 2025-01`
 
 ## Bloque 2 — SAFE (encuesta BCE)  [SEMI-MANUAL]
 

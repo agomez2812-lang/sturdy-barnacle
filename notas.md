@@ -152,5 +152,20 @@ distintos entre bancos. Comparabilidad limitada; anotar el perímetro.
 |---|---|---|
 | 1 | Acceso de red a las fuentes | **Resuelto**: se recreará el entorno con política de red abierta a los dominios de `entorno_red.md`. Pendiente de ejecución por parte del usuario. |
 | 2 | Tratamiento de `/hipotecas` | **Resuelto**: sólo inmueble comercial vía EBA Transparency Exercise (ver §2.1). Pipeline en `scripts/eba_te_cre.py`. |
-| 3 | Alcance de `/prestamos_personales` | **Abierto**: hoy recoge préstamo a empresa por tramo de importe *y* crédito al consumo a hogares (proxy de autónomos). Confirmar si se mantienen ambos. |
-| 4 | Ventana temporal | **Abierto**: el pipeline usa `--desde 2022-01` por defecto. |
+| 3 | Alcance de `/prestamos_personales` | **Resuelto**: se mantienen los dos ángulos, préstamo a empresa por tramo de importe *y* crédito al consumo a hogares como proxy de autónomos, en ficheros separados y con `criterio_segmentacion` distinto. |
+| 4 | Ventana temporal | **Resuelto**: desde `2025-01`. Es el valor por defecto del harvester. |
+
+Con las cuatro decisiones cerradas, no queda nada pendiente de definir: el
+único bloqueo vivo es el acceso de red (§1).
+
+### Nota sobre la ventana 2025-01
+
+Da unas 20 observaciones mensuales por serie, suficiente para precio de
+nueva producción, que es lo que interesa aquí. Dos salvedades:
+- Para **coste de riesgo y NPL** (`/transversal`) una ventana tan corta no
+  deja ver el ciclo; esos datos son de extracción manual y ahí conviene
+  coger más historia aunque el harvester del BCE vaya desde 2025.
+- Los **volúmenes** de nueva producción tienen estacionalidad mensual
+  marcada. Con año y medio no hay dos ciclos completos para comparar mismo
+  mes contra mismo mes. Si se quiere tasa interanual, hay que ampliar a
+  `--desde 2023-01`; el harvester acepta cualquier fecha sin más cambios.

@@ -51,6 +51,6 @@ lo señalará y se añade el CDN concreto.
 
 ```bash
 python3 scripts/check_fuentes.py                    # verificar acceso
-python3 scripts/ecb_mir_harvest.py --desde 2022-01  # bloques 1 y liquidez
+python3 scripts/ecb_mir_harvest.py --desde 2025-01  # bloques 1 y liquidez
 # después: SAFE, EBA, OCDE, EUF/FCI y comparables, según fuentes.md
 ```

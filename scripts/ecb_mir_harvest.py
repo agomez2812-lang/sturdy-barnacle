@@ -7,7 +7,7 @@ codificadas a mano: asi no hay que adivinar los codigos de maturity ni de
 amount category, el portal devuelve todas las combinaciones existentes.
 
 Uso:
-    python3 scripts/ecb_mir_harvest.py --desde 2022-01
+    python3 scripts/ecb_mir_harvest.py --desde 2025-01
     python3 scripts/ecb_mir_harvest.py --bloque circulante --dry-run
 
 Requiere salida HTTPS hacia data-api.ecb.europa.eu.
@@ -157,7 +157,7 @@ def normaliza(texto_csv, pais, producto, metrica_base, unidad, criterio,
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--desde", default="2022-01", help="periodo inicial, AAAA-MM")
+    ap.add_argument("--desde", default="2025-01", help="periodo inicial, AAAA-MM")
     ap.add_argument("--bloque", action="append",
                     help="limitar a un bloque (repetible); por defecto todos")
     ap.add_argument("--dry-run", action="store_true",

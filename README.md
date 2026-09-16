@@ -28,7 +28,7 @@ Un pipeline probado que rellena los bloques automatizables en una orden, en
 cuanto haya salida HTTPS hacia `data-api.ecb.europa.eu`:
 
 ```bash
-python3 scripts/ecb_mir_harvest.py --desde 2022-01          # todos los bloques
+python3 scripts/ecb_mir_harvest.py --desde 2025-01          # todos los bloques
 python3 scripts/ecb_mir_harvest.py --bloque circulante      # uno solo
 python3 scripts/ecb_mir_harvest.py --dry-run                # ver las consultas
 ```
