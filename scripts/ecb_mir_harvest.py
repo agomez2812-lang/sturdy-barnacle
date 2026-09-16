@@ -53,12 +53,24 @@ TRAMOS = {
 BLOQUES = {
     # Circulante: lineas de credito y descubiertos a empresas. No tiene
     # tramos de importe en MIR (amount category solo aplica a A2A).
+    # Hay DOS perimetros y no son intercambiables:
+    #   A2Z1 = revolving y descubiertos SOLO  <- el que corresponde a
+    #          circulante de empresa; es la serie principal.
+    #   A2Z  = lo anterior MAS deuda de tarjeta (convenience y extended
+    #          credit card debt). Se recoge como secundaria para trazar la
+    #          diferencia, no para mezclar con la anterior.
     "circulante": {
         "carpeta": "circulante",
         "producto": "linea_credito_circulante",
         "claves": [
-            ("M.{p}.B.A2Z..R..2240.EUR.N", "tipo", "pct_anual"),
-            ("M.{p}.B.A2Z..B..2240.EUR.N", "volumen", "eur_millones"),
+            ("M.{p}.B.A2Z1..R..2240.EUR.N",
+             "tipo (revolving y descubiertos)", "pct_anual"),
+            ("M.{p}.B.A2Z1..B..2240.EUR.N",
+             "volumen (revolving y descubiertos)", "eur_millones"),
+            ("M.{p}.B.A2Z..R..2240.EUR.N",
+             "tipo (revolving, descubiertos y tarjeta)", "pct_anual"),
+            ("M.{p}.B.A2Z..B..2240.EUR.N",
+             "volumen (revolving, descubiertos y tarjeta)", "eur_millones"),
         ],
         "criterio": "tamano_prestamo",
     },

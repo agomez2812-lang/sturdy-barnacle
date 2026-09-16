@@ -136,11 +136,11 @@ portal (no asumidos):
 entre sí duplica.** Para el spread PYME–gran empresa, la comparación limpia
 es `2` (≤0,25 M€) contra `1` (>1 M€).
 
-### 2.10 Volúmenes de circulante: sólo a nivel de zona euro
+### 2.10 Volúmenes de circulante: casi inexistentes
 
-Las series de volumen de negocio de revolving y descubiertos (`A2Z`,
-`DATA_TYPE_MIR = B`) devuelven 404 para los seis países; sólo existen para
-el agregado `U2`. El **tipo** sí está por país. Consecuencia: en
+Las series de volumen de negocio de revolving y descubiertos devuelven 404
+para los seis países. Sólo existe volumen para `A2Z` a nivel de zona euro
+(`U2`); para `A2Z1` no existe **en ningún país ni en el agregado**. El **tipo** sí está por país. Consecuencia: en
 `/circulante` hay precio por país pero no volumen por país. Lo mismo ocurre
 con el volumen de depósitos a plazo de empresas en **Países Bajos**
 (`NL.L22.B`), que tampoco se publica.
@@ -259,6 +259,39 @@ Dos lecturas que conviene tener presentes antes de interpretar rentabilidad:
   Bajos es el 7,6 % y en Alemania el 17,8 %. Un mismo spread no significa lo
   mismo sobre el 50 % de la cartera que sobre el 8 %. Cualquier comparación
   de rentabilidad entre países tiene que normalizar por esto.
+
+### 2.16 Circulante: `A2Z1` frente a `A2Z`, dos perímetros distintos
+
+Contraste con una descarga independiente del portal (captura aportada por el
+usuario, series alemanas, actualización 2026-09-02) que destapó que se
+estaba usando el código menos adecuado:
+
+| Código | Perímetro |
+|---|---|
+| `A2Z1` | Revolving y descubiertos **solo** |
+| `A2Z` | Lo anterior **más deuda de tarjeta** (convenience y extended credit card debt) |
+
+Para circulante de empresa el perímetro correcto es **`A2Z1`**: la deuda de
+tarjeta no es financiación de circulante en el sentido relevante aquí. El
+harvester pasa a recoger `A2Z1` como serie principal y mantiene `A2Z` como
+secundaria, etiquetada, para poder trazar la diferencia. **No deben
+mezclarse en una misma serie.**
+
+Numéricamente la diferencia es pequeña, de 0 a 4 pb, mayor en Francia y en
+el agregado de zona euro y casi nula en España, Portugal y Países Bajos.
+Importa por corrección y trazabilidad más que por magnitud.
+
+Contraste de validación (Alemania, `MIR.M.DE.B.A2Z1.A.R.A.2240.EUR.N`,
+2026 ene-jul): 4,91 · 4,92 · 4,93 · 4,91 · 4,90 · 5,06 · 5,01. **Coincidencia
+exacta** con la descarga independiente. Igual resultado para
+`MIR.M.DE.B.A2A.D.R.2.2240.EUR.N` y `MIR.M.DE.B.A2A.D.R.3.2240.EUR.N`.
+
+### 2.17 Julio de 2026 es provisional
+
+`OBS_STATUS = P` en el dato de julio de España, Alemania, Francia, Italia y
+el agregado de zona euro. Es revisable en publicaciones posteriores. El
+harvester lo marca en la columna `notas` de cada fila afectada. Una razón
+más para no apoyar conclusiones en el último mes disponible (ver §2.12).
 
 ## 3. Estado de las decisiones
 
