@@ -34,7 +34,10 @@ PLAZO = "Total initial rate fixation"
 
 # --- supuestos, todos declarados en el CSV de salida ---
 TASA_IMPOSITIVA = 0.25          # tipo efectivo uniforme
-DENSIDAD_RWA = 0.57             # ponderacion 75% retail PYME x factor CRR 501
+# La densidad de RWA y el coste del riesgo ya NO son supuestos: se leen de
+# las dos extracciones nuevas. DENSIDAD_RWA solo queda como respaldo si
+# faltara el dato de algun pais.
+DENSIDAD_RWA = 0.57             # respaldo: 75% retail PYME x factor CRR 501
 CUNA_ES_FALLBACK = 60.0         # pb, si no se puede calcular de los datos
 # El coste del riesgo del EBA es de GRUPO y esta contaminado por el negocio
 # internacional y de consumo de los grandes grupos: para Espana da 1,22%
@@ -42,7 +45,7 @@ CUNA_ES_FALLBACK = 60.0         # pb, si no se puede calcular de los datos
 # PYME. Se modela desde el NPL de PYME, que si es del segmento, con un factor
 # flujo/stock calibrado para reproducir los dos costes de riesgo de segmento
 # que si estan observados: ABN AMRO Corporate Banking 0,15% y CaixaBank 0,24%.
-FACTOR_FLUJO_STOCK = 0.06
+FACTOR_FLUJO_STOCK = 0.06       # ya no se usa; se conserva por trazabilidad
 EURIBOR_3M = 2.23               # media 2026, dataset FM del BCE
 DFR_BCE = 2.09                  # facilidad de deposito del BCE, media 2026
 
@@ -107,6 +110,17 @@ def recoge():
         if x["periodo_referencia"] == "2026-Q1" and x["metrica"].startswith("Ratio de NPL"):
             npl[x["pais"]][x["metrica"].split("| ")[1]] = float(x["valor"])
 
+    # Coste del riesgo OBSERVADO: PD x LGD de la clase IRB de PYME.
+    cor_obs = {}
+    for x in lee("transversal/eba_parametros_riesgo.csv"):
+        if x["metrica"].startswith("Coste del riesgo PYME"):
+            cor_obs[x["pais"]] = float(x["valor"])
+    # Densidad de RWA OBSERVADA de la cartera PYME.
+    dens_obs = {}
+    for x in lee("transversal/eba_te_capital_pyme.csv"):
+        if x["metrica"].startswith("Densidad de RWA"):
+            dens_obs[x["pais"]] = float(x["valor"]) / 100.0
+
     out = {}
     for p in PAISES:
         precio = media_ponderada(tip.get(p, {}), vol.get(p, {}), ANIO)
@@ -122,6 +136,8 @@ def recoge():
             "cet1": i.get("Ratio CET1"),
             "npl_pyme": n.get("Sociedades no financieras, PYME"),
             "npl_total": n.get("Total prestamos y anticipos"),
+            "cor_pyme": cor_obs.get(p),
+            "densidad": dens_obs.get(p, DENSIDAD_RWA),
         }
     return out
 
@@ -136,10 +152,11 @@ def modelo(e, cuna_pb, k=FACTOR_FLUJO_STOCK):
     # Coste de fondos = Euribor 3m, igual para los seis paises. El negocio de
     # deposito se modela aparte, que es como lo planteo el encargo.
     margen = ingreso - EURIBOR_3M
-    cor = e["npl_pyme"] * k
+    # Coste del riesgo: PD x LGD de la clase IRB de PYME (observado).
+    cor = e["cor_pyme"] if e.get("cor_pyme") is not None else e["npl_pyme"] * k
     opex = margen * (e["eficiencia"] / 100.0)
     bai = margen - cor - opex
-    capital_pct = DENSIDAD_RWA * e["cet1"]          # en % del saldo
+    capital_pct = e["densidad"] * e["cet1"]        # en % del saldo
     roe = (bai * (1 - TASA_IMPOSITIVA)) / capital_pct * 100 if capital_pct else None
     return dict(ingreso=ingreso, comisiones=cuna_pb / 100.0, margen=margen,
                 cor=cor, opex=opex, bai=bai, capital=capital_pct, roe=roe)
@@ -186,17 +203,16 @@ def main():
              "paises; el negocio de deposito se modela aparte"),
             ("Margen bruto", m["margen"], "pct_anual", "nivel", "ingreso menos coste"),
             ("Coste del riesgo", m["cor"], "pct_cartera", "ratio",
-             "SUPUESTO. NPL de PYME del EBA (observado, %.2f%%) por factor "
-             "flujo/stock %.2f, calibrado sobre los dos CoR de segmento "
-             "observados: ABN AMRO 0,15%% y CaixaBank 0,24%%"
-             % (ent[p]["npl_pyme"], FACTOR_FLUJO_STOCK)),
+             "OBSERVADO. PD por LGD de la clase IRB 'Corporates - Of Which: "
+             "SME', mediana de entidades declarantes, COREP C 9.02"),
             ("Gastos de explotacion", m["opex"], "pct_cartera", "ratio",
              "SUPUESTO parcial. Eficiencia del EBA (grupo) aplicada al margen"),
             ("Resultado antes de impuestos", m["bai"], "pct_cartera", "ratio",
              "margen menos riesgo menos gastos"),
             ("Capital asignado", m["capital"], "pct_rwa", "ratio",
-             "SUPUESTO. Densidad de RWA %.0f%% (ponderacion 75%% retail PYME "
-             "por factor CRR art. 501) sobre CET1 observado" % (100 * DENSIDAD_RWA)),
+             "OBSERVADO. Densidad de RWA de la cartera PYME %.1f%% (EBA "
+             "Transparency Exercise) sobre CET1 observado"
+             % (100 * ent[p]["densidad"])),
             ("ROE del prestamo PYME", m["roe"], "pct_roe", "ratio",
              "MODELIZADO. Tipo impositivo supuesto %.0f%%" % (100 * TASA_IMPOSITIVA)),
         ]:

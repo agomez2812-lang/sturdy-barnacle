@@ -70,9 +70,9 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
 {const s=pres.addSlide();
  titulo(s,"Mapa de fiabilidad del dato","Qué se puede afirmar y con qué respaldo, producto a producto y país a país");
  const filas=[["Producto","Precio","Volumen","Comisiones","Riesgo","Capital"],
-  ["Préstamo PYME por tramo","OBSERVADO","OBSERVADO","SOLO ESPAÑA","OBSERVADO","SUPUESTO"],
-  ["Circulante","OBSERVADO","NO EXISTE","NO EXISTE","OBSERVADO","SUPUESTO"],
-  ["Hipoteca PYME","NO EXISTE","PROXY CRE","NO EXISTE","OBSERVADO","SUPUESTO"],
+  ["Préstamo PYME por tramo","OBSERVADO","OBSERVADO","SOLO ESPAÑA","OBSERVADO","OBSERVADO"],
+  ["Circulante","OBSERVADO","NO EXISTE","NO EXISTE","OBSERVADO","OBSERVADO"],
+  ["Hipoteca PYME","NO EXISTE","PROXY CRE","NO EXISTE","OBSERVADO","OBSERVADO"],
   ["Factoring","NO EXISTE","OBSERVADO","NO EXISTE","PARCIAL","NO EXISTE"],
   ["Confirming","NO EXISTE","SOLO ES e IT","NO EXISTE","NO EXISTE","NO EXISTE"],
   ["Depósitos de empresa","OBSERVADO","PARCIAL","n/a","n/a","n/a"]];
@@ -83,7 +83,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    return {text:c, options:cel(null,{color:"FFFFFF", bold:true, fontSize:9, fill:{color:col(c)}})};
  }));
  s.addTable(rows, Object.assign(tOpt(),{y:1.78, colW:[3.3,1.77,1.77,1.77,1.77,1.75], rowH:0.44}));
- s.addText("El mapa de huecos es en sí un resultado: cuatro de los cinco productos no tienen precio con comisiones en ningún país salvo España, y la hipoteca a PYME no existe como estadística oficial europea.",
+ s.addText("El mapa de huecos es en sí un resultado. Tras incorporar los parámetros IRB del EBA, el riesgo y el capital de PYME son observados en los seis países. El hueco que queda es la comisión: solo España publica un tipo con comisiones para empresas.",
    {x:M, y:5.55, w:W-2*M, h:0.6, fontFace:BF, fontSize:12, color:TXT, isTextBox:true, margin:0});
  [["OBSERVADO",OK],["PARCIAL o SUPUESTO",MED],["NO EXISTE",BAD]].forEach((l,i)=>chip(s,M+i*2.0,6.35,l[0],l[1]));
  fuente(s,"Fuentes: BCE (MIR), EBA Risk Dashboard, Banco de España (Boletín Estadístico), Banca d'Italia (STACORIS), OCDE, EUF.");
@@ -173,9 +173,9 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    return {text:c, options:o};}));
  s.addTable(rows, Object.assign(tOpt(),{y:1.78, colW:[3.0].concat(Array(6).fill(1.685)), rowH:0.37}));
  [["Observado",PRIM],["Supuesto",MED]].forEach((l,i)=>chip(s,M+i*1.7,6.15,l[0],l[1]));
- s.addText("El coste de fondos es el Euríbor 3m, igual para los seis. El negocio de depósito se modela aparte.",
+ s.addText("Solo la fila de comisiones es supuesto. Riesgo y capital son ahora observados por país.",
    {x:M+3.7, y:6.15, w:8.5, h:0.3, fontFace:BF, fontSize:10, color:MUT, isTextBox:true, margin:0});
- fuente(s,"Precio: BCE MIR. Comisiones: cuña española de 87 pb aplicada a los seis (supuesto). Riesgo: NPL PYME del EBA × factor flujo/stock 0,06. Gastos: eficiencia EBA sobre margen. Capital: densidad RWA 57 % sobre CET1 observado. Impuesto 25 %.");
+ fuente(s,"Precio: BCE MIR. Comisiones: cuña española de 87 pb aplicada a los seis (único supuesto material). Riesgo: PD × LGD de la clase IRB de PYME (COREP C 9.02). Gastos: eficiencia EBA sobre margen. Capital: densidad de RWA observada de la cartera PYME sobre CET1. Impuesto 25 %.");
 }
 
 /* 7 — ROE por pais */
@@ -192,12 +192,12 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
  s.addText("Cómo leerlo",{x:8.5, y:1.95, w:4.05, h:0.32, fontFace:HF, fontSize:15,
    bold:true, color:PRIM, isTextBox:true, margin:0});
  s.addText([
-  {text:"Italia, Portugal y Países Bajos encabezan", options:{bold:true, breakLine:true}},
-  {text:"por combinaciones distintas: Italia por precio, Portugal por eficiencia y bajo riesgo, Países Bajos por el menor NPL de PYME de los seis.\n\n", options:{breakLine:true}},
-  {text:"Francia queda último", options:{bold:true, breakLine:true}},
-  {text:"por el precio más bajo de los seis combinado con la peor eficiencia (65,6 %).\n\n", options:{breakLine:true}},
-  {text:"España está en la media", options:{bold:true, breakLine:true}},
-  {text:"pese al spread más estrecho, gracias a la mejor eficiencia después de Portugal.", options:{}}],
+  {text:"Países Bajos y Alemania encabezan", options:{bold:true, breakLine:true}},
+  {text:"por la misma razón: el menor coste del riesgo de los seis (0,35 % y 0,40 %) y la menor densidad de RWA (37 % y 35 %), que reduce el capital a inmovilizar.\n\n", options:{breakLine:true}},
+  {text:"España cae al quinto puesto", options:{bold:true, breakLine:true}},
+  {text:"por combinar el precio más bajo con una densidad de RWA del 59,5 %, la segunda mayor: cada euro de préstamo PYME consume casi el doble de capital que en Alemania.\n\n", options:{breakLine:true}},
+  {text:"Francia queda última", options:{bold:true, breakLine:true}},
+  {text:"con un 1,7 %, y en negativo si no se asume comisión alguna.", options:{}}],
   {x:8.5, y:2.4, w:4.05, h:3.3, fontFace:BF, fontSize:11.5, color:TXT, isTextBox:true, margin:0});
  fuente(s,"ROE modelizado, no observado. Depende del supuesto de comisiones: ver lámina siguiente de sensibilidad. Tipo impositivo 25 % uniforme.");
 }
@@ -268,6 +268,54 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    {x:9.05, y:2.4, w:3.5, h:3.3, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuente: EBA Risk Dashboard, anexo de datos Q1 2026, desgloses «of which SMEs» y «of which CRE». Es la muestra de bancos del EBA, no el sistema completo.");
 }
+
+/* 10b — PD x LGD */
+{const s=pres.addSlide();
+ titulo(s,"Coste del riesgo: PD × LGD de la cartera PYME","Parámetros IRB de la clase «Corporates – Of Which: SME» · Mediana de entidades declarantes · 2026-Q1");
+ s.addChart(pres.ChartType.bar, [{name:"PD × LGD", labels:P, values:D.irb.cor}],
+   {x:M, y:1.8, w:7.1, h:3.9, barDir:"col", chartColors:[BAD], showTitle:false,
+    showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:12, dataLabelColor:TXT,
+    showLegend:false, catAxisLabelColor:TXT, catAxisLabelFontSize:11,
+    valAxisLabelColor:MUT, valAxisLabelFormatCode:'0.00"%"',
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:1.0});
+ const L=[["","PD","LGD","PD × LGD"]].concat(P.map((p,i)=>
+   [p, D.irb.pd[i].toFixed(2)+" %", D.irb.lgd[i].toFixed(1)+" %", D.irb.cor[i].toFixed(2)+" %"]));
+ const rows=L.map((r,ri)=>r.map((c,ci)=>{
+   if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:10})};
+   const o=cel(null,{align: ci===0?"left":"center", fontSize:10.5, bold: ci===0});
+   if(ci===3) o.bold=true, o.fill={color:"FBEDEB"}, o.color=BAD;
+   return {text:c, options:o};}));
+ s.addTable(rows, {x:8.0, y:1.8, w:4.73, colW:[1.6,1.02,1.02,1.09], rowH:0.42,
+   fontFace:BF, border:{pt:0.5,color:"D6DEE1"}, valign:"middle", autoPage:false});
+ s.addText("Italia tiene la peor combinación (PD 2,26 % y LGD 35,6 %) y Países Bajos la mejor (1,18 % y 29,7 %). Portugal tiene la LGD más alta de los seis, un 40 %, compensada por una PD baja.",
+   {x:M, y:5.85, w:W-2*M, h:0.7, fontFace:BF, fontSize:12, color:TXT, isTextBox:true, margin:0});
+ fuente(s,"Fuente: EBA, anexo de parámetros de riesgo del Risk Dashboard Q1 2026, origen COREP C 9.02. Se usa la mediana de entidades y no la media ponderada, que se deja arrastrar por carteras grandes con parámetros extremos.");
+}
+
+/* 10c — consumo de capital */
+{const s=pres.addSlide();
+ titulo(s,"Consumo de capital: densidad de RWA de la cartera PYME","RWA sobre valor de exposición · EU-wide Transparency Exercise · Junio 2025 · Incorpora ya el factor de apoyo a PYME del art. 501 CRR");
+ s.addChart(pres.ChartType.bar, [{name:"Densidad de RWA", labels:P, values:D.capital.densidad}],
+   {x:M, y:1.85, w:7.3, h:3.9, barDir:"col", chartColors:[PRIM], showTitle:false,
+    showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:12, dataLabelColor:TXT,
+    showLegend:false, catAxisLabelColor:TXT, catAxisLabelFontSize:11,
+    valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:70});
+ s.addShape(pres.ShapeType.roundRect,{x:8.2, y:1.85, w:4.53, h:2.1, fill:{color:"F7EDE4"},
+   rectRadius:0.06, line:{color:ACC}});
+ s.addText("Casi el doble de capital en España que en Alemania",{x:8.42, y:2.0, w:4.1, h:0.55,
+   fontFace:HF, fontSize:13, bold:true, color:ACC, isTextBox:true, margin:0});
+ s.addText("Un euro de préstamo PYME consume un 59,5 % de RWA en España y un 35,3 % en Alemania. Sobre el mismo margen, eso divide el ROE casi por dos. Es el factor que más mueve el ranking, por delante del precio.",
+   {x:8.42, y:2.58, w:4.1, h:1.25, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:8.2, y:4.15, w:4.53, h:1.6, fill:{color:LIGHT},
+   rectRadius:0.06, line:{color:"DCE4E7"}});
+ s.addText("Exposición PYME (M€)",{x:8.42, y:4.28, w:4.1, h:0.3, fontFace:HF,
+   fontSize:12, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addText(P.map((p,i)=>`${p}: ${Math.round(D.capital.exposicion[i]/1000)}k`).join("   ·   "),
+   {x:8.42, y:4.62, w:4.1, h:1.0, fontFace:BF, fontSize:10.5, color:TXT, isTextBox:true, margin:0});
+ fuente(s,"Fuente: EBA, EU-wide Transparency Exercise 2025, fichero tr_cre.csv, partidas 2520523 (valor de exposición PYME) y 2520533 (RWA PYME), agregadas por supervisor nacional. La diferencia refleja el peso de modelos internos frente a método estándar y la garantía aportada.");
+}
+
 
 /* 11 — eficiencia, capital, comisiones */
 {const s=pres.addSlide();
@@ -369,14 +417,43 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
  fuente(s,"Fuentes: EUF (datos anuales 2025), AEF para el desglose español, Assifact para el italiano. El turnover es importe cedido en el año, no saldo vivo: no comparable con cartera de crédito.");
 }
 
+/* 14b — comparables */
+{const s=pres.addSlide();
+ titulo(s,"Comparables banco a banco","Cuentas de resultados 2026 · De nueve bancos analizados, solo dos publican segmento de empresas con desglose de comisiones");
+ const C=D.comparables;
+ const g=n=>{const c=C.find(x=>x.banco===n); return c?c.m:{};};
+ const L=[["Banco","País","Segmento publicado","Ingresos M€","Comisiones M€","Com./ing.","Eficiencia"],
+  ["Commerzbank","Alemania","Corporate Clients","1.232","376","30,5 %","—"],
+  ["ABN AMRO","P. Bajos","Corporate Banking","1.694","429","25,3 %","49,5 %"],
+  ["Intesa Sanpaolo","Italia","Banca dei Territori","6.205","no desglosa","—","46,7 %"],
+  ["CaixaBank","España","no tiene segmento empresas","8.338","2.075","24,9 %","39,6 %"],
+  ["BPER Banca","Italia","no desglosa por división","3.876","1.353","34,9 %","41,4 %"],
+  ["ING · SocGen · BNP","—","no accesible: bloqueo antibot","—","—","—","—"]];
+ const rows=L.map((r,ri)=>r.map((c,ci)=>{
+   if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci<3?"left":"center", fontSize:10})};
+   const o=cel(null,{align: ci<3?"left":"center", fontSize:10, bold: ci===0});
+   if(ri===6) o.color=MUT, o.italic=true;
+   else if(ci===2 && c.startsWith("no")) o.color=BAD;
+   else if(ci===2) o.color=OK, o.bold=true;
+   return {text:c, options:o};}));
+ s.addTable(rows, Object.assign(tOpt(),{y:1.82, colW:[2.4,1.5,3.3,1.6,1.6,1.25,1.48], rowH:0.5}));
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:5.25, w:W-2*M, h:1.35, fill:{color:"FBEDEB"},
+   rectRadius:0.06, line:{color:BAD}});
+ s.addText("Por qué esto no cierra la pata de comisiones",{x:M+0.25, y:5.38, w:11.8, h:0.3,
+   fontFace:HF, fontSize:13, bold:true, color:BAD, isTextBox:true, margin:0});
+ s.addText("La NIIF 8 obliga a reportar por los segmentos que usa la dirección, y casi ninguno usa «PYME». El segmento de Commerzbank mezcla gran empresa, PYME, sector público e institucionales. En ABN AMRO la PYME neerlandesa ni siquiera está en Corporate Banking, sino en Personal & Business Banking. El peso de comisiones del 25 % al 35 % sirve como orden de magnitud de la banca de empresas, no como medida del negocio PYME.",
+   {x:M+0.25, y:5.72, w:11.8, h:0.8, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
+ fuente(s,"Fuentes: comunicado de resultados Q2 2026 de Commerzbank; informe intermedio Q2 2026 de ABN AMRO; resultados 1H26 de Intesa Sanpaolo; Actividad y Resultados 1S26 de CaixaBank; resultados 1H26 de BPER. Cifras de segmento donde existe, de grupo en el resto.");
+}
+
 /* 15 — supuestos */
 {const s=pres.addSlide();
- titulo(s,"Supuestos del modelo","Cada uno declarado, con su origen y su efecto sobre el resultado");
+ titulo(s,"Supuestos del modelo","Cada uno declarado, con su origen y su efecto · Dos de los iniciales han dejado de ser supuestos");
  const L=[["Supuesto","Valor","Origen","Efecto si cambia"],
   ["Cuña de comisiones","87 pb","Observada en España (TAE − TEDR, tramo ≤1 M€). Aplicada a los otros cinco países","ALTO. Mueve el ROE entre 3 y 12 puntos"],
   ["Coste de fondos","Euríbor 3m 2,23 %","Observado. Igual para los seis países","MEDIO. Desplaza todos los ROE en paralelo"],
-  ["Factor flujo/stock del riesgo","0,06","Calibrado para reproducir los dos costes de riesgo de segmento observados: ABN AMRO 0,15 % y CaixaBank 0,24 %","MEDIO. Altera el orden entre países con NPL dispar"],
-  ["Densidad de RWA","57 %","Ponderación 75 % de PYME minorista por el factor de apoyo del art. 501 CRR","ALTO en nivel, nulo en orden: afecta igual a los seis"],
+  ["Coste del riesgo","PD × LGD por país","YA NO ES SUPUESTO. Parámetros IRB de la clase «Corporates – Of Which: SME», mediana de entidades (COREP C 9.02)","—"],
+  ["Densidad de RWA","35 % a 61 % por país","YA NO ES SUPUESTO. RWA sobre exposición de la cartera PYME (EBA Transparency Exercise)","—"],
   ["Tipo impositivo","25 %","Uniforme, no por país","BAJO. Escala proporcional"],
   ["Eficiencia","EBA por país","Observada, pero de grupo consolidado y no de segmento PYME","MEDIO. Penaliza a países con banca universal compleja"]];
  const rows=L.map((r,ri)=>r.map((c,ci)=>{
@@ -396,7 +473,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
  s.addText("Cuatro límites que conviene tener delante antes de usar cualquier cifra de este deck",
    {x:M, y:1.18, w:W-2*M, h:0.4, fontFace:BF, fontSize:13, color:"9FB3BC", isTextBox:true, margin:0});
  const lim=[
-  ["Rentabilidad comparable entre países","Solo España e Italia publican un tipo con comisiones para empresas, y con perímetros distintos entre sí. Para los otros cuatro la comisión es supuesto. El ROE comparado es una hipótesis ordenada, no una medición."],
+  ["Rentabilidad comparable entre países","Riesgo y capital de PYME ya son observados por país. Lo que sigue siendo supuesto es la comisión: solo España e Italia publican un tipo con comisiones para empresas, y con perímetros distintos. El ROE comparado es una hipótesis ordenada, no una medición."],
   ["El negocio PYME de cada banco","De nueve bancos analizados, solo dos publican cuenta de resultados de un segmento de empresas con desglose de comisiones, y ninguno aísla PYME. La NIIF 8 obliga a reportar por los segmentos que usa la dirección, y casi ninguno usa «PYME»."],
   ["El precio del factoring y del confirming","No es obtenible con fuentes públicas gratuitas en ninguno de los seis países. Es el único bloque que se cierra sin ningún dato de su objetivo."],
   ["La hipoteca a PYME","No existe como estadística oficial europea. Lo que se muestra es exposición a inmueble comercial, que es otra cosa."]];

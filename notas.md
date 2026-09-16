@@ -22,7 +22,7 @@ concretos. `check_fuentes.py` los cuenta como alcanzables por eso.
 | 1. ECB MIR + tipos oficiales | **Hecho** | 11.019 observaciones, desde 2025-01 |
 | 2. SAFE | **Hecho** | 10.803 obs. Q8B **descontinuada tras 2022-S1**, ver §2.20 |
 | 3. EBA Risk Dashboard | **Hecho** | 2.484 obs, hasta 2026-Q1, con desglose PYME y CRE |
-| 4. EBA Transparency (→ `/hipotecas`) | Pendiente | el Dashboard ya da CRE por país; la TE añadiría banco a banco |
+| 4. EBA Transparency Exercise | **Hecho** | densidad de RWA de PYME por país; ver §2.34 |
 | 5. OCDE Scoreboard | **Hecho** | 535 obs, 2007-2022. **Sin Alemania**, ver §2.30 |
 | 6. EUF / FCI | **Hecho** | EUF y detalle nacional AEF/Assifact. Sin precio |
 | 7. Comparables banco a banco | **Parcial** | 5 de 9 bancos; ver §2.27 |
@@ -736,6 +736,77 @@ Vías que quedan abiertas, ninguna gratuita ni automatizable:
 **Conclusión: el precio del factoring y del confirming no es obtenible con
 fuentes públicas gratuitas en ninguno de los seis países.** Es el único
 bloque del encargo que se cierra sin ningún dato de su objetivo principal.
+
+### 2.34 PD × LGD de PYME: el coste del riesgo deja de ser un supuesto
+
+Dos extracciones nuevas eliminan los dos supuestos más pesados del modelo.
+
+**Parámetros IRB** (`scripts/eba_parametros_riesgo.py`). El anexo de
+parámetros de riesgo del Risk Dashboard del EBA, con origen en **COREP
+C 9.02**, publica por país y clase de exposición la tasa de default, la tasa
+de pérdida, la **PD ajustada y la LGD**, en percentiles y media ponderada.
+Existe la clase **«Corporates – Of Which: SME»**. Mediana de entidades,
+2026-Q1:
+
+| País | PD | LGD | PD × LGD |
+|---|---|---|---|
+| Países Bajos | 1,18 % | 29,7 % | **0,35 %** |
+| Alemania | 1,26 % | 31,4 % | 0,40 % |
+| Portugal | 1,26 % | 40,0 % | 0,50 % |
+| España | 1,73 % | 34,4 % | 0,59 % |
+| Francia | 2,15 % | 31,5 % | 0,68 % |
+| Italia | 2,26 % | 35,6 % | **0,80 %** |
+
+Se usa la **mediana** y no la media ponderada, que se deja arrastrar por
+carteras grandes con parámetros extremos.
+
+**Densidad de RWA** (`scripts/eba_te_pyme.py`). El fichero `tr_cre.csv` de la
+base completa del Transparency Exercise, 123 MB, trae partidas específicas
+de PYME. Densidad = RWA PYME / valor de exposición PYME, junio 2025:
+
+| País | Densidad de RWA | Exposición PYME |
+|---|---|---|
+| Portugal | 61,3 % | 30.452 M€ |
+| España | 59,5 % | 308.378 M€ |
+| Italia | 46,3 % | 252.021 M€ |
+| Francia | 43,0 % | 961.184 M€ |
+| Países Bajos | 37,2 % | 259.108 M€ |
+| Alemania | 35,3 % | 316.561 M€ |
+
+El Transparency Exercise **no publica PD ni LGD** en su edición 2025: solo
+exposición, RWA, exposición en default y provisiones. Los parámetros vienen
+del anexo del Risk Dashboard, que es otra fuente.
+
+### 2.35 Corrección: el ROE cambia de orden al usar datos observados
+
+El modelo anterior suponía un coste del riesgo derivado del NPL de PYME con
+un factor calibrado, y una densidad de RWA uniforme del 57 %. Ambos eran
+razonables pero **estaban equivocados en magnitud y, sobre todo, en
+dispersión entre países**.
+
+| País | ROE con supuestos | ROE con PD×LGD y densidad observadas |
+|---|---|---|
+| Países Bajos | 10,2 % | **13,7 %** |
+| Alemania | 8,6 % | **12,1 %** |
+| Portugal | 10,5 % | 8,1 % |
+| Italia | 10,5 % | 7,6 % |
+| España | 8,3 % | **5,5 %** |
+| Francia | 4,3 % | 1,7 % |
+
+Qué cambió y por qué:
+
+- El coste del riesgo supuesto **infravaloraba** el real en torno a la mitad
+  (España 0,32 % supuesto frente a 0,59 % observado).
+- La densidad de RWA uniforme **ocultaba el factor que más mueve el
+  resultado**: va del 35,3 % en Alemania al 61,3 % en Portugal. Un euro de
+  préstamo PYME consume casi el doble de capital en España que en Alemania.
+- Alemania y Países Bajos suben porque combinan el menor coste del riesgo
+  con la menor densidad de RWA. España baja porque junta el precio más bajo
+  con la segunda mayor densidad.
+
+**Lectura de negocio:** el ranking de rentabilidad PYME lo decide más el
+consumo de capital que el precio. Es lo contrario de lo que sugería el
+modelo con supuestos, y cambia dónde conviene mirar.
 
 ## 3. Estado de las decisiones
 

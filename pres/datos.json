@@ -49,12 +49,12 @@
    3.14
   ],
   "cor": [
-   0.32,
-   0.26,
-   0.31,
-   0.29,
-   0.25,
-   0.19
+   0.59,
+   0.4,
+   0.68,
+   0.8,
+   0.5,
+   0.35
   ],
   "opex": [
    0.87,
@@ -65,78 +65,78 @@
    1.68
   ],
   "bai": [
-   0.87,
-   1.1,
-   0.52,
-   1.25,
-   1.43,
-   1.28
+   0.59,
+   0.96,
+   0.15,
+   0.74,
+   1.18,
+   1.11
   ],
   "capital": [
-   7.79,
-   9.66,
-   9.05,
-   8.87,
-   10.16,
-   9.34
+   8.13,
+   5.99,
+   6.83,
+   7.21,
+   10.93,
+   6.09
   ],
   "roe": [
-   8.33,
-   8.56,
-   4.32,
-   10.53,
-   10.54,
-   10.24
+   5.49,
+   12.09,
+   1.66,
+   7.65,
+   8.08,
+   13.71
   ]
  },
  "sens": {
   "0": [
-   3.47,
-   5.52,
-   1.83,
-   6.6,
-   6.34,
-   6.98
+   0.82,
+   7.18,
+   -1.64,
+   2.81,
+   4.17,
+   8.7
   ],
   "25": [
-   4.86,
-   6.39,
-   2.55,
-   7.73,
-   7.54,
-   7.91
+   2.16,
+   8.58,
+   -0.69,
+   4.2,
+   5.29,
+   10.14
   ],
   "50": [
-   6.25,
-   7.26,
-   3.26,
-   8.85,
-   8.75,
-   8.85
+   3.49,
+   9.99,
+   0.25,
+   5.58,
+   6.41,
+   11.57
   ],
   "87": [
-   8.31,
-   8.55,
-   4.31,
-   10.52,
-   10.53,
-   10.23
+   5.47,
+   12.07,
+   1.65,
+   7.63,
+   8.06,
+   13.69
   ],
   "100": [
-   9.04,
-   9.0,
-   4.68,
-   11.1,
-   11.15,
-   10.72
+   6.16,
+   12.8,
+   2.14,
+   8.35,
+   8.65,
+   14.43
   ],
   "150": [
-   11.82,
-   10.74,
-   6.11,
-   13.35,
-   13.56,
-   12.58
+   8.83,
+   15.61,
+   4.03,
+   11.12,
+   10.88,
+   17.29
   ]
  },
  "dep": {
@@ -349,5 +349,164 @@
   200.0,
   52.0,
   90.0
+ ],
+ "irb": {
+  "pd": [
+   1.73,
+   1.26,
+   2.15,
+   2.26,
+   1.26,
+   1.18
+  ],
+  "lgd": [
+   34.38,
+   31.44,
+   31.51,
+   35.6,
+   40.0,
+   29.7
+  ],
+  "cor": [
+   0.59,
+   0.4,
+   0.68,
+   0.8,
+   0.5,
+   0.35
+  ],
+  "defrate": [
+   1.32,
+   0.99,
+   2.04,
+   1.54,
+   0.92,
+   0.63
+  ]
+ },
+ "irb_grande": {
+  "pd": [
+   0.57,
+   0.5,
+   0.6,
+   0.67,
+   0.33,
+   0.52
+  ],
+  "lgd": [
+   40.0,
+   39.55,
+   40.0,
+   40.0,
+   40.0,
+   40.0
+  ]
+ },
+ "capital": {
+  "densidad": [
+   59.46,
+   35.34,
+   43.0,
+   46.35,
+   61.33,
+   37.2
+  ],
+  "exposicion": [
+   308377.6,
+   316560.6,
+   961183.57,
+   252020.52,
+   30452.1,
+   259107.64
+  ],
+  "default": [
+   2.69,
+   3.3,
+   3.29,
+   3.34,
+   1.92,
+   2.89
+  ]
+ },
+ "comparables": [
+  {
+   "banco": "Commerzbank",
+   "pais": "Alemania",
+   "periodo": "2026-Q2",
+   "segmento": "Corporate Clients",
+   "m": {
+    "Ingresos del segmento": "1232",
+    "Margen de intereses": "660",
+    "Comisiones netas": "376",
+    "Resultado operativo": "490",
+    "Cartera media de prestamos": "123000",
+    "Comisiones netas sobre ingresos del segmento": "30.5"
+   }
+  },
+  {
+   "banco": "ABN AMRO",
+   "pais": "Paises Bajos",
+   "periodo": "2026-H1",
+   "segmento": "Corporate Banking",
+   "m": {
+    "Ingresos del segmento": "1694",
+    "Margen de intereses": "1093",
+    "Comisiones netas": "429",
+    "Resultado operativo": "855",
+    "Ratio de eficiencia (cost-income)": "49.5",
+    "Coste del riesgo": "15.0",
+    "ROE del segmento": "10.8",
+    "Prestamos a clientes": "86900",
+    "Activos ponderados por riesgo": "77400",
+    "Comisiones netas sobre ingresos del segmento": "25.3"
+   }
+  },
+  {
+   "banco": "Intesa Sanpaolo",
+   "pais": "Italia",
+   "periodo": "2026-H1",
+   "segmento": "Banca dei Territori",
+   "m": {
+    "Ingresos del segmento": "6205",
+    "Costes operativos": "2898",
+    "Resultado operativo": "3307",
+    "Ratio de eficiencia (cost-income)": "46.7",
+    "Provisiones y saneamientos": "528",
+    "Resultado neto": "1727"
+   }
+  },
+  {
+   "banco": "CaixaBank",
+   "pais": "Espana",
+   "periodo": "2026-H1",
+   "segmento": "Grupo consolidado",
+   "m": {
+    "Margen de intereses": "5390",
+    "Comisiones netas": "2075",
+    "Comisiones bancarias mayoristas": "193",
+    "Ingresos del segmento": "8338",
+    "Ratio de eficiencia (cost-income)": "39.6",
+    "Coste del riesgo": "24.0",
+    "ROE del segmento": "15.4",
+    "Ratio de morosidad": "1.8",
+    "Credito a la clientela bruto": "406233",
+    "Comisiones netas sobre ingresos del segmento": "24.9"
+   }
+  },
+  {
+   "banco": "BPER Banca",
+   "pais": "Italia",
+   "periodo": "2026-H1",
+   "segmento": "Grupo consolidado",
+   "m": {
+    "Margen de intereses": "2211.8",
+    "Comisiones netas": "1353.4",
+    "Ingresos del segmento": "3876.2",
+    "Costes operativos": "1605.3",
+    "Ratio de eficiencia (cost-income)": "41.4",
+    "Saneamientos por riesgo de credito": "177",
+    "Comisiones netas sobre ingresos del segmento": "34.9"
+   }
+  }
  ]
 }
