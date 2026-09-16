@@ -208,6 +208,58 @@ del Banco de España. Spread ≤0,25 M€ menos >1 M€, media de 12 meses:
 | Zona euro | +71 pb |
 Pero la lectura de «spread invertido» no se sostiene fuera de julio.
 
+### 2.14 Media ponderada de 2026: sí se puede, con dos matices
+
+El tipo mensual del MIR ya viene ponderado por el volumen contratado dentro
+de ese mes. Para agregar varios meses hay que **volver a ponderar por el
+volumen de cada mes**, no promediar los tipos a secas:
+
+    tipo_periodo = Σ(tipo_m × volumen_m) / Σ(volumen_m)
+
+Implementado en `scripts/medias_ponderadas.py`, salida en
+`prestamos_personales/prestamos_empresas_medias_ponderadas.csv`.
+
+**Matiz 1: «2026» son siete meses, de enero a julio.** Agosto y septiembre no
+están publicados (23º día hábil tras cierre de mes). Es un año parcial y el
+período de referencia de cada fila lo dice explícitamente.
+
+**Matiz 2: Alemania no publica volumen del corte fino.** Sólo publica volumen
+para `≤1 M€` y `>1 M€`, no para `≤0,25 M€` ni `0,25–1 M€` (salvo un dato
+suelto en 2025-08 que no se usa). Los tipos finos alemanes sí existen. El
+script emite esas filas como `media_simple` con nota, en vez de fingir una
+ponderación que no se puede hacer.
+
+En la práctica la ponderación cambia poco: entre 0 y 3 pb frente a la media
+simple, porque los volúmenes mensuales son bastante estables. La decisión
+relevante no es ponderar o no, sino **qué corte de tramos se usa**.
+
+### 2.15 Base comparable recomendada: corte grueso (≤1 M€ vs >1 M€)
+
+Es el único con volumen publicado en los seis países y todos los meses.
+2026 YTD (ene-jul), ponderado por volumen:
+
+| País | ≤1 M€ | >1 M€ | Spread | Peso del ≤1 M€ sobre nueva producción |
+|---|---|---|---|---|
+| España | 3,41 % | 3,46 % | **−5 pb** | 50,5 % |
+| Portugal | 3,94 % | 3,71 % | +23 pb | 51,1 % |
+| Francia | 3,77 % | 3,49 % | +27 pb | 30,0 % |
+| Alemania | 4,39 % | 3,41 % | +98 pb | 17,8 % |
+| Italia | 4,25 % | 3,22 % | +103 pb | 34,6 % |
+| Países Bajos | 4,50 % | 3,37 % | +113 pb | 7,6 % |
+| Zona euro | 3,96 % | 3,44 % | +52 pb | 26,1 % |
+
+Dos lecturas que conviene tener presentes antes de interpretar rentabilidad:
+
+- **El spread plano de España se confirma** también en el corte grueso y
+  ponderado (−5 pb), así que no era sólo efecto de julio ni del tramo fino.
+  Es un rasgo persistente del mercado español en lo que va de 2026, y sigue
+  pendiente de contraste con el Boletín Estadístico.
+- **La última columna condiciona todo lo demás.** En España y Portugal la
+  mitad de la nueva producción a empresas es de importe ≤1 M€; en Países
+  Bajos es el 7,6 % y en Alemania el 17,8 %. Un mismo spread no significa lo
+  mismo sobre el 50 % de la cartera que sobre el 8 %. Cualquier comparación
+  de rentabilidad entre países tiene que normalizar por esto.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
