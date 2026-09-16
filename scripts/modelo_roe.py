@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import schema  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PAISES = ["Espana", "Alemania", "Francia", "Italia", "Portugal", "Paises Bajos"]
+PAISES = ["Espana", "Alemania", "Francia", "Italia", "Portugal", "Paises Bajos", "Irlanda"]
 ANIO = "2026"
 TRAMO = "Hasta 1 M EUR"
 PLAZO = "Total initial rate fixation"

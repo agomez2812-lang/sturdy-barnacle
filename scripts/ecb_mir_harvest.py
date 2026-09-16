@@ -29,7 +29,7 @@ BASE = "https://data-api.ecb.europa.eu/service/data"
 PORTAL = "https://data.ecb.europa.eu/data/datasets/MIR/MIR."
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-PAISES = ["ES", "DE", "FR", "IT", "PT", "NL", "U2"]
+PAISES = ["ES", "DE", "FR", "IT", "PT", "NL", "IE", "U2"]
 
 # AMOUNT_CAT -> etiqueta. Verificado contra TITLE_COMPL del portal (2026-09-16).
 # ATENCION: los tramos SE SOLAPAN. "0" (<=1 M) es la suma de "2" (<=0,25 M) y

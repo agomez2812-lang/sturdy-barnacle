@@ -38,6 +38,7 @@ UNITS = {
 COUNTRIES = {
     "ES": "Espana", "DE": "Alemania", "FR": "Francia",
     "IT": "Italia", "PT": "Portugal", "NL": "Paises Bajos",
+    "IE": "Irlanda",
     "U2": "Zona euro (referencia)",
 }
 

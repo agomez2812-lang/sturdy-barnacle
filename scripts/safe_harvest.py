@@ -33,7 +33,7 @@ DIMS = ["FREQ", "REF_AREA", "FIRM_SIZE", "FIRM_SECTOR", "FIRM_TURNOVER",
         "FIRM_AGE", "FIRM_OWNERSHIP", "SAFE_QUESTION", "SAFE_ITEM",
         "SAFE_ANSWER", "SAFE_FILTER", "SAFE_DENOM"]
 
-PAISES = ["ES", "DE", "FR", "IT", "PT", "NL", "U2"]
+PAISES = ["ES", "DE", "FR", "IT", "PT", "NL", "IE", "U2"]
 TAMANOS = {"SME": "PYME (<250 empleados)", "MIC": "Micro (1-9)",
            "SML": "Pequena (10-49)", "MED": "Mediana (50-249)",
            "LAR": "Grande (250+)"}

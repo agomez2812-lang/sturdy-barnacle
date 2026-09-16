@@ -843,6 +843,58 @@ Qué cambió y por qué:
 consumo de capital que el precio. Es lo contrario de lo que sugería el
 modelo con supuestos, y cambia dónde conviene mirar.
 
+### 2.37 Irlanda incorporada: séptimo país
+
+Añadida a toda la cadena de extracción y al modelo. Cobertura completa salvo
+dos huecos concretos.
+
+| Bloque | Irlanda |
+|---|---|
+| Precio por tramo (MIR) | Completo, los cuatro tramos |
+| Circulante (A2Z1) | Completo |
+| Crédito al consumo a hogares (A2D) | **No existe**, 404 en el MIR |
+| Volumen de depósito a plazo (L22) | **No existe**, 404 |
+| EBA Risk Dashboard | Completo |
+| Parámetros IRB (PD, LGD) | Completo |
+| Transparency Exercise (capital) | Completo |
+| OCDE Scoreboard | Completo, hasta 2022 |
+| EUF factoring | Completo |
+
+**Perfil: el precio más alto y el capital más caro.**
+
+| Métrica | Irlanda | Posición entre los siete |
+|---|---|---|
+| Precio tramo ≤1 M€ | 5,37 % | **el más alto** |
+| PD de PYME | 1,08 % | **la más baja** |
+| LGD de PYME | 37,3 % | segunda más alta |
+| PD × LGD | 0,40 % | empatada con Alemania, segunda más baja |
+| **Densidad de RWA** | **70,0 %** | **la más alta**, el doble que Alemania |
+| Cost-income | 57,4 % | segunda peor |
+| NPL de PYME | 3,77 % | segunda más baja |
+| Exposición PYME | 16.964 M€ | **la más pequeña**, 1,8 % de la francesa |
+| Peso del tramo ≤1 M€ | 16,8 % | similar a Alemania |
+| Factoring sobre PIB | 4,5 % | **la más baja**; crecimiento 0,0 % |
+| **ROE modelizado** | **7,7 %** | empatada con Italia, cuarta |
+
+**Lo que aporta Irlanda al argumento central.** Es el caso que confirma, por
+el lado contrario, que el ranking lo decide el capital y no el precio:
+tiene el precio más alto de los siete y la mejor PD, y aun así queda en
+mitad de tabla porque la densidad de RWA del 70 % y un cost-income del 57 %
+se comen el margen. España e Irlanda están en los extremos opuestos de
+precio y llegan a ROE parecidos por la misma vía: consumo de capital alto.
+
+Es además el país **menos sensible al supuesto de comisiones**: su ROE va
+del 5,5 % al 9,2 % entre cero y 150 pb, un recorrido de 3,7 puntos frente a
+los 8,4 de Alemania. Su margen de partida es tan amplio que la comisión pesa
+poco en términos relativos.
+
+**Cautela sobre el tamaño.** La cartera PYME irlandesa de la muestra del EBA
+son 16.964 M€, menos del 2 % de la francesa. Los parámetros medianos salen
+de pocas entidades declarantes, así que son más volátiles que los del resto.
+La OCDE le atribuía además un NPL del 8,1 % en 2022, muy por encima del
+3,77 % actual del EBA: el saneamiento posterior a la crisis bancaria
+irlandesa sigue siendo reciente y conviene no extrapolar la serie histórica.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

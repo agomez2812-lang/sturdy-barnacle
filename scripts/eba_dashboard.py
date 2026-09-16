@@ -24,7 +24,7 @@ import schema  # noqa: E402
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 URL = ("https://www.eba.europa.eu/risk-and-data-analysis/risk-analysis/"
        "risk-monitoring/risk-dashboard")
-PAISES = {"ES", "DE", "FR", "IT", "PT", "NL", "EU"}
+PAISES = {"ES", "DE", "FR", "IT", "PT", "NL", "IE", "EU"}
 
 # Indicadores de la hoja "KRIs by country and EU" -> (etiqueta, unidad, tipo)
 KRIS = {

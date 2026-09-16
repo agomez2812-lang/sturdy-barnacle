@@ -27,7 +27,8 @@ XLSX = os.path.join(ROOT, "raw", "eba", "credit_risk_q1_2026.xlsx")
 URL = ("https://www.eba.europa.eu/risk-and-data-analysis/risk-analysis/"
        "risk-monitoring/risk-dashboard")
 PAISES = {"Spain": "Espana", "Germany": "Alemania", "France": "Francia",
-          "Italy": "Italia", "Portugal": "Portugal", "Netherlands": "Paises Bajos"}
+          "Italy": "Italia", "Portugal": "Portugal", "Netherlands": "Paises Bajos",
+          "Ireland": "Irlanda"}
 CLASES = {
     "Corporates - Of Which: SME": "Empresas, del cual PYME",
     "Corporates - Of Which: Large corporates": "Empresas, del cual gran empresa",

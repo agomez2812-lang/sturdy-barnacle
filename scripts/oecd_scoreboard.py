@@ -23,7 +23,7 @@ FLOW = "OECD.CFE.SMEE,DSD_SMEE_FINANCING@DF_SMEE_SCOREBOARD,1.0"
 URL = "https://sdmx.oecd.org/public/rest/data/%s/all" % FLOW
 PORTAL = "https://data-explorer.oecd.org/"
 PAISES = {"ESP": "Espana", "DEU": "Alemania", "FRA": "Francia",
-          "ITA": "Italia", "PRT": "Portugal", "NLD": "Paises Bajos"}
+          "ITA": "Italia", "PRT": "Portugal", "NLD": "Paises Bajos", "IRL": "Irlanda"}
 TAM = {"SME": "PYME", "LRG": "Gran empresa", "T": "Total"}
 
 # medida -> (etiqueta, carpeta, unidad, tipo, factor)

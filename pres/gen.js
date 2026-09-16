@@ -101,18 +101,18 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
     catAxisLabelColor:TXT, valAxisLabelColor:MUT, catAxisLabelFontSize:11,
     valAxisLabelFormatCode:'0.0"%"', valGridLine:{color:"E3E9EB", size:1},
     catGridLine:{style:"none"}, valAxisMaxVal:5.5});
- s.addShape(pres.ShapeType.roundRect,{x:8.4, y:1.75, w:4.33, h:2.0, fill:{color:LIGHT},
+ s.addShape(pres.ShapeType.roundRect,{x:8.4, y:1.75, w:4.33, h:2.32, fill:{color:LIGHT},
    rectRadius:0.06, line:{color:"DCE4E7"}});
  s.addText("Peso del tramo ≤1 M€ sobre la nueva producción",{x:8.6, y:1.9, w:3.95, h:0.5,
    fontFace:HF, fontSize:13, bold:true, color:PRIM, isTextBox:true, margin:0});
  s.addText(P.map((p,i)=>`${p}: ${D.peso1m[i]} %`).join("\n"),
-   {x:8.6, y:2.45, w:3.95, h:1.2, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0, lineSpacing:15});
- s.addShape(pres.ShapeType.roundRect,{x:8.4, y:3.95, w:4.33, h:1.8, fill:{color:"F7EDE4"},
+   {x:8.6, y:2.42, w:3.95, h:1.58, fontFace:BF, fontSize:10.5, color:TXT, isTextBox:true, margin:0, lineSpacing:13});
+ s.addShape(pres.ShapeType.roundRect,{x:8.4, y:4.22, w:4.33, h:1.53, fill:{color:"F7EDE4"},
    rectRadius:0.06, line:{color:ACC}});
- s.addText("Un mismo spread no significa lo mismo",{x:8.6, y:4.1, w:3.95, h:0.35,
+ s.addText("Un mismo spread no significa lo mismo",{x:8.6, y:4.34, w:3.95, h:0.35,
    fontFace:HF, fontSize:13, bold:true, color:ACC, isTextBox:true, margin:0});
- s.addText("En España y Portugal la mitad de la nueva producción es de importe ≤1 M€. En Países Bajos es el 7,6 %. Cualquier comparación de rentabilidad debe normalizar por este peso.",
-   {x:8.6, y:4.5, w:3.95, h:1.1, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
+ s.addText("En España y Portugal la mitad de la nueva producción es de importe ≤1 M€. En Países Bajos es el 7,6 % y en Irlanda el 16,8 %. Cualquier comparación de rentabilidad debe normalizar por este peso.",
+   {x:8.6, y:4.70, w:3.95, h:0.95, fontFace:BF, fontSize:10.5, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuente: BCE, ECB Data Portal, dataset MIR. Tipo anual equivalente (AAR/NDER), que excluye comisiones. Media enero-julio 2026 ponderada por volumen mensual.");
 }
 
@@ -171,7 +171,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    if(sup.includes(ri)) o.fill={color:"FBF2EA"}, o.color="8A5A2B";
    if(tot.includes(ri)) o.bold=true, o.fill={color: ri===10?PRIM:LIGHT}, o.color= ri===10?"FFFFFF":PRIM;
    return {text:c, options:o};}));
- s.addTable(rows, Object.assign(tOpt(),{y:1.78, colW:[3.0].concat(Array(6).fill(1.685)), rowH:0.37}));
+ s.addTable(rows, Object.assign(tOpt(),{y:1.78, colW:[2.7].concat(Array(7).fill(1.347)), rowH:0.37}));
  [["Observado",PRIM],["Supuesto",MED]].forEach((l,i)=>chip(s,M+i*1.7,6.15,l[0],l[1]));
  s.addText("Solo la fila de comisiones es supuesto. Riesgo y capital son ahora observados por país.",
    {x:M+3.7, y:6.15, w:8.5, h:0.3, fontFace:BF, fontSize:10, color:MUT, isTextBox:true, margin:0});
@@ -193,12 +193,14 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    bold:true, color:PRIM, isTextBox:true, margin:0});
  s.addText([
   {text:"Países Bajos y Alemania encabezan", options:{bold:true, breakLine:true}},
-  {text:"por la misma razón: el menor coste del riesgo de los seis (0,35 % y 0,40 %) y la menor densidad de RWA (37 % y 35 %), que reduce el capital a inmovilizar.\n\n", options:{breakLine:true}},
+  {text:"por la misma razón: un coste del riesgo bajo (0,35 % y 0,40 %) y la menor densidad de RWA (37 % y 35 %), que reduce el capital a inmovilizar.\n\n", options:{breakLine:true}},
   {text:"España cae al quinto puesto", options:{bold:true, breakLine:true}},
-  {text:"por combinar el precio más bajo con una densidad de RWA del 59,5 %, la segunda mayor: cada euro de préstamo PYME consume casi el doble de capital que en Alemania.\n\n", options:{breakLine:true}},
+  {text:"por combinar el precio más bajo con una densidad de RWA del 59,5 %: consume casi el doble de capital que Alemania.\n\n", options:{breakLine:true}},
+  {text:"Irlanda lo ilustra al revés", options:{bold:true, breakLine:true}},
+  {text:"— precio más alto (5,37 %) y mejor PD, pero densidad del 70 % y cost-income del 57 %: se queda en 7,7 %.\n\n", options:{breakLine:true}},
   {text:"Francia queda última", options:{bold:true, breakLine:true}},
   {text:"con un 1,7 %, y en negativo si no se asume comisión alguna.", options:{}}],
-  {x:8.5, y:2.4, w:4.05, h:3.3, fontFace:BF, fontSize:11.5, color:TXT, isTextBox:true, margin:0});
+  {x:8.5, y:2.36, w:4.05, h:3.46, fontFace:BF, fontSize:10.5, color:TXT, isTextBox:true, margin:0});
  fuente(s,"ROE modelizado, no observado. Depende del supuesto de comisiones: ver lámina siguiente de sensibilidad. Tipo impositivo 25 % uniforme.");
 }
 
@@ -214,13 +216,13 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    const o=cel(null,{align: ci===0?"left":"center", bold: ci===0});
    if(ci===4) o.fill={color:"F7EDE4"}, o.bold=true, o.color="8A5A2B";
    return {text:c, options:o};}));
- s.addTable(rows, Object.assign(tOpt(),{y:1.85, colW:[2.7].concat(Array(6).fill(1.575)), rowH:0.46}));
- s.addShape(pres.ShapeType.roundRect,{x:M, y:5.0, w:W-2*M, h:1.55, fill:{color:"F7EDE4"},
+ s.addTable(rows, Object.assign(tOpt(),{y:1.82, colW:[2.7].concat(Array(6).fill(1.572)), rowH:0.40}));
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:5.25, w:W-2*M, h:1.4, fill:{color:"F7EDE4"},
    rectRadius:0.06, line:{color:ACC}});
- s.addText("Lo que el supuesto cambia y lo que no",{x:M+0.25, y:5.15, w:11.8, h:0.32,
+ s.addText("Lo que el supuesto cambia y lo que no",{x:M+0.25, y:5.36, w:11.8, h:0.32,
    fontFace:HF, fontSize:14, bold:true, color:ACC, isTextBox:true, margin:0});
  s.addText("El nivel del ROE se mueve mucho: España pasa del 3,5 % al 11,8 % según se asuma cero o 150 pb de comisión. El ordenamiento se mueve menos: Francia es último en todos los escenarios e Italia, Portugal y Países Bajos encabezan en todos. Lo que sí cambia es la posición relativa de España, que sube conforme se asume más comisión — y es el único país donde sabemos que la comisión es alta.",
-   {x:M+0.25, y:5.5, w:11.8, h:0.9, fontFace:BF, fontSize:11.5, color:TXT, isTextBox:true, margin:0});
+   {x:M+0.25, y:5.70, w:11.8, h:0.85, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
  fuente(s,"87 pb es la cuña observada en España (TAE − TEDR, tramo ≤1 M€, media 2026, Banco de España). Para los otros cinco países no existe dato equivalente.");
 }
 
@@ -285,9 +287,9 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    const o=cel(null,{align: ci===0?"left":"center", fontSize:10.5, bold: ci===0});
    if(ci===3) o.bold=true, o.fill={color:"FBEDEB"}, o.color=BAD;
    return {text:c, options:o};}));
- s.addTable(rows, {x:8.0, y:1.8, w:4.73, colW:[1.6,1.02,1.02,1.09], rowH:0.42,
+ s.addTable(rows, {x:8.0, y:1.8, w:4.73, colW:[1.6,1.02,1.02,1.09], rowH:0.385,
    fontFace:BF, border:{pt:0.5,color:"D6DEE1"}, valign:"middle", autoPage:false});
- s.addText("Italia tiene la peor combinación (PD 2,26 % y LGD 35,6 %) y Países Bajos la mejor (1,18 % y 29,7 %). Portugal tiene la LGD más alta de los seis, un 40 %, compensada por una PD baja.",
+ s.addText("Italia tiene la peor combinación (PD 2,26 % y LGD 35,6 %) y Países Bajos la mejor (1,18 % y 29,7 %). Irlanda tiene la PD más baja de los siete, 1,08 %, pero una LGD del 37,3 %. Portugal tiene la LGD más alta, un 40 %, compensada por una PD baja.",
    {x:M, y:5.85, w:W-2*M, h:0.7, fontFace:BF, fontSize:12, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuente: EBA, anexo de parámetros de riesgo del Risk Dashboard Q1 2026, origen COREP C 9.02. Se usa la mediana de entidades y no la media ponderada, que se deja arrastrar por carteras grandes con parámetros extremos.");
 }
@@ -327,11 +329,11 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
      o.color = neg?OK:BAD; o.bold=true; o.fill={color: neg?"EAF3EE":"FBEDEB"}; }
    if(ri===3) o.fill={color: ci===0?LIGHT:"F3DEDA"};
    return {text:c, options:o};}));
- s.addTable(rows, Object.assign(tOpt(),{y:4.32, colW:[3.1].concat(Array(6).fill(1.52)), rowH:0.38}));
+ s.addTable(rows, Object.assign(tOpt(),{y:4.32, colW:[2.9].concat(Array(7).fill(1.319)), rowH:0.36}));
  s.addShape(pres.ShapeType.roundRect,{x:M, y:5.95, w:W-2*M, h:0.85, fill:{color:"FBF2EA"},
    rectRadius:0.06, line:{color:MED}});
  s.addText([{text:"Cautela con el LGD de gran empresa. ", options:{bold:true, color:"8A5A2B"}},
-   {text:"Está agrupado en el 40,0 % en los seis países y en todo el reparto (percentiles 25, 50 y 75), porque es el valor supervisor del IRB básico bajo CRR3, no una estimación propia. La ventaja de severidad de la PYME es real —viene de mayor garantía real— pero está exagerada por ese efecto: en media ponderada la brecha se reduce a la mitad (PYME 23,6–37,9 % frente a gran empresa 35,0–38,8 %). El spread de PD, en cambio, es sólido: la PD sí es estimación propia en ambas clases.",
+   {text:"Está agrupado en el 40,0 % en los siete países y en todo el reparto (percentiles 25, 50 y 75), porque es el valor supervisor del IRB básico bajo CRR3, no una estimación propia. La ventaja de severidad de la PYME es real —viene de mayor garantía real— pero está exagerada por ese efecto: en media ponderada la brecha se reduce a la mitad (PYME 23,6–37,9 % frente a gran empresa 35,0–38,8 %). El spread de PD, en cambio, es sólido: la PD sí es estimación propia en ambas clases.",
     options:{color:TXT}}],
    {x:M+0.22, y:6.05, w:11.85, h:0.68, fontFace:BF, fontSize:10, isTextBox:true, margin:0});
  fuente(s,"Fuente: EBA, anexo de parámetros de riesgo del Risk Dashboard Q1 2026, origen COREP C 9.02. Clases «Corporates – Of Which: SME» y «Corporates – Of Which: Large corporates».");
@@ -348,9 +350,9 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
     valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:70});
  s.addShape(pres.ShapeType.roundRect,{x:8.2, y:1.85, w:4.53, h:2.1, fill:{color:"F7EDE4"},
    rectRadius:0.06, line:{color:ACC}});
- s.addText("Casi el doble de capital en España que en Alemania",{x:8.42, y:2.0, w:4.1, h:0.55,
+ s.addText("El capital manda sobre el precio",{x:8.42, y:2.0, w:4.1, h:0.55,
    fontFace:HF, fontSize:13, bold:true, color:ACC, isTextBox:true, margin:0});
- s.addText("Un euro de préstamo PYME consume un 59,5 % de RWA en España y un 35,3 % en Alemania. Sobre el mismo margen, eso divide el ROE casi por dos. Es el factor que más mueve el ranking, por delante del precio.",
+ s.addText("Va del 35,3 % en Alemania al 70,0 % en Irlanda: un euro de préstamo PYME consume el doble de capital en Irlanda que en Alemania. Sobre el mismo margen, eso divide el ROE por dos. Es el factor que más mueve el ranking, por delante del precio.",
    {x:8.42, y:2.58, w:4.1, h:1.25, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
  s.addShape(pres.ShapeType.roundRect,{x:8.2, y:4.15, w:4.53, h:1.6, fill:{color:LIGHT},
    rectRadius:0.06, line:{color:"DCE4E7"}});
@@ -376,7 +378,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center"})};
    return {text:c, options:cel(null,{align: ci===0?"left":"center", bold: ci===0,
      fill:{color: ri%2 ? "FFFFFF" : LIGHT}})};}));
- s.addTable(rows, Object.assign(tOpt(),{y:1.8, colW:[3.0].concat(Array(6).fill(1.685)), rowH:0.48}));
+ s.addTable(rows, Object.assign(tOpt(),{y:1.8, colW:[2.7].concat(Array(7).fill(1.347)), rowH:0.46}));
  s.addShape(pres.ShapeType.roundRect,{x:M, y:5.1, w:6.0, h:1.5, fill:{color:LIGHT},
    rectRadius:0.06, line:{color:"DCE4E7"}});
  s.addText("Por qué España rinde pese al spread estrecho",{x:M+0.22, y:5.25, w:5.55, h:0.32,

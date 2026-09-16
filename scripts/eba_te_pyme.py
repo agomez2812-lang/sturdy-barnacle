@@ -32,7 +32,7 @@ CSV_TE = os.path.join(ROOT, "raw", "eba_te", "tr_cre.csv")
 URL = ("https://www.eba.europa.eu/risk-and-data-analysis/risk-analysis/"
        "eu-wide-transparency-exercise")
 PAISES = {"ES": "Espana", "DE": "Alemania", "FR": "Francia",
-          "IT": "Italia", "PT": "Portugal", "NL": "Paises Bajos"}
+          "IT": "Italia", "PT": "Portugal", "NL": "Paises Bajos", "IE": "Irlanda"}
 ITEMS = {"2520503": "exposicion_original", "2520513": "exposicion_default",
          "2520523": "exposicion_valor", "2520533": "rwa"}
 
