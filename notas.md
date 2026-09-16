@@ -25,7 +25,7 @@ concretos. `check_fuentes.py` los cuenta como alcanzables por eso.
 | 4. EBA Transparency (→ `/hipotecas`) | Pendiente | el Dashboard ya da CRE por país; la TE añadiría banco a banco |
 | 5. OCDE Scoreboard | Pendiente | |
 | 6. EUF / FCI | Pendiente | |
-| 7. Comparables banco a banco | Pendiente | |
+| 7. Comparables banco a banco | **Parcial** | 3 de 9 bancos; ver §2.27 |
 | 8. Filiales de factoring | Pendiente | |
 | 9. Banco de España | **Hecho** | cuadros 19.5, 19.6 y 19.13; resuelve §2.22, ver §2.23 |
 
@@ -534,6 +534,67 @@ Esto deja el encargo con un límite duro que conviene asumir explícitamente:
   no por producto. Es más débil, pero es lo único que hay.
 
 Esto refuerza la prioridad del bloque 7 sobre el resto de lo pendiente.
+
+### 2.27 Bloque 7: 3 de 9 bancos, y el reporte por segmentos es muy desigual
+
+Adelantado por delante de OCDE y factoring porque es la única vía de medir
+ingreso por comisiones en los cuatro países sin estadística oficial (§2.26).
+
+| Banco | Estado | Detalle del segmento |
+|---|---|---|
+| Commerzbank | **Hecho** | Corporate Clients: ingresos, margen de intereses, comisiones, resultado operativo, cartera |
+| ABN AMRO | **Hecho** | Corporate Banking: cuenta completa, cost-income, coste del riesgo, ROE, cartera, RWA |
+| Intesa Sanpaolo | **Parcial** | Banca dei Territori: ingresos, costes, cost-income, provisiones, resultado. **Sin desglose de intereses ni comisiones** |
+| ING | **Bloqueado** | La web devuelve 403 a descarga automatizada (protección antibot) |
+| Société Générale | **Bloqueado** | Igual, 403 |
+| CaixaBank | Pendiente | |
+| Banco Sabadell | Pendiente | |
+| BPER | Pendiente | |
+| BNP Paribas | Pendiente | |
+
+**Peso de las comisiones sobre el ingreso del segmento**, que es lo que se
+buscaba:
+
+| País | Banco / segmento | Comisiones / ingresos | Período |
+|---|---|---|---|
+| Alemania | Commerzbank, Corporate Clients | **30,5 %** | 2026-Q2 |
+| Países Bajos | ABN AMRO, Corporate Banking | **25,3 %** | 2026-H1 |
+
+Contraste con el dato del EBA a nivel de grupo consolidado (§2.21):
+Alemania 31,97 % y Países Bajos 20,42 %. En Alemania el segmento empresas
+pesa en comisiones casi igual que el grupo; en Países Bajos, el segmento
+corporativo pesa más que el grupo.
+
+### 2.28 Los perímetros de segmento no son comparables, y en un caso engañan
+
+Esta es la debilidad estructural del bloque 7, y conviene tenerla delante
+antes de poner estas cifras en una misma tabla:
+
+- **Commerzbank, Corporate Clients**: mezcla gran empresa, PYME alemana,
+  sector público e institucionales. **No aísla la PYME.**
+- **ABN AMRO, Corporate Banking**: incluye Clearing y Global Markets, de
+  ingreso muy volátil. Y lo más importante: **la PYME neerlandesa no está
+  aquí**, sino en Personal & Business Banking. Usar este segmento como
+  proxy de PYME en Países Bajos sería un error.
+- **Intesa, Banca dei Territori**: sí es mayoritariamente PYME y retail,
+  pero no separa intereses de comisiones, justo el dato que se busca. Habría
+  que ir a la *relazione semestrale*, más detallada que el comunicado.
+
+Conclusión provisional: el peso de comisiones por segmento **existe** como
+dato pero **no es comparable entre bancos** sin normalizar perímetros, y en
+varios casos el segmento publicado no corresponde a PYME. Sirve como orden
+de magnitud del componente de comisión en banca de empresas, no como medida
+del negocio PYME de cada país.
+
+### 2.29 Dos bancos bloquean la descarga automatizada
+
+ING y Société Générale devuelven 403 a cualquier petición automatizada,
+también con user-agent de navegador. No es política de egress del entorno:
+otros dominios bancarios descargan sin problema. Es protección antibot del
+propio sitio.
+
+Alternativas, si se quieren esos dos bancos: descargar los PDF a mano y
+dejarlos en `raw/bancos/`, desde donde el extractor los toma igual.
 
 ## 3. Estado de las decisiones
 
