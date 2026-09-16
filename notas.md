@@ -4,57 +4,30 @@
 
 ---
 
-## 1. BLOQUEO CRÍTICO: ninguna fuente primaria es accesible desde este entorno
+## 1. Acceso a las fuentes: RESUELTO
 
-El entorno de ejecución remoto aplica una **política de egress restrictiva**.
-Comprobación ejecutada el 2026-09-16 con `scripts/check_fuentes.py`:
+El entorno se subió a nivel de red `Full` el 2026-09-16. Comprobación con
+`scripts/check_fuentes.py`: **15/15 fuentes alcanzables**. El cambio propagó
+al proxy de la sesión en caliente, sin necesidad de abrir una sesión nueva.
 
-```
-0/15 fuentes alcanzables.
-```
+Algunas responden con 403/503 al HEAD de portada (OCDE, CaixaBank, ING,
+ABN AMRO, Commerzbank); es filtrado de bots del propio sitio ante una
+petición HEAD, no bloqueo del proxy, y no impide descargar los documentos
+concretos. `check_fuentes.py` los cuenta como alcanzables por eso.
 
-Dominios verificados y **denegados** por el proxy (respuesta `403 a CONNECT`,
-denegación de política, no error del sitio remoto):
+### Estado de la extracción
 
-| # | Fuente del encargo | Dominio | Estado |
-|---|---|---|---|
-| 1 | ECB Data Portal (API SDMX) | `data-api.ecb.europa.eu` | BLOQUEADO |
-| 1 | ECB Data Portal (web) | `data.ecb.europa.eu` | BLOQUEADO |
-| 2 | SAFE (encuesta BCE) | `www.ecb.europa.eu` | BLOQUEADO |
-| 3 | EBA Risk Dashboard / RAR | `www.eba.europa.eu` | BLOQUEADO |
-| 4 | EBA Transparency Exercise | `www.eba.europa.eu` | BLOQUEADO |
-| 5 | OECD Scoreboard | `www.oecd.org`, `stats.oecd.org` | BLOQUEADO |
-| 6 | EUF | `euf.eu.com` | BLOQUEADO |
-| 6 | FCI | `fci.nl` | BLOQUEADO |
-| 7 | IR de los 9 bancos comparables | varios | BLOQUEADO |
-| 9 | Banco de España, Boletín Estadístico | `www.bde.es` | BLOQUEADO |
-
-Sólo salen `github.com`, `pypi.org`, `registry.npmjs.org` y la API de Anthropic.
-
-**Consecuencia:** no se ha escrito **ninguna fila de datos** en los CSV. Los
-archivos de cada carpeta contienen sólo la cabecera del esquema. No se ha
-estimado, interpolado ni reconstruido de memoria ningún valor: hacerlo
-produciría cifras con apariencia de oficiales pero no verificables, que es
-exactamente lo que el encargo prohíbe.
-
-**Qué sí se ha entregado:** el pipeline completo y probado que rellena los
-bloques 1 y 2 (ECB MIR + tipos oficiales BCE) en una sola orden en cuanto
-haya red. Ver `README.md`.
-
-**Cómo desbloquear:** la política de red se elige al crear el entorno de
-ejecución remoto. Hay que recrearlo con acceso a los dominios de la tabla
-(o con política sin restricción). Documentación:
-https://code.claude.com/docs/en/claude-code-on-the-web
-
-**Nota sobre WebSearch:** la búsqueda web sí funciona en este entorno, pero
-devuelve resúmenes generados sobre fragmentos, no el dato primario. Se ha
-usado **sólo** para confirmar identificadores de series y estructura de
-claves SDMX (metadatos), nunca para extraer valores. Un tipo de interés
-leído de un resumen de buscador no es trazable a período, unidad ni
-criterio de ponderación, y es precisamente donde se cuela la confusión
-nivel / porcentaje neto que el encargo advierte.
-
----
+| Bloque | Estado | Observaciones |
+|---|---|---|
+| 1. ECB MIR + tipos oficiales | **Hecho** | 11.019 observaciones, desde 2025-01 |
+| 2. SAFE | Pendiente | |
+| 3. EBA Risk Dashboard | Pendiente | |
+| 4. EBA Transparency (→ `/hipotecas`) | Pendiente | |
+| 5. OCDE Scoreboard | Pendiente | |
+| 6. EUF / FCI | Pendiente | |
+| 7. Comparables banco a banco | Pendiente | |
+| 8. Filiales de factoring | Pendiente | |
+| 9. Banco de España | Pendiente | |
 
 ## 2. Huecos estructurales de las fuentes (independientes del bloqueo)
 
@@ -145,6 +118,54 @@ segmentos de la memoria anual y con criterios de imputación de costes
 distintos entre bancos. Comparabilidad limitada; anotar el perímetro.
 
 ---
+
+### 2.9 Los tramos de importe del MIR SE SOLAPAN
+
+Códigos `AMOUNT_CAT` verificados contra la metadata `TITLE_COMPL` del propio
+portal (no asumidos):
+
+| Código | Tramo |
+|---|---|
+| `A` | Total |
+| `2` | Hasta 0,25 M€ |
+| `3` | Más de 0,25 y hasta 1 M€ |
+| `0` | **Hasta 1 M€** = `2` + `3` |
+| `1` | Más de 1 M€ |
+
+`0` es un agregado de `2` y `3`, y `A` los engloba todos. **Sumar tramos
+entre sí duplica.** Para el spread PYME–gran empresa, la comparación limpia
+es `2` (≤0,25 M€) contra `1` (>1 M€).
+
+### 2.10 Volúmenes de circulante: sólo a nivel de zona euro
+
+Las series de volumen de negocio de revolving y descubiertos (`A2Z`,
+`DATA_TYPE_MIR = B`) devuelven 404 para los seis países; sólo existen para
+el agregado `U2`. El **tipo** sí está por país. Consecuencia: en
+`/circulante` hay precio por país pero no volumen por país. Lo mismo ocurre
+con el volumen de depósitos a plazo de empresas en **Países Bajos**
+(`NL.L22.B`), que tampoco se publica.
+
+### 2.11 Anomalía a verificar: España tiene el spread PYME invertido
+
+Con datos de 2026-07, fijación inicial total, España es el **único** país
+de los seis donde el préstamo pequeño sale más barato que el grande:
+
+| País | ≤0,25 M€ | >1 M€ | Spread |
+|---|---|---|---|
+| España | 3,56 % | 3,79 % | **−23 pb** |
+| Alemania | 4,71 % | 3,61 % | +110 pb |
+| Francia | 4,06 % | 3,53 % | +53 pb |
+| Italia | 4,75 % | 3,55 % | +120 pb |
+| Portugal | 4,60 % | 3,86 % | +74 pb |
+| Países Bajos | 4,82 % | 3,10 % | +172 pb |
+| Zona euro | 4,22 % | 3,60 % | +62 pb |
+
+No se corrige ni se explica aquí: queda anotado como **hallazgo a
+contrastar**. Hipótesis a descartar con el Boletín Estadístico del Banco de
+España (bloque 9): peso del crédito con aval público en el tramo bajo,
+efecto de composición por plazo, o competencia en el segmento. Conviene
+confirmarlo antes de construir cualquier conclusión de rentabilidad sobre
+el mercado español.
 
 ## 3. Estado de las decisiones
 

@@ -16,6 +16,9 @@ COLUMNS = [
     "fuente",
     "url",
     "fecha_publicacion",
+    # --- desglose de la serie (vacio cuando no aplica) ---
+    "tramo_importe",   # tramo de importe del prestamo
+    "plazo_fijacion",  # periodo de fijacion inicial del tipo / vencimiento
     # --- columnas de control metodologico (exigidas por el encargo) ---
     "criterio_segmentacion",  # tamano_prestamo | tamano_empresa_empleados | entidad | n/a
     "tipo_de_dato",           # nivel | porcentaje_neto_encuesta | volumen | ratio | importe

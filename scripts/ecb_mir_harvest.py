@@ -16,6 +16,7 @@ import argparse
 import csv
 import io
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -29,6 +30,17 @@ PORTAL = "https://data.ecb.europa.eu/data/datasets/MIR/MIR."
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 PAISES = ["ES", "DE", "FR", "IT", "PT", "NL", "U2"]
+
+# AMOUNT_CAT -> etiqueta. Verificado contra TITLE_COMPL del portal (2026-09-16).
+# ATENCION: los tramos SE SOLAPAN. "0" (<=1 M) es la suma de "2" (<=0,25 M) y
+# "3" (0,25-1 M), y "A" (total) los engloba todos. Nunca sumar tramos entre si.
+TRAMOS = {
+    "A": "Total",
+    "0": "Hasta 1 M EUR",
+    "1": "Mas de 1 M EUR",
+    "2": "Hasta 0,25 M EUR",
+    "3": "Mas de 0,25 y hasta 1 M EUR",
+}
 
 # Estructura de clave MIR (10 dimensiones):
 #   FREQ.REF_AREA.BS_REP_SECTOR.BS_ITEM.MATURITY_NOT_IRATE
@@ -131,10 +143,21 @@ def normaliza(texto_csv, pais, producto, metrica_base, unidad, criterio,
         if not valor or not periodo:
             continue
         clave = d.get("KEY", "")
-        # El titulo del portal ya describe tramo y vencimiento; lo usamos
-        # como etiqueta para no perder el desglose del comodin.
-        titulo = (d.get("TITLE_COMPL") or d.get("TITLE") or "").strip()
-        metrica = "%s | %s" % (metrica_base, titulo or clave)
+        compl = (d.get("TITLE_COMPL") or "").strip()
+        # Tramo de importe: codigo verificado, con respaldo en el titulo.
+        tramo = TRAMOS.get((d.get("AMOUNT_CAT") or "").strip(), "")
+        if not tramo:
+            g = re.search(r",\s*([^,]*?amount)\s*,", compl)
+            tramo = g.group(1).strip() if g else ""
+        # Plazo: se extrae del titulo porque los codigos difieren entre
+        # prestamos (fijacion del tipo) y depositos (vencimiento acordado).
+        g = re.search(r",\s*([^,]*?(?:rate fixation|maturity|notice|Overnight)"
+                      r"[^,]*?)\s*,", compl)
+        plazo = g.group(1).strip() if g else ""
+        metrica = "%s | %s" % (metrica_base,
+                               (d.get("TITLE") or "").strip() or clave)
+        # OBS_STATUS distinto de A (normal) marca dato provisional o estimado.
+        estado = (d.get("OBS_STATUS") or "").strip()
         filas.append(schema.row(
             pais=schema.COUNTRIES.get(pais, pais),
             producto=producto,
@@ -150,7 +173,11 @@ def normaliza(texto_csv, pais, producto, metrica_base, unidad, criterio,
             tipo_de_dato="nivel" if unidad == "pct_anual" else "volumen",
             ponderacion="media_ponderada_volumen" if unidad == "pct_anual"
                         else "dato_unico",
-            notas="serie %s; nueva produccion" % clave,
+            tramo_importe=tramo,
+            plazo_fijacion=plazo,
+            notas="serie %s%s" % (
+                clave, "" if estado in ("A", "") else "; OBS_STATUS=%s "
+                "(no definitivo)" % estado),
         ))
     return filas
 
