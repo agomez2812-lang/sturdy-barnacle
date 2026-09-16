@@ -32,6 +32,7 @@ COLUMNS = [
 UNITS = {
     "pct_anual", "pct_neto_encuesta", "pct_cartera", "pct_rwa",
     "eur_millones", "eur_miles_millones", "pct_ingresos", "pb",
+    "pct_roe", "pct_activos",
 }
 
 COUNTRIES = {

@@ -20,9 +20,9 @@ concretos. `check_fuentes.py` los cuenta como alcanzables por eso.
 | Bloque | Estado | Observaciones |
 |---|---|---|
 | 1. ECB MIR + tipos oficiales | **Hecho** | 11.019 observaciones, desde 2025-01 |
-| 2. SAFE | Pendiente | |
-| 3. EBA Risk Dashboard | Pendiente | |
-| 4. EBA Transparency (→ `/hipotecas`) | Pendiente | |
+| 2. SAFE | **Hecho** | 10.803 obs. Q8B **descontinuada tras 2022-S1**, ver §2.20 |
+| 3. EBA Risk Dashboard | **Hecho** | 2.484 obs, hasta 2026-Q1, con desglose PYME y CRE |
+| 4. EBA Transparency (→ `/hipotecas`) | Pendiente | el Dashboard ya da CRE por país; la TE añadiría banco a banco |
 | 5. OCDE Scoreboard | Pendiente | |
 | 6. EUF / FCI | Pendiente | |
 | 7. Comparables banco a banco | Pendiente | |
@@ -328,6 +328,89 @@ Alemania, julio 2026, fijación total: ≤0,25 M€ = 4,71 %; 0,25–1 M€ = 4,
 **≤1 M€ = 4,54 %**, que cae entre ambas, como corresponde a que `≤1 M€` sea
 la unión de los dos tramos. La aritmética de la ponderada de 2026 para ese
 tramo es 521.987 / 118.869 = 4,3913 %.
+
+### 2.20 Q8B de la SAFE está descontinuada desde 2022-S1
+
+La pregunta **Q8B** («tipo cobrado por la línea de crédito o descubierto»)
+**dejó de publicarse tras 2022-S1**. Cubre 2014-S1 a 2022-S1 y no tiene
+pregunta sucesora: tras el rediseño de la encuesta, las series trimestrales
+nuevas (sufijo `_G1`, hasta 2026-Q2) son Q0B, Q2, Q4, Q5, Q6A, Q7A, Q7B, Q9,
+Q10, Q11, Q23 y Q26. Ninguna de Q8.
+
+Se ha descargado igualmente por su valor histórico, pero **no sirve para
+precio actual**: el último dato tiene más de cuatro años. Para el tipo
+vigente de la línea de crédito PYME la fuente es el MIR (`A2Z1`, §2.16), que
+llega a 2026-07.
+
+La **brecha de financiación** (`FG`) sí llega a 2025-S1. Es un **porcentaje
+neto**, no un nivel: en 2025-S1 España marca −1,28 y Francia +6,27. Un valor
+negativo indica que la brecha se estrecha. Etiquetada como
+`pct_neto_encuesta` y `porcentaje_neto_encuesta`, nunca agregable con Q8B.
+
+Cobertura: Q8B no existe para Portugal ni Países Bajos fuera del agregado
+PYME (16 combinaciones país-tamaño sin datos).
+
+### 2.21 El EBA Risk Dashboard sí trae desglose PYME y CRE
+
+Mejor de lo esperado. El anexo de datos publica, por país y trimestre, saldo
+bruto, importe de NPL, ratio de NPL y ratio de cobertura para seis
+segmentos, entre ellos **«…of which SMEs»** y **«…of which CRE»**. Esto
+cubre buena parte de `/hipotecas` sin necesidad del Transparency Exercise,
+aunque a nivel de país y no de banco.
+
+Indicadores transversales, 2026-Q1 (%):
+
+| País | NPL | Coste riesgo | Cost-income | ROE | NIM | Comis./ingresos | CET1 |
+|---|---|---|---|---|---|---|---|
+| España | 2,60 | 1,22 | 42,14 | 18,51 | 2,78 | 23,93 | 13,67 |
+| Alemania | 1,61 | 0,75 | 55,15 | 7,97 | 1,13 | 31,97 | 16,94 |
+| Francia | 2,16 | 0,55 | 65,60 | 6,34 | 0,99 | 33,73 | 15,88 |
+| Italia | 1,97 | 0,36 | 46,78 | 14,91 | 2,05 | 33,79 | 15,56 |
+| Portugal | 1,91 | 0,29 | 34,83 | 15,98 | 2,55 | 21,79 | 17,82 |
+| Países Bajos | 1,35 | 0,21 | 53,48 | 10,11 | 1,55 | 20,42 | 16,38 |
+| Unión Europea | 1,82 | 0,56 | 52,96 | 10,49 | 1,61 | 28,92 | 16,16 |
+
+Ratio de NPL por segmento, 2026-Q1 (%):
+
+| País | Total | Hogares | Empresas | **PYME** | **CRE** |
+|---|---|---|---|---|---|
+| España | 2,60 | 3,77 | 2,99 | **5,38** | 4,25 |
+| Alemania | 1,61 | 1,73 | 3,81 | 4,32 | **6,81** |
+| Francia | 2,16 | 2,27 | 3,94 | 5,12 | 3,86 |
+| Italia | 1,97 | 1,71 | 3,40 | 4,90 | 4,27 |
+| Portugal | 1,91 | 1,57 | 3,65 | 4,22 | 3,83 |
+| Países Bajos | 1,35 | 1,10 | 2,86 | 3,13 | 3,06 |
+| Unión Europea | 1,82 | 2,05 | 3,31 | 4,37 | 4,08 |
+
+Salvedades: es la **muestra de bancos del EBA**, no el sistema completo. Los
+indicadores transversales (cost-income, ROE, NIM) son de **grupo
+consolidado, no de segmento empresas** (ver §2.8), así que no son el
+cost-income del negocio PYME.
+
+### 2.22 Contraste a explicar: España cobra el spread más estrecho sobre la cartera de peor calidad
+
+Cruzando el bloque 1 con el 3, España aparece simultáneamente como:
+
+- el país con el **spread PYME más estrecho** de los seis: −5 pb, frente a
+  +23 a +113 pb en el resto (§2.15);
+- el país con el **mayor ratio de NPL de PYME**: 5,38 %, frente a 3,13–5,12 %
+  en el resto;
+- el que tiene la **mayor prima de riesgo PYME sobre empresas**: +2,39 pp,
+  cuando la media UE es +1,05 pp;
+- y el de **mayor coste del riesgo** agregado: 1,22 %, más del doble de la
+  media UE (0,56 %).
+
+Es decir, la banca española cobra a la PYME el menor diferencial relativo
+sobre la gran empresa mientras soporta la peor calidad de activo PYME de los
+seis países. No se resuelve aquí: puede reflejar mayor garantía real o aval
+público en el tramo bajo, un efecto de composición por plazo, o una presión
+competitiva que no está repercutiendo el riesgo al precio. Es la pregunta
+analítica más importante que ha salido hasta ahora y condiciona cualquier
+conclusión de rentabilidad sobre España.
+
+Nota: España compensa vía volumen y eficiencia, no vía precio. Es el país
+con mayor peso del tramo ≤1 M€ sobre la nueva producción (50,5 %, §2.15),
+el segundo mejor cost-income (42,14 %) y el mayor ROE (18,51 %).
 
 ## 3. Estado de las decisiones
 
