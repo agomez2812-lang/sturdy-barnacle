@@ -27,7 +27,7 @@ concretos. `check_fuentes.py` los cuenta como alcanzables por eso.
 | 6. EUF / FCI | Pendiente | |
 | 7. Comparables banco a banco | Pendiente | |
 | 8. Filiales de factoring | Pendiente | |
-| 9. Banco de España | Pendiente | |
+| 9. Banco de España | **Hecho** | cuadros 19.5, 19.6 y 19.13; resuelve §2.22, ver §2.23 |
 
 ## 2. Huecos estructurales de las fuentes (independientes del bloqueo)
 
@@ -387,30 +387,86 @@ indicadores transversales (cost-income, ROE, NIM) son de **grupo
 consolidado, no de segmento empresas** (ver §2.8), así que no son el
 cost-income del negocio PYME.
 
-### 2.22 Contraste a explicar: España cobra el spread más estrecho sobre la cartera de peor calidad
+### 2.22 RESUELTO: el spread plano de España era un artefacto de excluir comisiones
 
-Cruzando el bloque 1 con el 3, España aparece simultáneamente como:
+El contraste registrado antes (España cobra el spread PYME más estrecho
+sobre la peor cartera PYME) **queda explicado**. No era una anomalía de
+mercado sino una limitación de la métrica.
 
-- el país con el **spread PYME más estrecho** de los seis: −5 pb, frente a
-  +23 a +113 pb en el resto (§2.15);
-- el país con el **mayor ratio de NPL de PYME**: 5,38 %, frente a 3,13–5,12 %
-  en el resto;
-- el que tiene la **mayor prima de riesgo PYME sobre empresas**: +2,39 pp,
-  cuando la media UE es +1,05 pp;
-- y el de **mayor coste del riesgo** agregado: 1,22 %, más del doble de la
-  media UE (0,56 %).
+El MIR del BCE publica el **AAR/NDER**, equivalente al TEDR español: tipo
+**sin comisiones**. El Boletín Estadístico del Banco de España publica
+además el **TAE por tramo para sociedades no financieras** (cuadro 19.6),
+cosa que el MIR no hace para empresas en ningún país. La diferencia entre
+ambos es la comisión implícita:
 
-Es decir, la banca española cobra a la PYME el menor diferencial relativo
-sobre la gran empresa mientras soporta la peor calidad de activo PYME de los
-seis países. No se resuelve aquí: puede reflejar mayor garantía real o aval
-público en el tramo bajo, un efecto de composición por plazo, o una presión
-competitiva que no está repercutiendo el riesgo al precio. Es la pregunta
-analítica más importante que ha salido hasta ahora y condiciona cualquier
-conclusión de rentabilidad sobre España.
+| Tramo | TEDR 2026 | TAE 2026 | Cuña de comisiones |
+|---|---|---|---|
+| ≤0,25 M€ | 3,42 % | 4,43 % | **+102 pb** |
+| 0,25–1 M€ | 3,36 % | 3,72 % | +36 pb |
+| >1 M€ | 3,44 % | 3,62 % | +18 pb |
 
-Nota: España compensa vía volumen y eficiencia, no vía precio. Es el país
-con mayor peso del tramo ≤1 M€ sobre la nueva producción (50,5 %, §2.15),
-el segundo mejor cost-income (42,14 %) y el mayor ROE (18,51 %).
+Y por tanto el spread PYME español:
+
+| Métrica | Spread ≤0,25 M€ vs >1 M€ |
+|---|---|
+| TEDR, sin comisiones (lo que da el MIR) | **−2 pb** |
+| TAE, con comisiones | **+81 pb** |
+
+La banca española **sí cobra más caro a la PYME**: 81 pb más en coste total.
+Lo hace por comisión (102 pb frente a 18 pb) en vez de por tipo nominal. El
+spread negativo que aparecía en el MIR no existe en coste para el cliente ni
+en ingreso para el banco.
+
+Descomposición por plazo de vencimiento, con volúmenes del cuadro 19.13, que
+además muestra por qué el agregado sale plano en TEDR:
+
+| Plazo | ≤0,25 M€ | >1 M€ | Spread | Volumen ≤0,25 M€ |
+|---|---|---|---|---|
+| Hasta 1 año | 3,36 % | 3,46 % | −11 pb | 100.423 M€ (**94,9 %**) |
+| 1 a 5 años | 4,85 % | 3,25 % | +159 pb | 3.330 M€ (3,1 %) |
+| Más de 5 años | 4,35 % | 3,56 % | +79 pb | 2.021 M€ (1,9 %) |
+
+El 95 % de la nueva producción española de importe pequeño es a **menos de
+un año**, el único tramo de plazo donde el diferencial de tipo es negativo.
+A plazos largos el diferencial es normal y grande.
+
+Las renegociaciones no lo explican: crédito total a SNF 2026 en 3,42 % con
+renegociados incluidos frente a 3,41 % excluyéndolos, diferencia de 1 pb.
+
+Validación cruzada: el volumen del tramo ≤0,25 M€ en 2026 es de 105.777 M€
+según el Boletín (cuadro 19.13) y 105.779 M€ según el MIR del BCE. Dos
+fuentes independientes, diferencia de 2 M€ sobre 105.777. Los datos de
+ambos bloques son consistentes.
+
+### 2.23 Consecuencia grave: TODAS las comparaciones entre países son sin comisiones
+
+El TAE (`DATA_TYPE_MIR = C`) **no se publica para sociedades no financieras
+en ninguno de los seis países**, sólo para hogares (verificado: 0 filas para
+empresas en ES, DE, FR, IT, PT, NL y zona euro; 7 filas para hogares
+vivienda en España). El TAE de empresas del cuadro 19.6 es una estadística
+**nacional del Banco de España** que va más allá de lo que exige el BCE.
+
+Por tanto:
+
+- Todas las tablas comparativas de este trabajo (§2.15, §2.18) son
+  **TEDR/AAR, sin comisiones**. Miden precio nominal, no ingreso del banco
+  ni coste del cliente.
+- España es el **único** de los seis países donde la cuña de comisiones es
+  observable con datos públicos. Si los otros cinco tienen cuñas parecidas,
+  los spreads reales de todos están infraestimados; si no las tienen, España
+  no es comparable con ellos en términos de ingreso.
+- **No se puede concluir nada sobre rentabilidad relativa entre países
+  usando sólo el MIR.** Es la limitación más seria detectada hasta ahora.
+
+Siguiente paso para cerrarlo: estadísticas nacionales de cada banco central
+(Bundesbank, Banque de France, Banca d'Italia, Banco de Portugal, DNB), a
+ver si alguno publica TAE de empresas como hace el Banco de España. No está
+en el plan original del encargo y conviene decidir si se aborda.
+
+Lo que sí se sostiene de §2.22 en su versión anterior: España tiene el mayor
+ratio de NPL de PYME (5,38 %), la mayor prima de riesgo PYME sobre empresas
+(+2,39 pp) y el mayor coste del riesgo (1,22 %). Con la cuña de comisiones
+incorporada, el precio ya no contradice ese riesgo.
 
 ## 3. Estado de las decisiones
 

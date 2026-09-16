@@ -2,3 +2,4 @@ raw/
 __pycache__/
 *.pyc
 raw/eba/*.xlsx
+raw/bde/*.csv
