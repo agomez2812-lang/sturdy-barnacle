@@ -458,15 +458,82 @@ Por tanto:
 - **No se puede concluir nada sobre rentabilidad relativa entre países
   usando sólo el MIR.** Es la limitación más seria detectada hasta ahora.
 
-Siguiente paso para cerrarlo: estadísticas nacionales de cada banco central
-(Bundesbank, Banque de France, Banca d'Italia, Banco de Portugal, DNB), a
-ver si alguno publica TAE de empresas como hace el Banco de España. No está
-en el plan original del encargo y conviene decidir si se aborda.
+Revisados los cinco bancos centrales restantes: ver §2.24. Resultado corto,
+**solo Italia** publica algo equivalente.
 
 Lo que sí se sostiene de §2.22 en su versión anterior: España tiene el mayor
 ratio de NPL de PYME (5,38 %), la mayor prima de riesgo PYME sobre empresas
 (+2,39 pp) y el mayor coste del riesgo (1,22 %). Con la cuña de comisiones
 incorporada, el precio ya no contradice ese riesgo.
+
+### 2.24 Revisión de los cinco bancos centrales: solo Italia publica TAE de empresas
+
+| País | ¿Tipo con comisiones para empresas? | Verificación |
+|---|---|---|
+| **España** | **Sí** | Boletín Estadístico, cuadro 19.6. TAE por tramo, mensual. Descargado |
+| **Italia** | **Sí** | STACORIS, tavola TRI30951, TAEG por clase de importe y sector, trimestral, fuente AnaCredit. Descargado |
+| Alemania | No | API del Bundesbank, dataflow `BBIM1`: APRC para empresas devuelve vacío; para hogares consumo y vivienda, 293 observaciones cada una |
+| Francia | No, para PYME operativa | El TEG publicado cubre solo el régimen de usura, que desde las reformas de 2003 y 2005 **no se aplica a empresas comerciales salvo descubiertos**. Las categorías «personnes morales» con tasas del 4,22–4,62 % son entidades **sin** actividad industrial o comercial |
+| Portugal | No | BPstat publica TAEG solo para consumo y vivienda; para empresas, únicamente TAA (tipo acordado anualizado) |
+| Países Bajos | No | Sin estadística nacional equivalente localizada; el MIR confirma ausencia de TAE de empresas |
+
+Verificación transversal previa: `DATA_TYPE_MIR = C` (APRC) devuelve cero
+filas para empresas en los seis países y en zona euro, y sí devuelve datos
+para hogares.
+
+**TAEG italiano, sociedades no financieras, préstamos de inversión, 2026-Q1**
+(tavola TRI30951, total duraciones):
+
+| Clase de importe | TAEG |
+|---|---|
+| Hasta 50.000 € | 6,08 % |
+| 50.000–125.000 € | 5,62 % |
+| 125.000–250.000 € | 4,84 % |
+| 250.000–500.000 € | 4,40 % |
+| 500.000–1.000.000 € | 3,99 % |
+| Más de 1.000.000 € | 3,23 % |
+
+### 2.25 Los dos perímetros no son comparables entre sí
+
+Tentación a evitar: calcular la cuña italiana restando el TAEG de arriba al
+tipo del MIR, y compararla con los 102 pb españoles. **No es válido.** Las
+diferencias de perímetro son grandes:
+
+| | España (cuadro 19.6) | Italia (TRI30951) |
+|---|---|---|
+| Frecuencia | Mensual | Trimestral |
+| Cobertura | Todo el crédito a SNF | Solo préstamos **de inversión** |
+| Clase | Importe del préstamo | *Ammontare a disposizione* (importe dispuesto) |
+| Sector | SNF | SNF y familias productoras, **excluidos empresarios individuales** |
+| Fuente | Declaración de tipos | AnaCredit |
+| Exclusiones | — | Import y export |
+
+Como referencia, no como medida: el TAEG italiano del tramo >1 M€ (3,23 %)
+queda prácticamente en el tipo sin comisiones del MIR para Italia en ese
+mismo tramo (3,22 % de media 2026), mientras que en los tramos bajos el
+TAEG está muy por encima. La dirección coincide con España, comisiones
+concentradas en el préstamo pequeño, pero **la magnitud no es comparable** y
+no debe citarse como tal.
+
+### 2.26 Conclusión sobre comparabilidad entre países
+
+Cuatro de los seis países **no permiten medir el ingreso por comisiones** con
+datos públicos. Para Alemania, Francia, Portugal y Países Bajos solo existe
+el tipo sin comisiones del MIR.
+
+Esto deja el encargo con un límite duro que conviene asumir explícitamente:
+
+- La comparación de **precio nominal** entre los seis países es sólida y está
+  hecha (§2.15).
+- La comparación de **ingreso o rentabilidad** entre los seis **no es
+  posible** con fuentes oficiales. España e Italia son los únicos donde se ve
+  la parte de comisiones, y ni siquiera entre ellos dos con el mismo
+  perímetro.
+- Para los otros cuatro países, la vía que queda son las **cuentas anuales de
+  los bancos** (bloque 7), donde la comisión aparece agregada por segmento y
+  no por producto. Es más débil, pero es lo único que hay.
+
+Esto refuerza la prioridad del bloque 7 sobre el resto de lo pendiente.
 
 ## 3. Estado de las decisiones
 

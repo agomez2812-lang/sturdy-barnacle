@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 raw/eba/*.xlsx
 raw/bde/*.csv
+raw/it/*.pdf
