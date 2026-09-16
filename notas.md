@@ -895,6 +895,68 @@ La OCDE le atribuía además un NPL del 8,1 % en 2022, muy por encima del
 3,77 % actual del EBA: el saneamiento posterior a la crisis bancaria
 irlandesa sigue siendo reciente y conviene no extrapolar la serie histórica.
 
+### 2.38 Corrección: el coste de fondos pasa a ser el coste real de los recursos de empresa
+
+El modelo usaba el **Euríbor 3m, 2,23 %, igual para todos los países**. Eso
+mide el coste de financiarse en mercado, no el coste de los recursos que
+aporta la propia PYME, que es lo que interesa en banca de relación.
+
+Se sustituye por el **coste ponderado del depósito de empresa de cada país**
+(`scripts/coste_recursos.py`), combinando dos datasets del BCE:
+
+- **Tipos**: dataset MIR, depósito a la vista y a plazo de sociedades no
+  financieras, nueva producción.
+- **Saldos**: dataset BSI, series `L21` (vista) y `L22` (plazo), sector
+  `2240`, para ponderar la mezcla real de cada país.
+
+| País | Vista | Plazo | % vista | **Coste ponderado** | Margen sobre BCE |
+|---|---|---|---|---|---|
+| Irlanda | 0,10 % | 1,90 % | 82,6 % | **0,41 %** | 1,68 % |
+| Portugal | 0,07 % | 1,77 % | 62,3 % | 0,71 % | 1,38 % |
+| España | 0,44 % | 1,90 % | 78,9 % | 0,75 % | 1,34 % |
+| Italia | 0,56 % | 2,31 % | 88,6 % | 0,76 % | 1,33 % |
+| Países Bajos | 0,85 % | 2,14 % | 83,7 % | 1,06 % | 1,03 % |
+| Alemania | 0,72 % | 2,23 % | 71,3 % | 1,16 % | 0,93 % |
+| Francia | 0,52 % | 2,58 % | 60,1 % | **1,34 %** | 0,75 % |
+
+**Lo decide la mezcla, no el tipo.** Italia paga más a la vista que España
+(0,56 % frente a 0,44 %) y acaba prácticamente igual de barata, porque tiene
+el 88,6 % en vista frente al 78,9 % español. Francia paga un tipo a la vista
+intermedio pero es la más cara de las siete porque solo el 60 % de sus
+recursos son a la vista.
+
+Efecto sobre el ROE:
+
+| País | ROE con Euríbor | ROE con coste real de recursos |
+|---|---|---|
+| Países Bajos | 13,7 % | **20,4 %** |
+| Alemania | 12,1 % | **18,1 %** |
+| Italia | 7,7 % | 15,8 % |
+| Portugal | 8,1 % | 14,9 % |
+| España | 5,5 % | 13,4 % |
+| Irlanda | 7,7 % | 12,2 % |
+| Francia | 1,7 % | 5,0 % |
+
+Los niveles quedan mucho más cerca de lo que un banco obtiene realmente de
+una cartera PYME. **El supuesto asociado hay que declararlo**: se está
+financiando el crédito PYME íntegramente con depósito de empresa. Es el
+extremo opuesto al fondeo en mercado, y la realidad de cada banco está en
+medio según su relación crédito/depósitos. Con fondeo íntegro en mercado los
+ROE caerían entre 6 y 12 puntos, como muestra la columna de la izquierda.
+
+### 2.39 Error corregido: el bloque de depósitos no se escribía
+
+La lámina de coste de recursos salía con el gráfico vacío. Causa: al ejecutar
+`modelo_roe.py` canalizando la salida a `head`, Python recibía
+`BrokenPipeError` al imprimir y moría **antes de escribir el bloque de
+depósitos** en el CSV. El fichero quedaba con 112 filas en vez de 133 y la
+preparación de datos de la presentación leía ceros.
+
+No era un fallo del modelo ni de los datos, sino de cómo se estaba
+ejecutando. Queda anotado porque el mismo patrón puede repetirse con
+cualquiera de los extractores: **no canalizar su salida a `head` o `tail` si
+escriben ficheros después de imprimir**.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

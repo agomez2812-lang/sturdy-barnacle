@@ -157,7 +157,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    ["Precio (tipo MIR)"].concat(D.pl.precio.map(v=>v.toFixed(2))),
    ["+ Comisiones"].concat(D.pl.comisiones.map(v=>v.toFixed(2))),
    ["= Ingreso total"].concat(D.pl.ingreso.map(v=>v.toFixed(2))),
-   ["− Coste de fondos"].concat(D.pl.fondos.map(v=>v.toFixed(2))),
+   ["− Coste de los recursos"].concat(D.pl.fondos.map(v=>v.toFixed(2))),
    ["= Margen bruto"].concat(D.pl.margen.map(v=>v.toFixed(2))),
    ["− Coste del riesgo"].concat(D.pl.cor.map(v=>v.toFixed(2))),
    ["− Gastos"].concat(D.pl.opex.map(v=>v.toFixed(2))),
@@ -173,9 +173,9 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    return {text:c, options:o};}));
  s.addTable(rows, Object.assign(tOpt(),{y:1.78, colW:[2.7].concat(Array(7).fill(1.347)), rowH:0.37}));
  [["Observado",PRIM],["Supuesto",MED]].forEach((l,i)=>chip(s,M+i*1.7,6.15,l[0],l[1]));
- s.addText("Solo la fila de comisiones es supuesto. Riesgo y capital son ahora observados por país.",
+ s.addText("Solo la fila de comisiones es supuesto. Precio, recursos, riesgo y capital son observados por país.",
    {x:M+3.7, y:6.15, w:8.5, h:0.3, fontFace:BF, fontSize:10, color:MUT, isTextBox:true, margin:0});
- fuente(s,"Precio: BCE MIR. Comisiones: cuña española de 87 pb aplicada a los seis (único supuesto material). Riesgo: PD × LGD de la clase IRB de PYME (COREP C 9.02). Gastos: eficiencia EBA sobre margen. Capital: densidad de RWA observada de la cartera PYME sobre CET1. Impuesto 25 %.");
+ fuente(s,"Precio: BCE MIR. Comisiones: cuña española de 87 pb aplicada a los siete (único supuesto material). Recursos: tipos de depósito de empresa del MIR ponderados por los saldos del BSI. Riesgo: PD × LGD de la clase IRB de PYME (COREP C 9.02). Gastos: eficiencia EBA sobre margen. Capital: densidad de RWA observada sobre CET1. Impuesto 25 %.");
 }
 
 /* 7 — ROE por pais */
@@ -228,23 +228,33 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
 
 /* 9 — coste de recursos */
 {const s=pres.addSlide();
- titulo(s,"Coste de los recursos: la liquidez de empresas","Lo que el banco paga por el depósito frente a lo que obtiene en la facilidad del BCE (2,09 %) · Media 2026");
+ titulo(s,"Coste de los recursos de empresa","Tipos del MIR ponderados por la mezcla real de saldos del BSI · Media 2026 · Es el coste de fondos que usa el modelo");
  s.addChart(pres.ChartType.bar, [
-   {name:"Depósito a la vista", labels:P, values:D.dep.vista},
-   {name:"Margen sobre facilidad BCE", labels:P, values:D.dep.margen}],
-   {x:M, y:1.85, w:7.5, h:3.9, barDir:"col", barGrouping:"stacked",
-    chartColors:[MUT,OK], showTitle:false, showValue:true, dataLabelPosition:"ctr",
-    dataLabelFontSize:10, dataLabelColor:"FFFFFF", showLegend:true, legendPos:"b",
-    legendFontSize:11, catAxisLabelColor:TXT, catAxisLabelFontSize:11,
+   {name:"Coste ponderado de los recursos", labels:P, values:D.rec.coste},
+   {name:"Margen sobre la facilidad del BCE", labels:P, values:D.rec.margen}],
+   {x:M, y:1.85, w:7.45, h:3.85, barDir:"col", barGrouping:"stacked",
+    chartColors:[PRIM,OK], showTitle:false, showValue:true, dataLabelPosition:"ctr",
+    dataLabelFontSize:9, dataLabelColor:"FFFFFF", showLegend:true, legendPos:"b",
+    legendFontSize:10, catAxisLabelColor:TXT, catAxisLabelFontSize:10,
     valAxisLabelColor:MUT, valAxisLabelFormatCode:'0.0"%"',
-    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}});
- s.addShape(pres.ShapeType.roundRect,{x:8.4, y:1.85, w:4.33, h:3.9, fill:{color:LIGHT},
-   rectRadius:0.06, line:{color:"DCE4E7"}});
- s.addText("Portugal capta la liquidez más barata",{x:8.6, y:2.0, w:3.95, h:0.6,
-   fontFace:HF, fontSize:14, bold:true, color:PRIM, isTextBox:true, margin:0});
- s.addText("Paga un 0,07 % por el depósito a la vista de empresas y puede colocarlo al 2,09 % en el BCE: 202 pb de margen sin riesgo ni consumo de capital.\n\nPaíses Bajos es el extremo opuesto, con 124 pb, porque paga un 0,85 %.\n\nEste margen no depende del crédito y por eso se modela aparte de la cuenta del préstamo.",
-   {x:8.6, y:2.65, w:3.95, h:2.9, fontFace:BF, fontSize:11.5, color:TXT, isTextBox:true, margin:0});
- fuente(s,"Fuente: BCE, datasets MIR (tipos de depósito de sociedades no financieras) y FM (facilidad de depósito). El margen mostrado es sobre depósito a la vista; el depósito a plazo se remunera entre el 1,77 % y el 2,58 % según país.");
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:2.4});
+ const L=[["","Vista","Plazo","% vista","Ponderado"]].concat(P.map((p,i)=>
+   [p, D.rec.vista[i].toFixed(2), D.rec.plazo[i].toFixed(2),
+    D.rec.peso_vista[i].toFixed(0)+" %", D.rec.coste[i].toFixed(2)]));
+ const rows=L.map((r,ri)=>r.map((c,ci)=>{
+   if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:9.5})};
+   const o=cel(null,{align: ci===0?"left":"center", fontSize:10, bold: ci===0});
+   if(ci===4) o.bold=true, o.fill={color:LIGHT}, o.color=PRIM;
+   return {text:c, options:o};}));
+ s.addTable(rows, {x:8.15, y:1.85, w:4.58, colW:[1.28,0.8,0.8,0.86,0.84], rowH:0.365,
+   fontFace:BF, border:{pt:0.5,color:"D6DEE1"}, valign:"middle", autoPage:false});
+ s.addShape(pres.ShapeType.roundRect,{x:8.15, y:4.9, w:4.58, h:0.85, fill:{color:"F7EDE4"},
+   rectRadius:0.06, line:{color:ACC}});
+ s.addText("La mezcla decide, no el tipo: Italia paga un 0,56 % a la vista y España un 0,44 %, pero Italia tiene un 89 % en vista y acaba igual de barata.",
+   {x:8.35, y:5.0, w:4.2, h:0.68, fontFace:BF, fontSize:10, color:TXT, isTextBox:true, margin:0});
+ s.addText("Irlanda capta los recursos más baratos de los siete, un 0,41 %, y Francia los más caros, un 1,34 %: tres veces más. Es el segundo factor que más separa el ROE, por detrás del capital.",
+   {x:M, y:5.9, w:W-2*M, h:0.6, fontFace:BF, fontSize:12, color:TXT, isTextBox:true, margin:0});
+ fuente(s,"Fuentes: BCE, dataset MIR (tipos de depósito de sociedades no financieras, nueva producción) y dataset BSI (saldos L21 vista y L22 plazo, sector 2240) para la ponderación. Facilidad de depósito del BCE al 2,09 %.");
 }
 
 /* 10 — coste del riesgo */
@@ -498,7 +508,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
  titulo(s,"Supuestos del modelo","Cada uno declarado, con su origen y su efecto · Dos de los iniciales han dejado de ser supuestos");
  const L=[["Supuesto","Valor","Origen","Efecto si cambia"],
   ["Cuña de comisiones","87 pb","Observada en España (TAE − TEDR, tramo ≤1 M€). Aplicada a los otros cinco países","ALTO. Mueve el ROE entre 3 y 12 puntos"],
-  ["Coste de fondos","Euríbor 3m 2,23 %","Observado. Igual para los seis países","MEDIO. Desplaza todos los ROE en paralelo"],
+  ["Coste de los recursos","0,41 % a 1,34 % por país","Observado. Tipos del MIR ponderados por saldos del BSI. Supone financiar el crédito PYME con depósito de empresa","ALTO. Con fondeo en mercado al 2,23 % los ROE caerían entre 6 y 12 puntos"],
   ["Coste del riesgo","PD × LGD por país","YA NO ES SUPUESTO. Parámetros IRB de la clase «Corporates – Of Which: SME», mediana de entidades (COREP C 9.02)","—"],
   ["Densidad de RWA","35 % a 61 % por país","YA NO ES SUPUESTO. RWA sobre exposición de la cartera PYME (EBA Transparency Exercise)","—"],
   ["Tipo impositivo","25 %","Uniforme, no por país","BAJO. Escala proporcional"],

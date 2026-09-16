@@ -46,7 +46,7 @@ CUNA_ES_FALLBACK = 60.0         # pb, si no se puede calcular de los datos
 # flujo/stock calibrado para reproducir los dos costes de riesgo de segmento
 # que si estan observados: ABN AMRO Corporate Banking 0,15% y CaixaBank 0,24%.
 FACTOR_FLUJO_STOCK = 0.06       # ya no se usa; se conserva por trazabilidad
-EURIBOR_3M = 2.23               # media 2026, dataset FM del BCE
+EURIBOR_3M = 2.23               # media 2026; alternativa de fondeo en mercado
 DFR_BCE = 2.09                  # facilidad de deposito del BCE, media 2026
 
 
@@ -115,6 +115,13 @@ def recoge():
     for x in lee("transversal/eba_parametros_riesgo.csv"):
         if x["metrica"].startswith("Coste del riesgo PYME"):
             cor_obs[x["pais"]] = float(x["valor"])
+    # Coste de los recursos de empresa, ponderado por la mezcla real de
+    # vista y plazo de cada pais (scripts/coste_recursos.py).
+    coste_rec = {}
+    for x in lee("liquidez/coste_recursos_pyme.csv"):
+        if x["metrica"].startswith("Coste ponderado"):
+            coste_rec[x["pais"]] = float(x["valor"])
+
     # Densidad de RWA OBSERVADA de la cartera PYME.
     dens_obs = {}
     for x in lee("transversal/eba_te_capital_pyme.csv"):
@@ -138,6 +145,7 @@ def recoge():
             "npl_total": n.get("Total prestamos y anticipos"),
             "cor_pyme": cor_obs.get(p),
             "densidad": dens_obs.get(p, DENSIDAD_RWA),
+            "coste_rec": coste_rec.get(p),
         }
     return out
 
@@ -149,9 +157,12 @@ def modelo(e, cuna_pb, k=FACTOR_FLUJO_STOCK):
     que el ROE salga en porcentaje sin conversiones adicionales.
     """
     ingreso = e["precio"] + cuna_pb / 100.0
-    # Coste de fondos = Euribor 3m, igual para los seis paises. El negocio de
-    # deposito se modela aparte, que es como lo planteo el encargo.
-    margen = ingreso - EURIBOR_3M
+    # Coste de fondos = coste ponderado de los recursos de empresa del pais,
+    # no el Euribor. Supone que el credito PYME se financia con el deposito
+    # de empresa, que es el planteamiento de banca de relacion. El fondeo en
+    # mercado (Euribor) seria el otro extremo y da ROE mucho menores.
+    fondos = e["coste_rec"] if e.get("coste_rec") is not None else EURIBOR_3M
+    margen = ingreso - fondos
     # Coste del riesgo: PD x LGD de la clase IRB de PYME (observado).
     cor = e["cor_pyme"] if e.get("cor_pyme") is not None else e["npl_pyme"] * k
     opex = margen * (e["eficiencia"] / 100.0)
@@ -159,7 +170,8 @@ def modelo(e, cuna_pb, k=FACTOR_FLUJO_STOCK):
     capital_pct = e["densidad"] * e["cet1"]        # en % del saldo
     roe = (bai * (1 - TASA_IMPOSITIVA)) / capital_pct * 100 if capital_pct else None
     return dict(ingreso=ingreso, comisiones=cuna_pb / 100.0, margen=margen,
-                cor=cor, opex=opex, bai=bai, capital=capital_pct, roe=roe)
+                fondos=fondos, cor=cor, opex=opex, bai=bai,
+                capital=capital_pct, roe=roe)
 
 
 def main():
@@ -185,7 +197,7 @@ def main():
             continue
         m = modelo(ent[p], cuna_es)
         print("%-14s %7.2f %7.2f %7.2f %7.2f %7.2f %7.2f %7.1f%%" % (
-            p[:13], ent[p]["precio"], m["comisiones"], EURIBOR_3M,
+            p[:13], ent[p]["precio"], m["comisiones"], m["fondos"],
             m["cor"], m["opex"], m["bai"], m["roe"]))
         obs = p == "Espana"
         for metrica, valor, unidad, td, nota in [
@@ -198,9 +210,11 @@ def main():
               "publica tipo con comisiones para empresas" % cuna_es)),
             ("Ingreso total", m["ingreso"], "pct_anual", "nivel",
              "precio mas comisiones"),
-            ("Coste de fondos (Euribor 3m)", EURIBOR_3M, "pct_anual", "nivel",
-             "OBSERVADO. Dataset FM del BCE, media 2026. Igual para los seis "
-             "paises; el negocio de deposito se modela aparte"),
+            ("Coste de los recursos de empresa", m["fondos"], "pct_anual", "nivel",
+             "OBSERVADO. Tipos de deposito del MIR ponderados por los saldos "
+             "del BSI. SUPUESTO asociado: el credito PYME se financia con "
+             "deposito de empresa. Con fondeo en mercado (Euribor %.2f%%) el "
+             "ROE seria muy inferior" % EURIBOR_3M),
             ("Margen bruto", m["margen"], "pct_anual", "nivel", "ingreso menos coste"),
             ("Coste del riesgo", m["cor"], "pct_cartera", "ratio",
              "OBSERVADO. PD por LGD de la clase IRB 'Corporates - Of Which: "
