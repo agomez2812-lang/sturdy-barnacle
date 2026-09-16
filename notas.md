@@ -25,7 +25,7 @@ concretos. `check_fuentes.py` los cuenta como alcanzables por eso.
 | 4. EBA Transparency (→ `/hipotecas`) | Pendiente | el Dashboard ya da CRE por país; la TE añadiría banco a banco |
 | 5. OCDE Scoreboard | Pendiente | |
 | 6. EUF / FCI | Pendiente | |
-| 7. Comparables banco a banco | **Parcial** | 3 de 9 bancos; ver §2.27 |
+| 7. Comparables banco a banco | **Parcial** | 5 de 9 bancos; ver §2.27 |
 | 8. Filiales de factoring | Pendiente | |
 | 9. Banco de España | **Hecho** | cuadros 19.5, 19.6 y 19.13; resuelve §2.22, ver §2.23 |
 
@@ -535,66 +535,82 @@ Esto deja el encargo con un límite duro que conviene asumir explícitamente:
 
 Esto refuerza la prioridad del bloque 7 sobre el resto de lo pendiente.
 
-### 2.27 Bloque 7: 3 de 9 bancos, y el reporte por segmentos es muy desigual
+### 2.27 Bloque 7: 5 de 9 bancos, y el hallazgo es que casi ninguno publica segmento de empresas
 
-Adelantado por delante de OCDE y factoring porque es la única vía de medir
-ingreso por comisiones en los cuatro países sin estadística oficial (§2.26).
-
-| Banco | Estado | Detalle del segmento |
+| Banco | Estado | Qué publica |
 |---|---|---|
-| Commerzbank | **Hecho** | Corporate Clients: ingresos, margen de intereses, comisiones, resultado operativo, cartera |
-| ABN AMRO | **Hecho** | Corporate Banking: cuenta completa, cost-income, coste del riesgo, ROE, cartera, RWA |
-| Intesa Sanpaolo | **Parcial** | Banca dei Territori: ingresos, costes, cost-income, provisiones, resultado. **Sin desglose de intereses ni comisiones** |
-| ING | **Bloqueado** | La web devuelve 403 a descarga automatizada (protección antibot) |
-| Société Générale | **Bloqueado** | Igual, 403 |
-| CaixaBank | Pendiente | |
-| Banco Sabadell | Pendiente | |
-| BPER | Pendiente | |
-| BNP Paribas | Pendiente | |
+| **Commerzbank** | Segmento | Corporate Clients: ingresos, margen de intereses, comisiones, resultado, cartera |
+| **ABN AMRO** | Segmento | Corporate Banking: cuenta completa, cost-income, coste del riesgo, ROE, cartera, RWA |
+| **Intesa Sanpaolo** | Segmento parcial | Banca dei Territori: ingresos, costes, cost-income, provisiones, resultado. **Sin desglose de intereses ni comisiones** |
+| **CaixaBank** | Solo grupo | **No tiene segmento de empresas.** Segmenta en bancario y seguros, aseguradora, participaciones y BPI |
+| **BPER Banca** | Solo grupo | El comunicado **no desglosa por división** |
+| Banco Sabadell | Descargado, sin segmento | Segmenta por **geografía**: negocio bancario España y TSB. No hay cuenta de empresas |
+| ING | Bloqueado | 403 antibot |
+| Société Générale | Bloqueado | 403 antibot |
+| BNP Paribas | Bloqueado | 403 antibot en `invest.bnpparibas`, `group.bnpparibas` y el CDN |
 
-**Peso de las comisiones sobre el ingreso del segmento**, que es lo que se
-buscaba:
+**Hallazgo principal del bloque, y no es el que se esperaba:** de nueve
+bancos, **solo dos publican una cuenta de resultados de un segmento de
+empresas con desglose de comisiones** (Commerzbank y ABN AMRO). Los demás o
+segmentan por geografía y línea de negocio sin aislar empresas, o no
+desglosan intereses frente a comisiones dentro de la división.
 
-| País | Banco / segmento | Comisiones / ingresos | Período |
+Esto no es una limitación de esta extracción: es cómo reportan los bancos
+europeos. Lo exige la NIIF 8, que obliga a informar por los segmentos que
+usa la dirección, y en la mayoría de estos grupos esos segmentos no son
+"empresas" sino geografías o líneas de negocio.
+
+**Peso de las comisiones sobre el ingreso** (ojo al nivel de cada fila):
+
+| País | Banco | Nivel | Comisiones / ingresos |
 |---|---|---|---|
-| Alemania | Commerzbank, Corporate Clients | **30,5 %** | 2026-Q2 |
-| Países Bajos | ABN AMRO, Corporate Banking | **25,3 %** | 2026-H1 |
+| Italia | BPER | Grupo | 34,9 % |
+| Alemania | Commerzbank | **Segmento empresas** | 30,5 % |
+| Países Bajos | ABN AMRO | **Segmento corporativo** | 25,3 % |
+| España | CaixaBank | Grupo | 24,9 % |
 
-Contraste con el dato del EBA a nivel de grupo consolidado (§2.21):
-Alemania 31,97 % y Países Bajos 20,42 %. En Alemania el segmento empresas
-pesa en comisiones casi igual que el grupo; en Países Bajos, el segmento
-corporativo pesa más que el grupo.
+Referencia EBA a nivel de sistema, 2026-Q1 (§2.21): Italia 33,79 %, Alemania
+31,97 %, Países Bajos 20,42 %, España 23,93 %. Los cuatro bancos quedan cerca
+de la media de su país, lo que da cierta confianza en las cifras, pero no
+resuelve la pregunta: **ninguna de estas cifras es el negocio PYME.**
 
-### 2.28 Los perímetros de segmento no son comparables, y en un caso engañan
+### 2.28 Conclusión del bloque 7: no cierra la pata de ingresos
 
-Esta es la debilidad estructural del bloque 7, y conviene tenerla delante
-antes de poner estas cifras en una misma tabla:
+Se adelantó este bloque esperando que cubriera la medición del ingreso por
+comisiones en los cuatro países sin estadística oficial (§2.26). **No lo
+consigue**, por tres razones acumuladas:
 
-- **Commerzbank, Corporate Clients**: mezcla gran empresa, PYME alemana,
-  sector público e institucionales. **No aísla la PYME.**
-- **ABN AMRO, Corporate Banking**: incluye Clearing y Global Markets, de
-  ingreso muy volátil. Y lo más importante: **la PYME neerlandesa no está
-  aquí**, sino en Personal & Business Banking. Usar este segmento como
-  proxy de PYME en Países Bajos sería un error.
-- **Intesa, Banca dei Territori**: sí es mayoritariamente PYME y retail,
-  pero no separa intereses de comisiones, justo el dato que se busca. Habría
-  que ir a la *relazione semestrale*, más detallada que el comunicado.
+1. **Solo dos bancos publican segmento de empresas** con comisiones.
+2. **Esos dos segmentos no son PYME.** Commerzbank Corporate Clients mezcla
+   gran empresa, PYME, sector público e institucionales. ABN AMRO Corporate
+   Banking incluye Clearing y Global Markets, y además **la PYME neerlandesa
+   no está ahí**, sino en Personal & Business Banking: usarlo como proxy de
+   PYME sería un error.
+3. **Los perímetros no son comparables entre bancos** ni con los segmentos
+   del resto.
 
-Conclusión provisional: el peso de comisiones por segmento **existe** como
-dato pero **no es comparable entre bancos** sin normalizar perímetros, y en
-varios casos el segmento publicado no corresponde a PYME. Sirve como orden
-de magnitud del componente de comisión en banca de empresas, no como medida
-del negocio PYME de cada país.
+Lo que sí aporta el bloque: un orden de magnitud del peso de la comisión en
+banca de empresas europea, entre el 25 % y el 35 % del ingreso, consistente
+con el dato de sistema del EBA. Es un techo de información, no una medida
+del negocio PYME.
 
-### 2.29 Dos bancos bloquean la descarga automatizada
+**Consecuencia para el encargo:** la pregunta de rentabilidad PYME comparable
+entre los seis países **no tiene respuesta con fuentes públicas**. Se puede
+responder para España con precisión (MIR + Boletín, con comisiones), de forma
+aproximada para Italia (MIR + TAEG de AnaCredit, perímetro distinto), y solo
+en precio nominal para los otros cuatro.
 
-ING y Société Générale devuelven 403 a cualquier petición automatizada,
-también con user-agent de navegador. No es política de egress del entorno:
-otros dominios bancarios descargan sin problema. Es protección antibot del
-propio sitio.
+### 2.29 Tres bancos bloquean la descarga automatizada
 
-Alternativas, si se quieren esos dos bancos: descargar los PDF a mano y
-dejarlos en `raw/bancos/`, desde donde el extractor los toma igual.
+ING, Société Générale y BNP Paribas devuelven 403 a cualquier petición
+automatizada, también con user-agent de navegador y en varios dominios. No es
+la política de red del entorno: Commerzbank, ABN AMRO, Intesa, CaixaBank,
+BPER, la CNMV y el Banco de España descargan sin problema. Es protección
+antibot del propio sitio.
+
+Si se quieren esos tres: descargar los PDF a mano y dejarlos en
+`raw/bancos/`. El extractor los toma igual, solo hay que añadir sus valores
+a la tabla `DATOS` de `scripts/comparables_bancos.py`.
 
 ## 3. Estado de las decisiones
 

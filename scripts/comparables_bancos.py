@@ -76,6 +76,42 @@ DATOS = [
             ("Resultado neto", 1727, "eur_millones", "importe"),
         ],
     },
+    {
+        "pais": "Espana", "banco": "CaixaBank", "segmento": "Grupo consolidado",
+        "periodo": "2026-H1",
+        "doc": "CaixaBank, Actividad y Resultados enero-junio 2026, p. 6 y 66",
+        "url": "https://www.caixabank.com/es/accionistas-inversores.html",
+        "perimetro": "NO publica cuenta de resultados de un segmento de "
+                     "empresas. Sus segmentos son bancario y seguros, "
+                     "actividad aseguradora, participaciones y BPI.",
+        "filas": [
+            ("Margen de intereses", 5390, "eur_millones", "importe"),
+            ("Comisiones netas", 2075, "eur_millones", "importe"),
+            ("Comisiones bancarias mayoristas", 193, "eur_millones", "importe"),
+            ("Ingresos del segmento", 8338, "eur_millones", "importe"),
+            ("Ratio de eficiencia (cost-income)", 39.6, "pct_ingresos", "ratio"),
+            ("Coste del riesgo", 24, "pb", "ratio"),
+            ("ROE del segmento", 15.4, "pct_roe", "ratio"),
+            ("Ratio de morosidad", 1.78, "pct_cartera", "ratio"),
+            ("Credito a la clientela bruto", 406233, "eur_millones", "importe"),
+        ],
+    },
+    {
+        "pais": "Italia", "banco": "BPER Banca", "segmento": "Grupo consolidado",
+        "periodo": "2026-H1",
+        "doc": "BPER, resultados consolidados a 30 junio 2026, p. 19",
+        "url": "https://group.bper.it/",
+        "perimetro": "El comunicado NO desglosa por division ni segmento. "
+                     "Incluye la integracion de Banca Popolare di Sondrio.",
+        "filas": [
+            ("Margen de intereses", 2211.8, "eur_millones", "importe"),
+            ("Comisiones netas", 1353.4, "eur_millones", "importe"),
+            ("Ingresos del segmento", 3876.2, "eur_millones", "importe"),
+            ("Costes operativos", 1605.3, "eur_millones", "importe"),
+            ("Ratio de eficiencia (cost-income)", 41.4, "pct_ingresos", "ratio"),
+            ("Saneamientos por riesgo de credito", 177.0, "eur_millones", "importe"),
+        ],
+    },
 ]
 
 
@@ -92,7 +128,7 @@ def main():
             w.writerow(schema.row(
                 pais=b["pais"], producto="segmento_empresas",
                 metrica="%s | %s" % (metrica, b["segmento"]),
-                valor=("%.1f" % valor) if td == "ratio" else ("%.0f" % valor),
+                valor=("%.1f" % valor) if (td == "ratio" or valor % 1) else ("%.0f" % valor),
                 unidad=unidad, periodo_referencia=b["periodo"],
                 fuente="%s (%s)" % (b["banco"], b["doc"]), url=b["url"],
                 fecha_publicacion=hoy, criterio_segmentacion="entidad",
