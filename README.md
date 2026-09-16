@@ -19,8 +19,9 @@ Para reproducir el diagnóstico:
 python3 scripts/check_fuentes.py
 ```
 
-Los dominios a permitir al recrear el entorno están en
-**[`entorno_red.md`](entorno_red.md)**.
+Se arregla **editando el entorno** en claude.ai/code (no hace falta crear
+uno nuevo) y subiendo el nivel de red de `Trusted` a `Full` o `Custom`.
+Pasos y lista de dominios en **[`entorno_red.md`](entorno_red.md)**.
 
 ## Qué sí está listo
 
