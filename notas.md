@@ -145,27 +145,58 @@ el agregado `U2`. El **tipo** sí está por país. Consecuencia: en
 con el volumen de depósitos a plazo de empresas en **Países Bajos**
 (`NL.L22.B`), que tampoco se publica.
 
-### 2.11 Anomalía a verificar: España tiene el spread PYME invertido
+### 2.11 Qué es exactamente un tipo del MIR (no es un dato puntual)
 
-Con datos de 2026-07, fijación inicial total, España es el **único** país
-de los seis donde el préstamo pequeño sale más barato que el grande:
+Verificado contra la metadata de la serie y la nota metodológica del BCE:
 
-| País | ≤0,25 M€ | >1 M€ | Spread |
-|---|---|---|---|
-| España | 3,56 % | 3,79 % | **−23 pb** |
-| Alemania | 4,71 % | 3,61 % | +110 pb |
-| Francia | 4,06 % | 3,53 % | +53 pb |
-| Italia | 4,75 % | 3,55 % | +120 pb |
-| Portugal | 4,60 % | 3,86 % | +74 pb |
-| Países Bajos | 4,82 % | 3,10 % | +172 pb |
-| Zona euro | 4,22 % | 3,60 % | +62 pb |
+- `COLLECTION = A` → *Average of observations through period*. Es la **media
+  del mes**, no una foto de un día.
+- Es **media ponderada por el volumen de nueva producción** contratado en ese
+  mes. Por eso el esquema marca `ponderacion = media_ponderada_volumen`.
+- `UNIT = PCPA`, tipo anual equivalente (AAR/NDER).
+- **Nueva producción** = todo acuerdo nuevo entre banco y cliente, incluidas
+  las **renegociaciones** de préstamos existentes. Excluye las prórrogas
+  automáticas sin renegociar condiciones. No es el tipo de la cartera viva.
+- Se publica el **23º día hábil tras el cierre del mes**, de ahí que a fecha
+  2026-09-16 el último mes disponible sea 2026-07.
 
-No se corrige ni se explica aquí: queda anotado como **hallazgo a
-contrastar**. Hipótesis a descartar con el Boletín Estadístico del Banco de
-España (bloque 9): peso del crédito con aval público en el tramo bajo,
-efecto de composición por plazo, o competencia en el segmento. Conviene
-confirmarlo antes de construir cualquier conclusión de rentabilidad sobre
-el mercado español.
+Implicación: un mes suelto es ruidoso, sobre todo en los tramos bajos donde
+se firman menos contratos. Para hablar de nivel de precios conviene la media
+de varios meses, no el último dato.
+
+### 2.12 Julio de 2026 no es un mes representativo
+
+Contrastado el dato de julio contra los 12 meses anteriores, **julio está en
+el máximo o muy cerca del máximo del año en casi todos los países y tramos**,
+al final de una senda alcista continuada durante 2026. Tomarlo como nivel
+típico sobreestima el precio.
+
+| País | ≤0,25 M€ jul-26 | media 12m | >1 M€ jul-26 | media 12m |
+|---|---|---|---|---|
+| España | 3,56 | 3,35 | 3,79 | 3,37 |
+| Alemania | 4,71 | 4,53 | 3,61 | 3,30 |
+| Francia | 4,06 | 3,96 | 3,53 | 3,44 |
+| Italia | 4,75 | 4,56 | 3,55 | 3,18 |
+| Portugal | 4,60 | 4,28 | 3,86 | 3,60 |
+| Países Bajos | 4,82 | 4,46 | 3,10 | 3,33 |
+| Zona euro | 4,22 | 4,06 | 3,60 | 3,36 |
+
+### 2.13 Corrección: el spread invertido de España es en gran medida un
+efecto de julio
+
+En la nota anterior se registró un spread PYME de **−23 pb** para España
+usando sólo julio de 2026. Sobre media de 12 meses el spread es de **−2 pb**
+(3,35 % frente a 3,37 %): prácticamente plano, no invertido.
+
+La diferencia viene del tramo **>1 M€**, que en julio marca 3,79 % siendo su
+media anual 3,37 % y su máximo de los 12 meses. Es decir, lo anómalo no es
+que el préstamo pequeño esté barato, sino un **repunte puntual del tramo
+grande** en ese mes concreto.
+
+Sigue siendo cierto que España es el país con el spread PYME más estrecho de
+los seis con diferencia (el resto va de +52 a +113 pb en media de 12 meses),
+y eso sí merece contraste con el Boletín Estadístico del Banco de España.
+Pero la lectura de «spread invertido» no se sostiene fuera de julio.
 
 ## 3. Estado de las decisiones
 
