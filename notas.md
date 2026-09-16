@@ -194,8 +194,18 @@ que el préstamo pequeño esté barato, sino un **repunte puntual del tramo
 grande** en ese mes concreto.
 
 Sigue siendo cierto que España es el país con el spread PYME más estrecho de
-los seis con diferencia (el resto va de +52 a +113 pb en media de 12 meses),
-y eso sí merece contraste con el Boletín Estadístico del Banco de España.
+los seis con diferencia, y eso sí merece contraste con el Boletín Estadístico
+del Banco de España. Spread ≤0,25 M€ menos >1 M€, media de 12 meses:
+
+| País | Spread |
+|---|---|
+| España | **−2 pb** |
+| Francia | +52 pb |
+| Portugal | +67 pb |
+| Países Bajos | +113 pb |
+| Alemania | +124 pb |
+| Italia | +138 pb |
+| Zona euro | +71 pb |
 Pero la lectura de «spread invertido» no se sostiene fuera de julio.
 
 ## 3. Estado de las decisiones
