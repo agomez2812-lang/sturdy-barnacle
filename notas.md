@@ -23,8 +23,8 @@ concretos. `check_fuentes.py` los cuenta como alcanzables por eso.
 | 2. SAFE | **Hecho** | 10.803 obs. Q8B **descontinuada tras 2022-S1**, ver §2.20 |
 | 3. EBA Risk Dashboard | **Hecho** | 2.484 obs, hasta 2026-Q1, con desglose PYME y CRE |
 | 4. EBA Transparency (→ `/hipotecas`) | Pendiente | el Dashboard ya da CRE por país; la TE añadiría banco a banco |
-| 5. OCDE Scoreboard | Pendiente | |
-| 6. EUF / FCI | Pendiente | |
+| 5. OCDE Scoreboard | **Hecho** | 535 obs, 2007-2022. **Sin Alemania**, ver §2.30 |
+| 6. EUF / FCI | **Parcial** | EUF hecho (volumen 2025 por pais). Sin precio, ver §2.31 |
 | 7. Comparables banco a banco | **Parcial** | 5 de 9 bancos; ver §2.27 |
 | 8. Filiales de factoring | Pendiente | |
 | 9. Banco de España | **Hecho** | cuadros 19.5, 19.6 y 19.13; resuelve §2.22, ver §2.23 |
@@ -611,6 +611,72 @@ antibot del propio sitio.
 Si se quieren esos tres: descargar los PDF a mano y dejarlos en
 `raw/bancos/`. El extractor los toma igual, solo hay que añadir sus valores
 a la tabla `DATOS` de `scripts/comparables_bancos.py`.
+
+### 2.30 OCDE Scoreboard: dos límites que lo dejan como contraste histórico
+
+Dataset `DSD_SMEE_FINANCING@DF_SMEE_SCOREBOARD` del portal SDMX de la OCDE.
+Es la **única fuente del encargo que segmenta por tamaño de EMPRESA con
+definición nacional de PYME**, y la única que publica directamente un spread
+PYME frente a gran empresa. Pero:
+
+- **El último año es 2022.** Cuatro años de retraso frente al MIR, que llega
+  a 2026-07. No sirve para precio actual.
+- **Alemania no participa.** Cero filas para `DEU` en todo el dataset, no
+  solo en algunas medidas. El mayor mercado de los seis queda fuera.
+- El factoring solo tiene dato para Francia y Portugal.
+- Cada país reporta con **su propia definición nacional de PYME**, no
+  armonizada. Las filas lo declaran en `notas`.
+
+Lo que sí aporta: **corroboración independiente del hallazgo español.**
+Spread PYME frente a gran empresa, 2022:
+
+| País | Spread OCDE | Tipo PYME |
+|---|---|---|
+| **España** | **0,2 pp** | 3,44 % |
+| Portugal | 0,52 pp | 3,18 % |
+| Francia | 0,58 pp | 1,90 % |
+| Países Bajos | 0,9 pp | 3,80 % |
+| Italia | 2,0 pp | 5,30 % |
+| Alemania | — | — |
+
+España es el spread más estrecho y el de Italia el más amplio, el mismo
+orden que sale del MIR en 2026 (§2.15). Dos fuentes independientes, con
+definiciones distintas de PYME y cuatro años de separación, coinciden en el
+ordenamiento. Refuerza que el spread estrecho español es estructural y no un
+efecto del período elegido.
+
+### 2.31 Factoring: hay volumen, no hay precio
+
+**EUF, datos anuales 2025**, volumen cedido por país:
+
+| País | Volumen cedido | Cuota Europa | % del PIB | Var. anual |
+|---|---|---|---|---|
+| Francia | 439.430 M€ | 17,2 % | 14,8 % | +1,9 % |
+| Alemania | 423.472 M€ | 16,6 % | **9,5 %** | +6,2 % |
+| Italia | 297.445 M€ | 11,6 % | 13,2 % | +3,8 % |
+| España | 269.885 M€ | 10,6 % | 16,5 % | +1,2 % |
+| Países Bajos | 165.399 M€ | 6,5 % | 14,0 % | +5,3 % |
+| Portugal | 51.509 M€ | 2,0 % | **20,7 %** | **+12,7 %** |
+
+Total europeo 2,055 billones de euros; la EUF cubre el 94,4 %.
+
+Dos lecturas:
+
+- **La penetración invierte el ranking de tamaño.** Alemania es el segundo
+  mercado en volumen pero el último en penetración sobre PIB (9,5 %).
+  Portugal es el más pequeño en volumen y el que más penetra (20,7 %), y
+  además el que más crece (+12,7 %). El factoring pesa mucho más en las
+  economías del sur.
+- **`turnover` es importe cedido en el año, no saldo vivo.** No debe
+  compararse con la cartera de crédito del MIR ni del EBA. Las filas lo
+  declaran.
+
+**Lo que no hay: el precio.** Ni la EUF ni la OCDE publican comisión de
+cesión ni tipo de descuento. Sigue en pie lo anotado en §2.2: el precio del
+factoring solo existe en cuentas anuales de filiales especializadas
+(bloque 8), y el confirming no tiene estadística pan-europea comparable
+porque en el resto de países se reporta como *reverse factoring* con
+perímetro distinto.
 
 ## 3. Estado de las decisiones
 
