@@ -293,6 +293,42 @@ el agregado de zona euro. Es revisable en publicaciones posteriores. El
 harvester lo marca en la columna `notas` de cada fila afectada. Una razón
 más para no apoyar conclusiones en el último mes disponible (ver §2.12).
 
+### 2.18 La dimensión de PLAZO DE FIJACIÓN es una decisión, y mueve mucho
+
+Todas las tablas comparativas de este trabajo usan
+`MATURITY_NOT_IRATE = A`, «Total initial rate fixation»: toda la nueva
+producción del tramo, sea cual sea el plazo de fijación del tipo, ponderada
+por volumen. Es el valor por defecto de `scripts/medias_ponderadas.py`
+(`--plazo`).
+
+**Es una decisión, no un hecho de la fuente**, y mueve el resultado tanto o
+más que la elección de tramo. Ejemplo alemán, 2026:
+
+| Plazo de fijación | ≤0,25 M€ | 0,25–1 M€ | ≤1 M€ |
+|---|---|---|---|
+| `A` total | 4,34 → 4,71 | 3,90 → 4,20 | 4,20 → 4,56 |
+| `D` hasta 3 meses | 3,91 → 4,23 | 3,91 → 4,19 | no publicado |
+
+Unos 50 pb de diferencia en el tramo bajo. El préstamo a tipo revisable
+corto es más barato que la media de todos los plazos, que incluye tipo fijo
+a varios años.
+
+Criterio aplicado: `A` responde a «qué paga de media una PYME por su nueva
+financiación». Si el análisis se orienta a circulante o a tipo revisable
+corto, la base correcta es `D` y **todos los niveles bajan**. Regenerable
+con `--plazo "Up to 3 months initial rate fixation"`.
+
+Los doce códigos de plazo disponibles (fijación total, hasta 3 meses, hasta
+1 año, de 1 a 5 años, más de 5 años, etc.) están todos descargados en los
+CSV mensuales: cambiar de base no exige volver a la fuente.
+
+### 2.19 Comprobación de coherencia interna
+
+Alemania, julio 2026, fijación total: ≤0,25 M€ = 4,71 %; 0,25–1 M€ = 4,20 %;
+**≤1 M€ = 4,54 %**, que cae entre ambas, como corresponde a que `≤1 M€` sea
+la unión de los dos tramos. La aritmética de la ponderada de 2026 para ese
+tramo es 521.987 / 118.869 = 4,3913 %.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
