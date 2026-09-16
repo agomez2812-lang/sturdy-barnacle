@@ -5,6 +5,9 @@ Estado de acceso a fecha 2026-09-16: **todas bloqueadas** (ver `notas.md` §1).
 
 ## Bloque 1 — ECB Data Portal, dataset MIR  [AUTOMATIZADO]
 
+Cubre `/circulante`, `/prestamos_personales` y `/liquidez`. **No** cubre
+`/hipotecas`: ver bloque 4.
+
 API SDMX: `https://data-api.ecb.europa.eu/service/data/MIR/{clave}?format=csvdata`
 
 Estructura de la clave (10 dimensiones):
@@ -14,7 +17,7 @@ Estructura de la clave (10 dimensiones):
 |---|---|
 | `REF_AREA` | `ES` `DE` `FR` `IT` `PT` `NL` (+ `U2` zona euro como referencia) |
 | `BS_REP_SECTOR` | `B` = entidades de depósito excl. banco central (S.122) |
-| `BS_ITEM` | `A2A` préstamos excl. revolving · `A2Z` revolving y descubiertos · `A2C` adq. vivienda · `A2D` crédito al consumo · `L21` depósitos a la vista · `L22` depósitos a plazo |
+| `BS_ITEM` | `A2A` préstamos excl. revolving · `A2Z` revolving y descubiertos · `A2D` crédito al consumo · `L21` depósitos a la vista · `L22` depósitos a plazo |
 | `DATA_TYPE_MIR` | `R` tipo anual equivalente (**nivel**) · `B` volumen de negocio |
 | `AMOUNT_CAT` | `A` total · `1` ≤0,25 M€ · `2` 0,25–1 M€ · `3` >1 M€ — *confirmar en el primer volcado* |
 | `BS_COUNT_SECTOR` | `2240` sociedades no financieras · `2250` hogares |
@@ -43,10 +46,19 @@ https://www.eba.europa.eu/risk-and-data-analysis/risk-analysis/risk-monitoring
 Ratio de NPL por país, ROE, cost-income. Publicación trimestral con anexo
 de datos por país en XLSX. Nivel de grupo consolidado, no de segmento.
 
-## Bloque 4 — EBA Transparency Exercise  [MANUAL, alto valor]
+## Bloque 4 — EBA Transparency Exercise  [SEMI-AUTOMATIZADO]
 Datos banco a banco: EAD, RWA, exposiciones dudosas por cartera. Es la única
 vía pública para **densidad de RWA** por segmento y para exposición con
 garantía de inmueble comercial. Ficheros XLSX/CSV masivos por plantilla.
+
+**Alimenta el bloque `/hipotecas` completo** (decisión de alcance, `notas.md`
+§2.1): no se usa la serie MIR de hogares. Plantilla de riesgo de crédito,
+cartera con garantía de inmueble comercial.
+
+→ `scripts/eba_te_cre.py --inspect <csv>` para ver la estructura real de la
+edición descargada, rellenar `scripts/mapeo_eba.json`, y luego `--extract`.
+Los nombres de columna y los códigos de partida cambian entre ediciones, por
+eso el script no los codifica a mano.
 
 ## Bloque 5 — OECD Financing SMEs and Entrepreneurs (Scoreboard)  [MANUAL]
 Tipos PYME y spread PYME–gran empresa por país, con ficha metodológica

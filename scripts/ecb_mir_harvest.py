@@ -72,17 +72,11 @@ BLOQUES = {
         ],
         "criterio": "n/a",
     },
-    # Hipotecas: MIR solo publica adquisicion de vivienda por HOGARES.
-    # No existe desglose de hipoteca/inmueble comercial a empresas.
-    "hipotecas_hogares": {
-        "carpeta": "hipotecas",
-        "producto": "hipoteca_vivienda_hogares_referencia",
-        "claves": [
-            ("M.{p}.B.A2C..R..2250.EUR.N", "tipo", "pct_anual"),
-            ("M.{p}.B.A2C..B..2250.EUR.N", "volumen", "eur_millones"),
-        ],
-        "criterio": "n/a",
-    },
+    # NOTA: no hay bloque de hipotecas aqui. MIR solo publica adquisicion de
+    # vivienda por HOGARES (2250), no hay desglose de prestamo con garantia
+    # inmobiliaria a empresas (2240). Por decision de alcance, /hipotecas se
+    # cubre integramente con exposicion a inmueble comercial banco a banco
+    # desde el EBA Transparency Exercise: ver scripts/eba_te_cre.py.
     # Coste de los recursos: depositos de empresas (vista y a plazo).
     "liquidez": {
         "carpeta": "liquidez",

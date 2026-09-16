@@ -19,6 +19,9 @@ Para reproducir el diagnóstico:
 python3 scripts/check_fuentes.py
 ```
 
+Los dominios a permitir al recrear el entorno están en
+**[`entorno_red.md`](entorno_red.md)**.
+
 ## Qué sí está listo
 
 Un pipeline probado que rellena los bloques automatizables en una orden, en
@@ -37,9 +40,20 @@ Cubre, para los 6 países más zona euro como referencia:
 | `circulante` | tipo y volumen de revolving y descubiertos a empresas | `/circulante` |
 | `prestamos_empresas` | tipo y volumen por **tramo de importe** | `/prestamos_personales` |
 | `consumo_hogares` | crédito al consumo a hogares (referencia autónomos) | `/prestamos_personales` |
-| `hipotecas_hogares` | adquisición de vivienda, hogares (**referencia**, ver `notas.md` §2.1) | `/hipotecas` |
 | `liquidez` | depósitos de empresas a la vista y a plazo | `/liquidez` |
 | tipos oficiales | facilidad de depósito BCE, MRO, Euríbor 3m | `/liquidez` |
+
+`/hipotecas` **no** sale de MIR: no existe hipoteca a empresa en la
+estadística oficial UE (ver `notas.md` §2.1). Se cubre con exposición a
+inmueble comercial banco a banco desde el EBA Transparency Exercise:
+
+```bash
+python3 scripts/eba_te_cre.py --inspect raw/eba_te_credit_risk.csv   # ver estructura
+# rellenar scripts/mapeo_eba.json con lo que muestre --inspect, y luego:
+python3 scripts/eba_te_cre.py --extract raw/eba_te_credit_risk.csv --periodo 2025-12
+```
+
+Emite EAD, RWA y densidad de RWA (calculada, no publicada) por banco y país.
 
 Los bloques de factoring/confirming, riesgo, capital, eficiencia y comparables
 banco a banco son extracción manual: hoja de ruta en **[`fuentes.md`](fuentes.md)**.
@@ -69,5 +83,5 @@ Las cuatro últimas existen para que no se puedan mezclar magnitudes distintas:
 ```
 hipotecas/  prestamos_personales/  circulante/  factoring_confirming/
 liquidez/   transversal/           comparables_bancos/
-scripts/    notas.md   fuentes.md
+scripts/    notas.md   fuentes.md   entorno_red.md
 ```

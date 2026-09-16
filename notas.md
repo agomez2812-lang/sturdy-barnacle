@@ -67,10 +67,25 @@ sector hogares** (`BS_COUNT_SECTOR = 2250`). **No hay desglose de hipoteca
 ni de préstamo con garantía inmobiliaria a sociedades no financieras**
 (`2240`). El crédito con garantía real a empresas queda subsumido en la
 serie genérica de préstamos a empresas por tramo de importe.
-- Proxy recogido en `/hipotecas`: serie de hogares, **etiquetada como
-  referencia**, no como hipoteca PYME.
-- Alternativas reales: EBA Transparency Exercise (exposiciones garantizadas
-  por inmueble comercial, banco a banco) y estadísticas nacionales de CRE.
+
+**Decisión de alcance (2026-09-16):** el bloque `/hipotecas` se cubre
+**íntegramente con exposición a inmueble comercial banco a banco** desde el
+EBA Transparency Exercise. Se descarta la serie MIR de hogares, que no se
+recoge ni siquiera como referencia, para no inducir comparaciones con un
+producto que no es el estudiado.
+
+Consecuencias a tener presentes:
+- La cobertura es la **muestra de bancos del EBA**, no el mercado. No es
+  representativa del crédito PYME total de cada país, y los bancos pequeños
+  y las cajas quedan fuera.
+- El EBA publica **EAD y RWA**, no tipo de interés ni comisión. El tipo de
+  la hipoteca a empresa **no existe como dato público** en ninguna fuente
+  del encargo: sólo se puede aproximar por el tramo de importe de MIR
+  (`A2A`, ya recogido en `/prestamos_personales`) o por memoria anual.
+- La **densidad de RWA** no la publica el EBA: se calcula como RWA/EAD y se
+  marca como `tipo_de_dato = ratio` con nota de que es cálculo propio.
+- El perímetro «inmueble comercial» depende de la plantilla de cada edición;
+  fijar el filtro con `--inspect` antes de extraer y anotarlo.
 
 ### 2.2 Factoring y confirming — fuera de todo dataset del BCE
 No hay serie MIR ni BSI de factoring. Los volúmenes sólo existen en EUF/FCI
@@ -131,11 +146,11 @@ distintos entre bancos. Comparabilidad limitada; anotar el perímetro.
 
 ---
 
-## 3. Pendiente de decisión del usuario
+## 3. Estado de las decisiones
 
-1. Desbloquear el entorno de red (ver §1) o indicar vía alternativa de acceso.
-2. Confirmar tratamiento de `/hipotecas` dado §2.1 (¿serie de hogares como
-   referencia, o reorientar el bloque a inmueble comercial vía EBA TE?).
-3. Confirmar si `/prestamos_personales` debe cubrir préstamo a empresa por
-   tramo, crédito al consumo a hogares (autónomos), o ambos como está ahora.
-4. Ventana temporal objetivo. El pipeline usa `--desde 2022-01` por defecto.
+| # | Asunto | Estado |
+|---|---|---|
+| 1 | Acceso de red a las fuentes | **Resuelto**: se recreará el entorno con política de red abierta a los dominios de `entorno_red.md`. Pendiente de ejecución por parte del usuario. |
+| 2 | Tratamiento de `/hipotecas` | **Resuelto**: sólo inmueble comercial vía EBA Transparency Exercise (ver §2.1). Pipeline en `scripts/eba_te_cre.py`. |
+| 3 | Alcance de `/prestamos_personales` | **Abierto**: hoy recoge préstamo a empresa por tramo de importe *y* crédito al consumo a hogares (proxy de autónomos). Confirmar si se mantienen ambos. |
+| 4 | Ventana temporal | **Abierto**: el pipeline usa `--desde 2022-01` por defecto. |

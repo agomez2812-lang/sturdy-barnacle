@@ -1,0 +1,15 @@
+{
+  "_comentario": "Rellenar tras ejecutar --inspect sobre el fichero real del EBA Transparency Exercise. Los nombres de columna y los codigos de partida cambian entre ediciones; no dar por buenos los de ejemplo.",
+  "columna_banco": "",
+  "columna_pais": "",
+  "columna_cartera": "",
+  "columna_item": "",
+  "columna_valor": "",
+  "filtro_cartera": "commercial|immovable|mortgage",
+  "items": {
+    "ead": "",
+    "rwa": ""
+  },
+  "escala_a_millones": 1,
+  "fecha_publicacion": ""
+}
