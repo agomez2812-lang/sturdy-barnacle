@@ -6,3 +6,7 @@ raw/bde/*.csv
 raw/it/*.pdf
 raw/bancos/*.pdf
 raw/factoring/*.pdf
+pres/node_modules/
+pres/package-lock.json
+pres/referencia.pptx
+pres/*.pdf
