@@ -24,9 +24,9 @@ concretos. `check_fuentes.py` los cuenta como alcanzables por eso.
 | 3. EBA Risk Dashboard | **Hecho** | 2.484 obs, hasta 2026-Q1, con desglose PYME y CRE |
 | 4. EBA Transparency (→ `/hipotecas`) | Pendiente | el Dashboard ya da CRE por país; la TE añadiría banco a banco |
 | 5. OCDE Scoreboard | **Hecho** | 535 obs, 2007-2022. **Sin Alemania**, ver §2.30 |
-| 6. EUF / FCI | **Parcial** | EUF hecho (volumen 2025 por pais). Sin precio, ver §2.31 |
+| 6. EUF / FCI | **Hecho** | EUF y detalle nacional AEF/Assifact. Sin precio |
 | 7. Comparables banco a banco | **Parcial** | 5 de 9 bancos; ver §2.27 |
-| 8. Filiales de factoring | Pendiente | |
+| 8. Filiales de factoring | **Cerrado sin dato** | cuentas de pago; ver §2.33 |
 | 9. Banco de España | **Hecho** | cuadros 19.5, 19.6 y 19.13; resuelve §2.22, ver §2.23 |
 
 ## 2. Huecos estructurales de las fuentes (independientes del bloqueo)
@@ -677,6 +677,65 @@ factoring solo existe en cuentas anuales de filiales especializadas
 (bloque 8), y el confirming no tiene estadística pan-europea comparable
 porque en el resto de países se reporta como *reverse factoring* con
 perímetro distinto.
+
+### 2.32 El agregado de la EUF no significa lo mismo en cada país
+
+Hallazgo del bloque 8, y el más importante de los dos bloques de factoring.
+Contrastando el detalle nacional contra el agregado europeo:
+
+| | España (AEF) | Italia (Assifact) |
+|---|---|---|
+| Total publicado | 269.885 M€ | 289.105 M€ (EUF da 297.445) |
+| Factoring | 127.984 M€ (47,4 %) | ~262.000 M€ |
+| **Confirming** | **141.901 M€ (52,6 %)** | **5.370 M€ (1,9 %)** |
+| Reverse factoring | (incluido en confirming) | 21.960 M€ |
+
+**Más de la mitad de la cifra española es confirming. En Italia es el 1,9 %.**
+Comparar los 269.885 M€ de España con los 297.445 M€ de Italia, como invita
+a hacer la tabla de la EUF, es comparar dos cosas distintas: la española es
+mayoritariamente pago confirmado a proveedores, la italiana es cesión de
+facturas.
+
+Esto confirma con datos lo que se anotó como sospecha en §2.2. Consecuencias:
+
+- **El ranking de la EUF (§2.31) no es un ranking de factoring.** Es de
+  "factoring y financiación comercial", con mezcla distinta por país.
+- La penetración española sobre PIB del 16,5 % no es comparable con la
+  alemana del 9,5 % sin saber cuánto confirming lleva cada una, dato que la
+  EUF no publica.
+- Para comparar de verdad haría falta el desglose nacional de los seis
+  países. Se tiene de España e Italia. Faltan Alemania, Francia, Portugal y
+  Países Bajos, cada uno en su asociación nacional.
+
+Ojo también a la magnitud del confirming español más allá del volumen
+cedido: **273.000 M€ en órdenes de pago gestionadas** y más de 400.000 M€ de
+créditos gestionados, en torno al 24 % del PIB.
+
+### 2.33 Bloque 8: cerrado sin dato de precio
+
+El objetivo era la comisión de cesión de las filiales especializadas
+(Santander Factoring y Confirming, BNP Paribas Factor, Eurofactor). **No se
+ha obtenido, y no por falta de intentos.**
+
+- Las cuentas anuales de **Santander Factoring y Confirming, S.A.U., E.F.C.**
+  están depositadas en el Registro Mercantil de Madrid, de **acceso de pago**.
+  Los agregadores que las revenden (Infoempresa, Axesor, Iberinform) también.
+- **Ninguna asociación nacional publica precio.** Ni la EUF, ni la AEF, ni
+  Assifact, ni la OCDE. Todas publican volumen, crecimiento, penetración y
+  calidad de crédito. Assifact se acerca más que nadie con calidad de
+  crédito (deteriorados 2 %, sofferenze 1,03 %) pero no da comisión ni tipo.
+
+Vías que quedan abiertas, ninguna gratuita ni automatizable:
+
+1. **Registro Mercantil** español, de pago, para la filial de Santander.
+2. **Bundesanzeiger** alemán (alcanzable, `200`), donde BNP Paribas Factor
+   GmbH deposita cuentas. Es gratuito pero requiere búsqueda por formulario,
+   no automatizable desde aquí.
+3. Cuentas de **Eurofactor** dentro de Crédit Agricole Leasing & Factoring.
+
+**Conclusión: el precio del factoring y del confirming no es obtenible con
+fuentes públicas gratuitas en ninguno de los seis países.** Es el único
+bloque del encargo que se cierra sin ningún dato de su objetivo principal.
 
 ## 3. Estado de las decisiones
 
