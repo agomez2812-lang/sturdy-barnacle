@@ -550,7 +550,72 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("Al quitar Portugal, la correlación con la LGD cae de −0,32 a −0,03: toda la relación la sostenía un solo país, y su LGD mediana es 40,00 %, que es exactamente el valor supervisor F-IRB del art. 161 CRR3. La misma cifra aparece en la LGD de gran empresa de seis de los siete países. El suelo regulatorio aplasta la dispersión: el mecanismo es sólido, el dato no lo puede medir.",
    {x:CX+0.16, y:5.42, w:CW-0.32, h:1.10, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
 
- fuente(s,"Eje de información: profundidad de la información crediticia (0-8) y cobertura de bureau privado de Doing Business 2020, más dos ordinales propios sobre el umbral del registro público y el régimen de depósito de cuentas. Eje de recobro: fortaleza de los derechos legales del acreedor (0-12), tasa de recuperación, coste sobre la masa y tiempo de resolución, de la misma fuente. Doing Business se descontinuó en 2021 y su vintage es mayo de 2019; B-READY, su sucesor, solo cubre Portugal de los siete. PD y LGD del EBA, COREP C 9.02, 2026-Q1. n=7: indicativo, no causal.");
+ fuente(s,"Eje de información: profundidad de la información crediticia (0-8) y cobertura de bureau privado de Doing Business 2020, más dos ordinales propios sobre el umbral del registro público y el régimen de depósito de cuentas. Eje de recobro: fortaleza de los derechos legales del acreedor (0-12), tasa de recuperación, coste sobre la masa y tiempo de resolución, de la misma fuente. Doing Business se descontinuó en 2021 y su vintage es mayo de 2019; B-READY, su sucesor, solo cubre Portugal de los siete. PD y LGD del EBA, COREP C 9.02, 2026-Q1. n=7: indicativo, no causal. La PD de cada país es un resultado revelado y recoge también el apetito de riesgo del mercado, no solo su información y su entorno: ver la lámina siguiente.");
+}
+
+/* 13e — se paga el riesgo? apetito frente a precio */
+{const s=pres.addSlide();
+ titulo(s,"¿Se paga el riesgo? Entre mercados, no",
+        "Si cobrar más compensara prestar peor, el margen neto de riesgo sería plano entre países · Ordenado por PD creciente");
+ const A=D.apetito, pdv=D.irb_cmp.pd_pyme;
+ /* orden por PD creciente */
+ const ord=P.map((p,i)=>i).sort((a,b)=>pdv[a]-pdv[b]);
+ const lab=ord.map(i=>P[i]+"\n"+pdv[i].toFixed(2).replace(".",",")+" %");
+ s.addChart(pres.ChartType.bar,
+   [{name:"Margen neto de riesgo", labels:lab, values:ord.map(i=>A.mnr[i])}],
+   {x:M, y:1.82, w:7.25, h:3.55, barDir:"col", chartColors:[PRIM], showTitle:false,
+    showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:10.5,
+    dataLabelColor:TXT, dataLabelFormatCode:'0.00"%"', showLegend:false,
+    catAxisLabelColor:TXT, catAxisLabelFontSize:9, valAxisLabelColor:MUT,
+    valAxisLabelFormatCode:'0"%"', valGridLine:{color:"E3E9EB", size:1},
+    catGridLine:{style:"none"}, valAxisMaxVal:6});
+ s.addText("Precio más comisiones, menos coste de los recursos y menos coste del riesgo. Antes de gastos y de capital.",
+   {x:M, y:5.42, w:7.25, h:0.22, fontFace:BF, fontSize:8, color:MUT, italic:true,
+    align:"center", isTextBox:true, margin:0});
+
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:5.58, w:7.25, h:1.04, fill:{color:ORA3},
+   rectRadius:0.05, line:{color:ORA2}});
+ s.addText("Va al revés: ρ = −0,88 contra la PD",{x:M+0.16, y:5.66, w:6.95, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("Irlanda tiene la mejor PD (1,08 %) y el mayor margen neto de riesgo (5,43 %); Francia, la segunda peor PD (2,15 %) y el menor (2,62 %). La excepción es Italia: peor PD de las siete y aun así el cuarto mejor margen, porque es la que más cobra el gradiente por tamaño. Los siete no están sobre una misma frontera de riesgo y retorno: prestar peor no suele venir pagado.",
+   {x:M+0.16, y:5.92, w:6.95, h:0.66, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+
+ /* --- columna derecha: el gradiente dentro de cada mercado --- */
+ const CX=8.18, CW=W-M-CX;
+ s.addText("Dentro de cada mercado sí se paga",{x:CX, y:1.82, w:CW, h:0.26,
+   fontFace:HF, fontSize:12.5, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addText("Sobreprecio del tramo pequeño frente al de más de 1 M€ · Puntos básicos",
+   {x:CX, y:2.08, w:CW, h:0.22, fontFace:BF, fontSize:8, color:MUT, isTextBox:true, margin:0});
+ const og=P.map((p,i)=>i).sort((a,b)=>A.grad_tot[b]-A.grad_tot[a]);
+ let gy=2.36;
+ const gmax=150;
+ og.forEach(i=>{
+   const v=A.grad_tot[i], neg=v<0;
+   s.addText(P[i],{x:CX, y:gy, w:1.28, h:0.24, fontFace:BF, fontSize:8.5,
+     bold:true, color:DARK, valign:"middle", isTextBox:true, margin:0});
+   const x0=CX+1.32, bw=Math.max(0.03, Math.abs(v)/gmax*(CW-2.05));
+   s.addShape(pres.ShapeType.rect,{x:x0, y:gy+0.045, w:bw, h:0.15,
+     fill:{color: neg?MAG3:(v>=100?ORA2:ORA3)}, line:{color: neg?MAG:ORA2, width:0.5}});
+   s.addText((v>0?"+":"")+v,{x:CX+CW-0.68, y:gy, w:0.68, h:0.24, fontFace:BF,
+     fontSize:8.5, bold:true, color: neg?DARK:DARK, align:"right",
+     valign:"middle", isTextBox:true, margin:0});
+   gy+=0.30;});
+
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:4.48, w:CW, h:1.00, fill:{color:BLUE3},
+   rectRadius:0.05, line:{color:BLUE}});
+ s.addText("España es la única que no lo cobra",{x:CX+0.16, y:4.56, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("−4 pb: el préstamo pequeño sale marginalmente más barato que el de más de 1 M€. Italia cobra +143 y Países Bajos +120. Y el gradiente acompaña a la rentabilidad: ρ = +0,86 con el ROE.",
+   {x:CX+0.16, y:4.80, w:CW-0.32, h:0.62, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:5.58, w:CW, h:1.04, fill:{color:LIGHT},
+   rectRadius:0.05, line:{color:G3}});
+ s.addText("Qué corrige esto de la lámina anterior",{x:CX+0.16, y:5.66, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("La PD de un país también es apetito revelado, no solo información y entorno, y con dato público no se separan. Lo que el precio sí descarta es que el apetito sea lo dominante: si lo fuera, los de PD alta cobrarían más, y cobran menos.",
+   {x:CX+0.16, y:5.92, w:CW-0.32, h:0.66, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+
+ fuente(s,"Precio por tramo del dataset MIR del BCE, media ponderada por volumen de 2026-01 a 2026-07; Alemania no publica volumen de los tramos pequeños, así que su gradiente mezcla media simple y media ponderada. PD del EBA, COREP C 9.02, 2026-Q1, mediana de entidades. La comisión es un supuesto de 87 pb en los seis países que no la publican. El tramo de más de 1 M€ no es solo gran empresa, pero es el proxy más cercano que publica el MIR. n=7: indicativo, no causal.");
 }
 
 /* 10c — consumo de capital */
@@ -750,7 +815,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
   ["4","Países Bajos y Alemania son los objetivos naturales",
    "37,0 % y 35,0 % de ROE para el entrante. Combinan el menor coste del riesgo (0,35 % y 0,40 %) con la menor densidad de RWA (37 % y 35 %) e incumbentes con eficiencia mediocre (53,5 % y 55,2 %)."],
   ["5","El coste del riesgo se controla seleccionando, no recuperando",
-   "Igualar la PD a la mejor de las siete elimina el 75 % de la dispersión del coste del riesgo entre países; igualar la LGD solo el 22 %. Y el eje que mejor predice la PD no es la información disponible (ρ = −0,23) sino el entorno de recobro (ρ = −0,79): donde ejecutar es lento y caro, el impago se enquista."],
+   "Igualar la PD a la mejor de las siete elimina el 75 % de la dispersión del coste del riesgo entre países; igualar la LGD solo el 22 %. Y el eje que mejor predice la PD no es la información disponible (ρ = −0,23) sino el entorno de recobro (ρ = −0,79): donde ejecutar es lento y caro, el impago se enquista. Y no se compensa cobrando: entre mercados el margen neto de riesgo cae con la PD (ρ = −0,88)."],
   ["6","La comisión es el único supuesto material que queda",
    "Solo España publica un tipo con comisiones para empresas, y allí vale 87 pb sobre el tramo ≤1 M€. Aplicarla a los demás es una hipótesis. Antes de decidir, conviene validarla en el mercado objetivo: mueve el ROE entre 3 y 8 puntos."]];
  let y=1.66;
@@ -777,20 +842,21 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
   ["Completar","Densidad de RWA propia","La del modelo es la del mercado. Un entrante con método estándar o con menos garantía real tendría una densidad distinta, y ese es el factor que más pesa."],
   ["Cerrar","Precio del factoring y del confirming","No es obtenible con fuentes públicas gratuitas. Si el producto entra en el plan, hay que ir a registros de pago o a datos de mercado."],
   ["Riesgo: invertir en","Selección, no en recobro","La PD explica el 75 % de la diferencia de coste del riesgo entre países; la LGD solo el 22 %. El presupuesto va a datos de admisión —bureau privado, cuentas depositadas, alta frecuencia— antes que a recuperaciones."],
-  ["Riesgo: descontar","La ejecución del mercado, no solo su información","Italia tiene la segunda mejor información de las siete y la peor PD: ejecutar le cuesta el 22 % de la masa y 1,8 años. En Francia, además, micro y pequeñas pueden declarar sus cuentas confidenciales: sin adhesión a I-FIBEN se entra a ciegas."]];
- let y=1.68;
+  ["Riesgo: descontar","La ejecución del mercado, no solo su información","Italia tiene la segunda mejor información de las siete y la peor PD: ejecutar le cuesta el 22 % de la masa y 1,8 años. En Francia, además, micro y pequeñas pueden declarar sus cuentas confidenciales: sin adhesión a I-FIBEN se entra a ciegas."],
+  ["Riesgo: cobrar","El gradiente por tamaño","España es la única de las siete donde el préstamo pequeño no sale más caro que el de más de 1 M€: −4 pb, frente a +143 de Italia y +120 de Países Bajos. Y el gradiente acompaña al ROE (ρ = +0,86)."]];
+ let y=1.66;
  R.forEach((r,i)=>{
-   const rie = i>=6;                       // las dos ultimas son de riesgo
-   s.addShape(pres.ShapeType.roundRect,{x:M, y:y, w:2.25, h:0.58, fill:{color: i<3?ORA3:(rie?BLUE3:LIGHT)},
+   const rie = i>=6;                       // las tres ultimas son de riesgo
+   s.addShape(pres.ShapeType.roundRect,{x:M, y:y, w:2.25, h:0.50, fill:{color: i<3?ORA3:(rie?BLUE3:LIGHT)},
      rectRadius:0.05, line:{color: i<3?ORA2:(rie?BLUE:G3)}});
-   s.addText(r[0], {x:M, y:y, w:2.25, h:0.58, fontFace:HF, fontSize:9.5, bold:true,
+   s.addText(r[0], {x:M, y:y, w:2.25, h:0.50, fontFace:HF, fontSize:9.5, bold:true,
      color:DARK, align:"center", valign:"middle", isTextBox:true, margin:0});
-   s.addText(r[1], {x:M+2.45, y:y+0.02, w:3.3, h:0.54, fontFace:HF, fontSize:10, bold:true,
+   s.addText(r[1], {x:M+2.45, y:y+0.02, w:3.3, h:0.46, fontFace:HF, fontSize:10, bold:true,
      color:DARK, valign:"middle", isTextBox:true, margin:0});
-   s.addText(r[2], {x:M+5.9, y:y+0.02, w:6.25, h:0.54, fontFace:BF, fontSize:8.5,
+   s.addText(r[2], {x:M+5.9, y:y+0.02, w:6.25, h:0.46, fontFace:BF, fontSize:8.5,
      color:G1, valign:"middle", isTextBox:true, margin:0});
-   y+=0.635;});
- fuente(s,"ROE simulado del entrante con coste de los recursos 0,80 %, eficiencia 40 % y CET1 12,9 %, sobre el precio, riesgo, capital y fiscalidad de cada mercado. No incorpora coste de entrada ni escala mínima. Las dos recomendaciones de riesgo se apoyan en la descomposición PD/LGD de los parámetros IRB del EBA y en los índices institucionales de Doing Business 2020.");
+   y+=0.555;});
+ fuente(s,"ROE simulado del entrante con coste de los recursos 0,80 %, eficiencia 40 % y CET1 12,9 %, sobre el precio, riesgo, capital y fiscalidad de cada mercado. No incorpora coste de entrada ni escala mínima. Las tres recomendaciones de riesgo se apoyan en la descomposición PD/LGD de los parámetros IRB del EBA, en los índices institucionales de Doing Business 2020 y en el precio por tramo del dataset MIR del BCE.");
 }
 
 /* 16 — lo que no se puede afirmar */

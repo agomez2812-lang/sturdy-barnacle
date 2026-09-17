@@ -1356,6 +1356,84 @@ incorporar Irlanda. Corregidos a siete países y 38.451 filas, y la lámina
 de fuentes actualizada con el EU-wide Transparency Exercise y Doing
 Business, que ya se usaban pero no estaban listados.
 
+### 2.48 ¿La PD depende también del precio? Apetito de riesgo, contrastado
+
+Objeción del usuario: la PD no es solo un resultado de la información
+disponible, es también una decisión de **apetito**. Si presto a clientes de
+más riesgo, cobro más y estoy bien así.
+
+El mecanismo es correcto y la objeción es pertinente: obliga a matizar
+§2.47. Se contrasta en los dos niveles en que puede operar. Extractor en
+`scripts/apetito_riesgo.py`, salida en `transversal/apetito_riesgo.csv`.
+
+**El test.** Si el riesgo se pagara, el **margen neto de riesgo** —precio
+más comisiones, menos coste de los recursos, menos coste del riesgo, antes
+de gastos y de capital— sería plano entre países. No lo es:
+
+| País | Precio | PD | CoR | Margen neto de riesgo | ROE |
+|---|---|---|---|---|---|
+| Irlanda | 5,37 | 1,08 | 0,40 | **5,43** | 13,8 |
+| P. Bajos | 4,50 | 1,18 | 0,35 | 3,97 | 20,2 |
+| Alemania | 4,39 | 1,26 | 0,40 | 3,71 | 16,9 |
+| Portugal | 3,94 | 1,26 | 0,50 | 3,59 | 14,0 |
+| Italia | 4,25 | 2,26 | 0,80 | 3,56 | 15,2 |
+| España | 3,41 | 1,73 | 0,59 | 2,94 | 12,5 |
+| Francia | 3,77 | 2,15 | 0,68 | **2,62** | 5,0 |
+
+**Resultado 1: entre mercados el precio va en contra del riesgo.**
+ρ(precio, PD) = **−0,72** y ρ(precio, coste del riesgo) = −0,64. Los
+mercados que prestan peor son los que menos cobran. El margen neto de
+riesgo cae con la PD: ρ = **−0,88**. Es decir, no solo no se compensa:
+se castiga dos veces.
+
+**Consecuencia analítica.** Los siete países **no están sobre una misma
+frontera de riesgo y retorno**. Bajo una historia de puro apetito,
+seleccionar clientes más seguros significa aceptar menos rendimiento, y los
+países de PD baja cobrarían menos. Cobran más. Eso no prueba que el apetito
+no influya, pero sí **descarta que sea la explicación dominante** de la
+dispersión de PD entre países.
+
+**Excepción honesta: Italia.** Peor PD de las siete (2,26 %) y aun así el
+cuarto mejor margen neto de riesgo (3,56 %). Es el único país donde la
+lectura del usuario se sostiene parcialmente, y es coherente con que sea el
+que más cobra el gradiente por tamaño (ver abajo).
+
+**Resultado 2: dentro de cada mercado sí se paga.** El único eje de riesgo
+observable dentro de un país en la estadística oficial es el tramo de
+importe. Sobreprecio del tramo pequeño frente al de más de 1 M€, en pb:
+
+```
+Italia +143 · P. Bajos +120 · Alemania +115 · Portugal +65
+Irlanda  +59 · Francia  +49 · Espana     -4
+```
+
+**España es la única de las siete donde el préstamo pequeño no sale más
+caro que el grande.** Dentro del perímetro PYME (≤0,25 M€ frente a
+0,25–1 M€) el gradiente español es de +5 pb, contra +109 de Italia y +94 de
+Portugal. Y el gradiente acompaña a la rentabilidad: ρ(gradiente, ROE) =
+**+0,86**. La causalidad puede ir en los dos sentidos —un mercado rentable
+puede permitirse discriminar precio— así que se etiqueta como indicativa.
+
+**Qué corrige de §2.47.** La PD mediana de un país es un **resultado
+revelado**: mezcla entorno, información y apetito, y con dato público no se
+pueden separar. La lámina de los dos ejes lleva ahora esa salvedad
+explícita. Lo que el contraste de precio aporta es que la vía del apetito
+no explica el patrón observado, porque produciría el signo contrario.
+
+**Salvedades.** (i) n=7, indicativo y no causal. (ii) La comisión es un
+supuesto de 87 pb en los seis países que no la publican, así que el nivel
+del margen neto de riesgo depende de ese supuesto; el **orden** no, porque
+la cuña es la misma para todos salvo España. (iii) Alemania no publica
+volumen de los tramos pequeños, de modo que su gradiente mezcla media
+simple y media ponderada; se etiqueta en la fila. (iv) El tramo de más de
+1 M€ no es solo gran empresa, pero es el proxy más cercano que publica el
+MIR.
+
+**Salidas:** lámina 17 «¿Se paga el riesgo? Entre mercados, no»; salvedad
+añadida al pie de la lámina 16; conclusión 5 ampliada; tercera
+recomendación de riesgo («Riesgo: cobrar — el gradiente por tamaño»);
+bloque `apetito` en `pres/datos.json`.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
