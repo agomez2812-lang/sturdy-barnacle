@@ -33,6 +33,12 @@ UNITS = {
     "pct_anual", "pct_neto_encuesta", "pct_cartera", "pct_rwa",
     "eur_millones", "eur_miles_millones", "pct_ingresos", "pb",
     "pct_roe", "pct_activos",
+    # --- marco institucional (indicadores Doing Business y compuestos) ---
+    # `indice` = puntuacion; la escala va SIEMPRE en `notas` (0-8, 0-12,
+    # 0-16 o 0-100 normalizado). `pct_recuperacion` = centimos por dolar
+    # recuperados por el acreedor, NO un tipo de interes.
+    "indice", "anios", "pct_recuperacion", "pct_masa_concursal",
+    "pct_adultos",
 }
 
 COUNTRIES = {

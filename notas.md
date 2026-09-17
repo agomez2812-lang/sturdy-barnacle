@@ -1242,6 +1242,120 @@ riesgo: dónde está la palanca» y 15 «Infraestructura de información
 crediticia de PYME»), y el bloque `riesgo` en `pres/datos.json` con
 `ahorro_pd`, `ahorro_lgd`, `mejor_pd`, `mejor_lgd` e `infra`.
 
+### 2.47 Los dos ejes del riesgo: la hipótesis del usuario, contrastada
+
+Hipótesis planteada por el usuario: la **LGD** depende del entorno
+regulatorio (poder ejercer o no el derecho de recobro, y las garantías
+disponibles) y la **PD** depende de la información para seleccionar. Se
+pide clasificar a los países en esas dos dimensiones y ver las
+correlaciones.
+
+**Fuente institucional elegida.** Banco Mundial, *Doing Business 2020*,
+dataset histórico completo. Es la última medición comparable de los siete
+países: el programa se descontinuó en 2021 y su sucesor **B-READY solo
+cubre Portugal** de los siete (comprobado contra la API del Banco Mundial:
+`IC.BRE.BI.OS` devuelve únicamente PT). El *vintage* es **mayo de 2019** y
+se etiqueta como tal en cada fila. Los indicadores `IC.CLS.REC.CD` e
+`IC.ISV.DURS` ya no se sirven por la API; hubo que bajar el Excel del
+archivo. Extractor en `scripts/marco_riesgo.py`, salida en
+`transversal/marco_riesgo.csv`.
+
+**Construcción de los dos índices.** Media simple de cuatro componentes
+normalizados min-max a 0-100 sobre los siete países. **100 = el mejor de
+los siete, no un óptimo absoluto.** Los componentes se fijaron por
+mecanismo *antes* de mirar las correlaciones, para no ajustar el índice al
+resultado:
+
+- *Información*: profundidad de la información crediticia (0-8) y cobertura
+  del bureau privado, ambos de Doing Business; más dos ordinales propios
+  (0-3) sobre el umbral del registro público frente al tamaño típico de una
+  operación PYME y sobre el régimen real de depósito de cuentas.
+- *Recobro*: fortaleza de los derechos legales del acreedor (0-12), tasa de
+  recuperación, coste sobre la masa (invertido) y tiempo de resolución
+  (invertido).
+
+| País | Información | Recobro | PD | LGD |
+|---|---|---|---|---|
+| Irlanda | 87,5 | 88,6 | 1,08 | 37,34 |
+| Alemania | 75,0 | 71,0 | 1,26 | 31,44 |
+| Italia | 79,2 | 12,3 | 2,26 | 35,60 |
+| España | 64,4 | 56,8 | 1,73 | 34,38 |
+| Portugal | 64,5 | 17,6 | 1,26 | 40,00 |
+| P. Bajos | 53,8 | 68,3 | 1,18 | 29,70 |
+| Francia | 16,7 | 48,0 | 2,15 | 31,51 |
+
+**Correlaciones (ρ de Spearman, n=7).** El signo esperado es negativo en
+los cuatro casos:
+
+| | con la PD | con la LGD |
+|---|---|---|
+| Índice de información | −0,23 | +0,54 |
+| Índice de recobro | **−0,79** | −0,32 |
+| Índice de recobro, sin Portugal | — | **−0,03** |
+
+**Resultado 1: el mecanismo es correcto pero el mapeo está cruzado.** El
+eje que mejor predice la PD no es el de información (ρ = −0,23) sino el de
+**recobro** (ρ = −0,79), la relación más fuerte de todo el ejercicio.
+Interpretación —y se declara como interpretación, no como resultado—: donde
+ejecutar es lento y caro, el impago se enquista y el impago estratégico
+compensa, de modo que un marco de recobro débil eleva también la tasa de
+default medida. Italia (22 % de la masa, 1,8 años) y Portugal (3,0 años)
+son los dos peores del eje de recobro.
+
+**Resultado 2: la LGD no es contrastable con dato supervisor.** Al excluir
+Portugal, la correlación del índice de recobro con la LGD cae de −0,32 a
+−0,03: **toda la relación la sostenía un solo país**. Y la LGD mediana
+portuguesa es 40,00 %, que es exactamente el valor supervisor F-IRB del
+art. 161 CRR3 para exposiciones senior a empresas — el mismo 40,00 % que
+aparece en la LGD de gran empresa de seis de los siete países (ver
+`irb_cmp.lgd_grande`). El suelo regulatorio aplasta la dispersión. La
+conclusión honesta es que **con datos supervisores no se puede clasificar a
+los países por LGD**: el mecanismo del usuario es sólido, pero el dato
+público no lo puede medir. Para medirlo harían falta datos internos de
+recuperación por entidad.
+
+**Resultado 3: Italia es el contraejemplo del eje de información.** Tiene
+la segunda mejor información de las siete (79,2, con Cerved y CRIF y
+depósito obligatorio en el Registro Imprese) y la **peor PD** (2,26 %).
+Saber a quién se presta no basta si después no se puede ejecutar. Francia
+es el contraejemplo simétrico: la peor información (16,7, arrastrada por la
+confidencialidad opcional de cuentas y por una cobertura de bureau privado
+de 0 % en la medición de Doing Business) y la segunda peor PD (2,15 %).
+
+**Irlanda es el caso que no encaja.** Está en la frontera de los dos ejes
+(87,5 y 88,6) y tiene la mejor PD (1,08 %), pero una LGD alta (37,34 %).
+Lo único observado que acompaña a eso es que sus modelos IRB son los más
+conservadores de los siete: densidad de RWA del 70,0 % frente al 35,3 %
+alemán. Se anota como hipótesis, no como explicación.
+
+**Advertencias que acompañan siempre a este bloque.** (i) n=7: indicativo,
+no causal. (ii) Los dos ejes **no son independientes** entre sí: la calidad
+institucional viene en paquete, y el índice de recobro correlaciona con la
+PD casi tanto como con la LGD. (iii) Hay correlaciones espurias evidentes
+en los componentes en bruto —la cobertura del registro público contra la
+LGD da r = 0,86 sin ningún mecanismo detrás— que ilustran lo poco que
+aguanta una muestra de siete. (iv) El *vintage* institucional es 2019 y los
+parámetros IRB son de 2026-Q1: siete años de distancia.
+
+**Fuente descartada.** La OCDE publica «préstamos con aval público a PYME»,
+que sería la medida directa de la dimensión de garantías. No es utilizable:
+solo hay cuatro de los siete países y las definiciones nacionales no son
+comparables (España declara 30 M€ en 2018 frente a 53.860 M€ de Italia en
+2022, órdenes de magnitud que solo se explican por perímetros distintos).
+
+**Salidas:** lámina 16 «Los dos ejes: información selecciona, recobro
+recupera»; conclusión 5 añadida a la lámina de conclusiones y dos
+recomendaciones de riesgo añadidas a la de recomendaciones; bloque `marco`
+en `pres/datos.json`; unidades `indice`, `anios`, `pct_recuperacion`,
+`pct_masa_concursal` y `pct_adultos` añadidas al vocabulario cerrado de
+`scripts/schema.py`.
+
+**Corrección de arrastre.** Al revisar la presentación se detectaron textos
+que seguían diciendo «seis países» y «25.370 observaciones» desde antes de
+incorporar Irlanda. Corregidos a siete países y 38.451 filas, y la lámina
+de fuentes actualizada con el EU-wide Transparency Exercise y Doing
+Business, que ya se usaban pero no estaban listados.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
