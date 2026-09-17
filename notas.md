@@ -1869,6 +1869,101 @@ por construcción y solo cinco discriminan—; `scripts/eba_te_bancos_es.py`,
 `comparables_bancos/modelo_roe_bancos_es.csv`; bloque `bancos` en
 `pres/datos.json`.
 
+### 2.55 Datos de PYME por banco: qué existe y qué no, tras rastrearlo
+
+El usuario rechazó §2.54 con razón: precio, comisiones y coste del riesgo
+tenían que ser de PYME, no comunes ni escalados. Se rastrearon las fuentes
+una por una. Este es el resultado, incluidos los fracasos.
+
+**Fuentes comprobadas para PD/LGD de PYME por banco:**
+
+| Fuente | Resultado |
+|---|---|
+| Transparency Exercise, `tr_cre.csv` | **No tiene PD ni LGD.** Se recorrieron los 89 ítems del fichero buscando `PD`, `LGD`, `probability`, `loss given` y `expected loss`: ninguno |
+| EBA Pillar 3 Data Hub | **Inaccesible.** `pillar3.eba.europa.eu` y `pillar3datahub.eba.europa.eu` los rechaza el proxy de salida por política; la página del EBA sí carga pero solo enlaza guías de uso |
+| Pilar 3 de cada banco (plantilla EU CR6, que sí trae PD y LGD por clase de exposición) | **Bloqueado.** Bankinter y Sabadell devuelven 403 incluso con user-agent de navegador; CaixaBank 404 |
+| Chromium para saltar el anti-bot | **Fallido.** El navegador no confía en la CA del proxy («Privacy error») y no hay `certutil` ni paquete instalable para importarla al almacén NSS |
+| CNMV | Accesible, pero su registro no publica el Informe con Relevancia Prudencial de forma localizable sin navegación interactiva |
+
+**Lo que sí se encontró y no se estaba usando: las provisiones de PYME.**
+La partida **2520553** del Transparency Exercise da las correcciones de
+valor y provisiones de la cartera PYME, y con `Country = 28` sale la de la
+cartera **española** de cada banco. Con ella y con la exposición en default
+se obtiene la **cobertura de PYME**, que es una magnitud de PYME, del banco
+y española.
+
+**Cómo queda ahora el coste del riesgo.** Ya no es un escalado de un solo
+factor. Se construyen PD y LGD por separado, cada una anclada en el
+parámetro IRB de PYME de España (observado) y dispersada por una magnitud
+de PYME del propio banco (observada):
+
+```
+PD_banco  = PD PYME de Espana  x (mora PYME del banco / mora media)
+LGD_banco = LGD PYME de Espana x (cobertura del banco / cobertura media)
+CoR       = PD_banco x LGD_banco
+```
+
+| Banco | Mora PYME | Cobertura | PD | LGD | CoR |
+|---|---|---|---|---|---|
+| Bankinter | 2,34 % | 74,1 % | 0,74 % | 46,9 % | 0,35 % |
+| Sabadell | 5,91 % | 56,1 % | 1,88 % | 35,5 % | 0,67 % |
+| CaixaBank | 5,30 % | 53,6 % | 1,68 % | 34,0 % | 0,57 % |
+| BBVA | 3,98 % | 65,6 % | 1,27 % | 41,5 % | 0,53 % |
+| Santander | 7,80 % | 36,5 % | 2,48 % | 23,1 % | 0,57 % |
+
+**Hallazgo:** los dos efectos se compensan. **Santander tiene la peor mora
+de los cinco (7,80 %) y la menor cobertura (36,5 %)**, de modo que su coste
+del riesgo acaba en la media. La lectura económica es que provisiona menos
+porque espera recuperar más —cartera más garantizada—; la lectura
+alternativa es que está infraprovisionado. Con dato público no se pueden
+separar y se anota como tal.
+
+**Dos salvedades del método.** (i) La cobertura incluye provisiones de las
+fases 1 y 2, no solo del default, así que **sobreestima el nivel** de LGD;
+el sesgo es el mismo para los cinco, de modo que sirve para comparar entre
+bancos y no como nivel absoluto. (ii) No es la PD/LGD interna de cada banco:
+eso solo está en su Pilar 3.
+
+**El precio de PYME por banco NO EXISTE en fuente pública.** Ni el MIR (es
+agregado por país), ni el Boletín del Banco de España (agregado), ni el
+Transparency Exercise (su única partida de ingresos, 2520303, es de
+préstamos totales). AnaCredit lo tendría, pero no es público. Y **no vale
+usar el rendimiento medio de la inversión crediticia** de cada banco como
+sustituto: mezcla hipoteca, consumo y empresa en proporciones muy distintas
+entre bancos, así que introduciría sesgo en vez de información.
+
+**Lo que sí se puede hacer sin ese dato: darle la vuelta a la pregunta.**
+Con su propio riesgo, capital, gastos y coste de los recursos, ¿qué precio
+necesitaría cada banco para un ROE dado? Ese número **no depende del precio
+no observable** y mide capacidad competitiva:
+
+| Banco | Precio para un ROE del 15 % | ROE al precio común |
+|---|---|---|
+| Bankinter | **2,58 %** | 20,7 % |
+| Sabadell | 2,79 % | 20,2 % |
+| CaixaBank | 3,02 % | 17,7 % |
+| Santander | 3,57 % | 14,2 % |
+| BBVA | **3,77 %** | 13,2 % |
+
+**Bankinter puede vender 119 pb más barato que BBVA y ganar lo mismo.** Es
+la conclusión más accionable del bloque y la única que no arrastra el hueco
+del precio.
+
+**Comisiones de PYME por banco:** tampoco existen. Solo el Boletín del Banco
+de España publica una cuña de comisiones de empresa, y es agregada del
+sistema (§2.23).
+
+**Pendiente, si se aporta el dato manualmente:** los Informes con Relevancia
+Prudencial de los cinco bancos (plantilla EU CR6) cerrarían PD y LGD de PYME
+reales por banco. Se suma a la lista de ING, Société Générale, BNP Paribas e
+Intesa.
+
+**Salidas:** `scripts/eba_te_bancos_es.py` amplía la extracción con
+provisiones y cobertura; `scripts/modelo_roe_bancos_es.py` construye PD y
+LGD por banco y el precio de equilibrio; las dos láminas de bancos pasan a
+marcar en azul lo que es de la cartera PYME española y la de cuenta de
+resultados añade la fila del precio necesario.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

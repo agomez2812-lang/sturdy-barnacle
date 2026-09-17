@@ -9,10 +9,23 @@ entre bancos es solo lo que cada uno publica de verdad.
 
 OBSERVADO Y PROPIO DE CADA BANCO (EU-wide Transparency Exercise del EBA,
 contraparte espanola donde el dato lo permite):
-    densidad de RWA de su cartera PYME espanola
-    tasa de exposicion PYME espanola en default
-    ratio CET1
-    ratio de eficiencia
+    densidad de RWA de su cartera PYME espanola   PYME + banco
+    mora de su cartera PYME espanola              PYME + banco
+    cobertura de esa mora con provisiones         PYME + banco
+    ratio CET1                                    banco (grupo)
+    ratio de eficiencia                           banco (grupo)
+
+EL COSTE DEL RIESGO SE CONSTRUYE CON LAS DOS PIEZAS DE PYME DEL BANCO:
+
+    PD_banco  = PD PYME de Espana x (mora PYME del banco / mora media)
+    LGD_banco = LGD PYME de Espana x (cobertura del banco / cobertura media)
+    CoR       = PD_banco x LGD_banco
+
+El NIVEL lo fija el parametro IRB de PYME de Espana (COREP C 9.02), que es
+observado; la DISPERSION entre bancos la fijan su propia mora y su propia
+cobertura de PYME, las dos observadas y las dos de la cartera espanola. No
+es la PD/LGD interna de cada banco, que solo esta en su Pilar 3 y no se ha
+podido obtener (ver notas.md 2.55), pero ya no es un simple escalado.
 
 COMUN A LOS CINCO, porque ningun banco lo publica por segmento:
     precio del prestamo PYME        MIR de Espana, tramo <=1 M EUR
@@ -68,11 +81,16 @@ def comunes():
         elif x["metrica"] == "Coste de los recursos de empresa":
             c["coste_rec"] = float(x["valor"])
     for x in lee("transversal/eba_parametros_riesgo.csv"):
-        if x["pais"] == "Espana" and x["metrica"].startswith(
-                "Coste del riesgo PYME"):
+        if x["pais"] != "Espana":
+            continue
+        if x["metrica"].startswith("Coste del riesgo PYME"):
             c["cor_es"] = float(x["valor"])
-    falta = [k for k in ("precio", "cuna", "coste_rec", "cor_es")
-             if k not in c]
+        elif x["metrica"] == "PD ajustada (mediana) | Empresas, del cual PYME":
+            c["pd_es"] = float(x["valor"])
+        elif x["metrica"] == "LGD (mediana) | Empresas, del cual PYME":
+            c["lgd_es"] = float(x["valor"])
+    falta = [k for k in ("precio", "cuna", "coste_rec", "cor_es", "pd_es",
+                         "lgd_es") if k not in c]
     if falta:
         sys.exit("faltan entradas comunes: %s" % falta)
     return c
@@ -83,6 +101,7 @@ def por_banco():
     campos = {
         "Densidad de RWA de la cartera PYME en Espana": "densidad",
         "Tasa de exposicion PYME en default en Espana": "default",
+        "Cobertura de la exposicion PYME en default en Espana": "cobertura",
         "Ratio CET1": "cet1",
         "Ratio de eficiencia (cost-to-income)": "eficiencia",
         "Exposicion PYME en Espana": "exposicion",
@@ -92,7 +111,7 @@ def por_banco():
         if banco not in BANCOS or met not in campos:
             continue
         d[banco][campos[met]] = float(x["valor"])
-    falta = [b for b in BANCOS if len(d.get(b, {})) < 5]
+    falta = [b for b in BANCOS if len(d.get(b, {})) < 6]
     if falta:
         sys.exit("faltan datos de: %s" % falta)
     return d
@@ -114,9 +133,17 @@ def main():
     c = comunes()
     b = por_banco()
 
-    # mora relativa: agregado ponderado por exposicion de los cinco
+    # agregados ponderados por exposicion de los cinco, para relativizar
     exp = sum(b[x]["exposicion"] for x in BANCOS)
     mora_agg = sum(b[x]["default"] * b[x]["exposicion"] for x in BANCOS) / exp
+    cob_agg = sum(b[x]["cobertura"] * b[x]["exposicion"]
+                  for x in BANCOS) / exp
+
+    def riesgo(e):
+        """PD y LGD de PYME del banco, y su coste del riesgo."""
+        pd_b = c["pd_es"] * e["default"] / mora_agg
+        lgd_b = c["lgd_es"] * e["cobertura"] / cob_agg
+        return pd_b, lgd_b, pd_b * lgd_b / 100.0
 
     if os.path.exists(OUT):
         os.remove(OUT)
@@ -157,7 +184,7 @@ def main():
     res = {}
     for x in BANCOS:
         e = b[x]
-        cor = c["cor_es"] * e["default"] / mora_agg
+        pd_b, lgd_b, cor = riesgo(e)
         r = cuenta(c, e, cor)
         r0 = cuenta(c, e, c["cor_es"])
         res[x] = (r, r0, cor)
@@ -177,11 +204,18 @@ def main():
                  "pct_anual", "nivel", comun),
                 ("Margen bruto del prestamo PYME", r["margen"], "pct_anual",
                  "nivel", comun),
+                ("PD PYME", pd_b, "pct_cartera", "nivel",
+                 "PD PYME de Espana (%.2f %%) por la mora PYME espanola de "
+                 "este banco (%.2f %%) sobre la media de los cinco (%.2f %%)"
+                 % (c["pd_es"], e["default"], mora_agg)),
+                ("LGD PYME", lgd_b, "pct_cartera", "nivel",
+                 "LGD PYME de Espana (%.2f %%) por la cobertura PYME de este "
+                 "banco (%.1f %%) sobre la media de los cinco (%.1f %%)"
+                 % (c["lgd_es"], e["cobertura"], cob_agg)),
                 ("Coste del riesgo PYME", cor, "pct_cartera", "nivel",
-                 "SUPUESTO: PD x LGD de PYME de Espana (%.2f %%) escalado "
-                 "por la mora PYME espanola de este banco (%.2f %%) frente "
-                 "al agregado de los cinco (%.2f %%)"
-                 % (c["cor_es"], e["default"], mora_agg)),
+                 "PD x LGD, ambas construidas sobre datos de la cartera PYME "
+                 "espanola de este banco. El nivel lo ancla el parametro IRB "
+                 "de PYME de Espana; la dispersion entre bancos es suya"),
                 ("Gastos de explotacion del prestamo PYME", r["gastos"],
                  "pct_cartera", "nivel",
                  "eficiencia observada del banco aplicada al margen." +
@@ -200,6 +234,34 @@ def main():
                  "para los cinco; aisla el efecto de la mora relativa")]:
             emite(x, metrica, valor, unidad, td, nota)
 
+    # --- precio de equilibrio -------------------------------------------
+    # El precio de PYME por banco NO es obtenible (ver notas.md 2.55). Lo que
+    # si se puede dar la vuelta es la pregunta: con su propio riesgo, capital,
+    # gastos y fondeo, que precio necesitaria cada banco para un ROE dado.
+    # Eso no depende del precio no observable y es directamente accionable.
+    OBJETIVO = 15.0
+    print()
+    print("PRECIO QUE NECESITA CADA BANCO PARA UN ROE DEL %.0f%%" % OBJETIVO)
+    print("%-11s %13s %14s %11s"
+          % ("banco", "precio comun", "precio equil.", "diferencia"))
+    for x in BANCOS:
+        e = b[x]
+        cor = riesgo(e)[2]
+        # ROE es lineal en el precio: se despeja en un paso
+        r1 = cuenta(c, e, cor)
+        r2 = cuenta(c, e, cor, cuna=c["cuna"] + 1.0)   # +100 pb de ingreso
+        pend = (r2["roe"] - r1["roe"])                 # pp de ROE por 100 pb
+        preciso = c["precio"] + (OBJETIVO - r1["roe"]) / pend
+        print("%-11s %12.2f%% %13.2f%% %10.0f pb"
+              % (x, c["precio"], preciso, (preciso - c["precio"]) * 100))
+        emite(x, "Precio del prestamo PYME para un ROE del %.0f%%" % OBJETIVO,
+              preciso, "pct_anual", "nivel",
+              "precio que necesitaria este banco con su propio riesgo, "
+              "capital, gastos y coste de los recursos. No depende del "
+              "precio real de PYME del banco, que no es obtenible")
+        emite(x, "Sensibilidad del ROE a 100 pb de precio", pend, "pct_roe",
+              "ratio", "puntos de ROE por cada 100 pb de precio o comision")
+
     # descomposicion: que separa a cada banco del mejor
     print()
     print("QUE EXPLICA LA DIFERENCIA (frente al mejor de los cinco)")
@@ -217,9 +279,9 @@ def main():
         # se sustituye una palanca cada vez por la del mejor
         def con(**kw):
             e2 = dict(e); e2.update(kw)
-            cor2 = kw.pop("_cor", None) or c["cor_es"] * e2["default"] / mora_agg
-            return cuenta(c, e2, cor2)["roe"]
-        d_riesgo = con(default=em["default"]) - base_roe
+            return cuenta(c, e2, riesgo(e2)[2])["roe"]
+        d_riesgo = con(default=em["default"],
+                       cobertura=em["cobertura"]) - base_roe
         d_capital = con(densidad=em["densidad"], cet1=em["cet1"]) - base_roe
         d_gastos = con(eficiencia=em["eficiencia"]) - base_roe
         print("%-11s %8.1f %10.1f %10.1f %10.1f"

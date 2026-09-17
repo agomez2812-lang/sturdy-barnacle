@@ -35,8 +35,8 @@ function titulo(s, t, sub){
   if(sub) s.addText(sub, {x:M, y:1.08, w:W-2*M, h:0.42, fontFace:BF, fontSize:11,
                 color:MUT, isTextBox:true, margin:0});
 }
-function fuente(s, t){
-  s.addText(t, {x:M, y:6.76, w:W-2*M, h:0.56, fontFace:BF, fontSize:7.5,
+function fuente(s, t, sz){
+  s.addText(t, {x:M, y:6.76, w:W-2*M, h:0.56, fontFace:BF, fontSize: sz||7.5,
                 color:MUT, italic:true, isTextBox:true, margin:0});
 }
 function chip(s, x, y, txt, col){
@@ -62,7 +62,7 @@ L.portada = () => {const s=pres.addSlide(); s.background={color:DARK};
    {x:M, y:3.45, w:10.5, h:0.5, fontFace:BF, fontSize:18, color:G2, isTextBox:true, margin:0});
  s.addText("Cinco productos · Datos oficiales 2026 · Modelo de ROE con supuestos declarados",
    {x:M, y:4.15, w:10.5, h:0.4, fontFace:BF, fontSize:13, color:ACC, isTextBox:true, margin:0});
- s.addText("38.813 observaciones · 11 fuentes · Septiembre 2026",
+ s.addText("38.843 observaciones · 11 fuentes · Septiembre 2026",
    {x:M, y:6.5, w:10.5, h:0.35, fontFace:BF, fontSize:11, color:MUT, isTextBox:true, margin:0});
  s.addNotes("Deck construido sobre datos oficiales del BCE, EBA, OCDE, Banco de España, Banca d'Italia, EUF y cuentas de resultados de bancos. El ROE es modelizado, no observado.");
 };
@@ -819,27 +819,27 @@ L.bancos_es = () => {const s=pres.addSlide();
     showLegend:false, catAxisLabelColor:TXT, catAxisLabelFontSize:10.5,
     valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
     valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:24});
- {const T=[["","Cartera PYME\nen España, M€","Densidad\nde RWA","CET1","Eficiencia","Mora PYME\nen España","Coste del\nriesgo","ROE"]]
+ {const T=[["","Cartera PYME\nen España, M€","Densidad\nRWA PYME","Mora\nPYME","Cobertura\nPYME","PD\nPYME","LGD\nPYME","CoR\nPYME","CET1","Efic.","ROE"]]
    .concat(N.map((b,i)=>[b, B.exposicion[i].toLocaleString("es-ES"),
-     n1(B.densidad[i])+" %", n1(B.cet1[i],2)+" %", n1(B.eficiencia[i])+" %",
-     n1(B.mora[i],2)+" %", n1(B.cor[i],2)+" %", n1(B.roe[i])+" %"]));
+     n1(B.densidad[i])+" %", n1(B.mora[i],2)+" %", n1(B.cobertura[i])+" %",
+     n1(B.pd[i],2)+" %", n1(B.lgd[i])+" %", n1(B.cor[i],2)+" %",
+     n1(B.cet1[i],2)+" %", n1(B.eficiencia[i])+" %", n1(B.roe[i])+" %"]));
   const rows=T.map((r,ri)=>r.map((c,ci)=>{
-    if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:7.5})};
-    const o=cel(null,{align: ci===0?"left":"center", fontSize:9, bold: ci===0});
-    if(ci===7){ o.bold=true; o.fill={color: B.roe[ri-1]>=20?ORA2:(B.roe[ri-1]>=16?ORA3:LIGHT)}; }
-    if(ci===2||ci===5){ o.fill={color:"FFFFFF"}; o.color=G1; }
+    if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:7})};
+    const o=cel(null,{align: ci===0?"left":"center", fontSize:8, bold: ci===0});
+    if(ci>=1 && ci<=7) o.fill={color:BLUE3};     // magnitudes de la cartera PYME
+    if(ci===10){ o.bold=true; o.fill={color: B.roe[ri-1]>=20?ORA2:(B.roe[ri-1]>=16?ORA3:LIGHT)}; }
     return {text:c, options:o};}));
-  s.addTable(rows, Object.assign(tOpt(),{y:4.72, colW:[1.55,1.72,1.30,1.05,1.24,1.45,1.28,1.13], rowH:0.30}));}
- s.addText("Las dos columnas en gris son las que más separan a un banco de otro. Las de eficiencia y CET1 son de grupo consolidado; las de cartera, densidad y mora son de contraparte española.",
-   {x:M, y:6.52, w:W-2*M, h:0.22, fontFace:BF, fontSize:8, color:MUT, italic:true, isTextBox:true, margin:0});
+  s.addTable(rows, Object.assign(tOpt(),{y:4.72, colW:[1.28,1.42,1.20,0.94,1.15,0.94,0.98,0.98,1.02,0.90,1.32], rowH:0.30}));}
+ s.addText("En azul, lo que sale de la cartera PYME ESPAÑOLA de cada banco: exposición, densidad, mora, cobertura y, a partir de ellas, PD, LGD y coste del riesgo. CET1 y eficiencia son de grupo consolidado, que es lo único que publica el ejercicio.",
+   {x:M, y:6.46, w:W-2*M, h:0.30, fontFace:BF, fontSize:7.5, color:MUT, italic:true, isTextBox:true, margin:0});
 
  const CX=7.88, CW=W-M-CX;
  s.addShape(pres.ShapeType.roundRect,{x:CX, y:1.92, w:CW, h:1.24, fill:{color:MAG3},
    rectRadius:0.05, line:{color:MAG}});
- s.addText("Esto no mide habilidad comercial",{x:CX+0.16, y:2.00, w:CW-0.32, h:0.24,
+ s.addText("El riesgo sí es de PYME; el precio no existe",{x:CX+0.16, y:2.00, w:CW-0.32, h:0.24,
    fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
- s.addText("Precio, comisiones, coste de los recursos y fiscalidad son COMUNES a los cinco: ningún banco los publica por segmento. Todos ingresan el mismo "
-   + n1(D.bancos.margen[0]+D.pl.fondos[0],2) + " %. Lo que separa es riesgo, capital y gastos, no el precio que cada uno consigue.",
+ s.addText("El riesgo ya no es un escalado: PD y LGD se construyen con la mora y la cobertura de la cartera PYME española de cada banco. Lo que sigue sin existir en fuente pública es el PRECIO de PYME por banco, y por eso es común a los cinco.",
    {x:CX+0.16, y:2.26, w:CW-0.32, h:0.84, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
 
  s.addText("Qué le falta a cada uno para llegar a " + N[0],
@@ -860,15 +860,15 @@ L.bancos_es = () => {const s=pres.addSlide();
    rectRadius:0.05, line:{color:ORA2}});
  s.addText("Sabadell y BBVA son el contraste",{x:CX+0.16, y:5.34, w:CW-0.32, h:0.24,
    fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
- s.addText("Sabadell tiene la peor eficiencia de los cinco y aun así queda segundo, por una densidad de RWA del 37,3 %, la más baja. BBVA tiene la mejor eficiencia tras Bankinter y queda cuarto, por una densidad del 71,0 %, la más alta. El capital manda otra vez sobre todo lo demás.",
+ s.addText("Sabadell tiene la peor eficiencia y aun así queda segundo, por la densidad de RWA más baja (37,3 %). Y Santander compensa la peor mora PYME (7,80 %) con la menor cobertura (36,5 %): más impagos, pero menos provisionados, así que su coste del riesgo acaba en la media.",
    {x:CX+0.16, y:5.60, w:CW-0.32, h:0.78, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
- fuente(s,"Cálculo propio. Cartera PYME, densidad de RWA y mora: EBA, EU-wide Transparency Exercise, partidas 2520503 a 2520533 con contraparte de Country = 28 (España), junio de 2025, que es el dato armonizado más reciente. CET1 y eficiencia: mismo ejercicio, nivel de GRUPO consolidado, que en Santander y BBVA está dominado por el negocio internacional; igualar su eficiencia a la del mejor solo movería su ROE 1,0 y 0,2 puntos, así que no altera el orden. Coste del riesgo: PD × LGD de PYME de España (0,59 %) escalado por la mora relativa de cada banco, que es un supuesto; sin escalar, el orden sería " + N.map((b,i)=>b+" "+n1(B.roe_sin_escalar[i])).join(" · ") + " %. Tipo impositivo del 30 % (art. 29 LIS) para los cinco.");
+ fuente(s,"Cálculo propio. Cartera PYME, densidad de RWA, mora y provisiones: EBA, EU-wide Transparency Exercise, partidas 2520503 a 2520553 con contraparte de Country = 28 (España), junio de 2025, el dato armonizado más reciente. PD del banco = PD PYME de España por su mora relativa; LGD del banco = LGD PYME de España por su cobertura relativa: el nivel lo ancla el parámetro IRB de PYME de España (COREP C 9.02) y la dispersión entre bancos la fijan sus dos magnitudes de PYME observadas. No es la PD/LGD interna de cada banco, que solo está en su Pilar 3. La cobertura incluye provisiones de fases 1 y 2, así que sirve para comparar entre bancos, no como nivel absoluto de LGD. CET1 y eficiencia son de GRUPO consolidado; igualar la eficiencia de Santander y BBVA a la del mejor movería su ROE 1,0 y 0,2 puntos, así que no altera el orden. Tipo impositivo del 30 % (art. 29 LIS) para los cinco.", 6.5);
 };
 
 /* 14d — cuenta de resultados PYME banco a banco */
 L.bancos_es_pl = () => {const s=pres.addSlide();
  const B=D.bancos, N=B.nombres;
- titulo(s,"Cuenta de resultados del préstamo PYME, banco a banco","En % del saldo medio · Tramo ≤1 M€ · Junio 2025 · Solo las cinco filas marcadas «del banco» cambian de una columna a otra");
+ titulo(s,"Cuenta de resultados del préstamo PYME, banco a banco","En % del saldo medio · Tramo ≤1 M€ · Junio 2025 · El riesgo y el capital salen de la cartera PYME española de cada banco; el precio y las comisiones no existen por banco en ninguna fuente pública");
  const rep=v=>N.map(()=>v);      // magnitud comun a los cinco
  const F=[
   ["Precio (tipo MIR de España)","Común", rep(n1(B.precio,2)), 0],
@@ -876,29 +876,31 @@ L.bancos_es_pl = () => {const s=pres.addSlide();
   ["= Ingreso total","Común", B.ingreso.map(v=>n1(v,2)), 2],
   ["− Coste de los recursos","Común", rep(n1(B.fondos,2)), 0],
   ["= Margen bruto","Común", B.margen.map(v=>n1(v,2)), 2],
-  ["− Coste del riesgo","Del banco", B.cor.map(v=>n1(v,2)), 3],
+  ["− Coste del riesgo (PD × LGD)","PYME del banco", B.cor.map(v=>n1(v,2)), 3],
   ["− Gastos","Del banco", B.gastos.map(v=>n1(v,2)), 3],
   ["= Resultado antes de imp.","Del banco", B.bai.map(v=>n1(v,2)), 2],
-  ["Capital asignado (RWA × CET1)","Del banco", B.capital.map(v=>n1(v,2)), 3],
+  ["Capital asignado (RWA PYME × CET1)","PYME del banco", B.capital.map(v=>n1(v,2)), 3],
   ["Tipo impositivo","Común", rep(n1(B.tipo,1)+" %"), 0],
-  ["ROE","Del banco", B.roe.map(v=>n1(v)+" %"), 4]];
+  ["ROE","Resultado", B.roe.map(v=>n1(v)+" %"), 4],
+  ["Precio necesario para un ROE del 15 %","Resultado", B.precio_eq.map(v=>n1(v,2)), 5]];
  const L2=[["Concepto","Ámbito"].concat(N)].concat(F.map(f=>[f[0],f[1]].concat(f[2])));
  const rows=L2.map((r,ri)=>r.map((c,ci)=>{
    if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:10})};
-   const tipo=F[ri-1][3], propio=F[ri-1][1]==="Del banco";
+   const tipo=F[ri-1][3], propio=F[ri-1][1]!=="Común";
    const o=cel(null,{align: ci===0?"left":"center", fontSize:10.5});
-   if(ci===1){ o.fontSize=8.5; o.bold=true;
+   if(ci===1){ o.fontSize=7.5; o.bold=true;
      o.fill={color: propio?BLUE3:LIGHT}; o.color= propio?DARK:G1; return {text:c, options:o}; }
    if(tipo===1) o.fill={color:ORA3}, o.color=DARK;          // supuesto
    if(tipo===2) o.bold=true, o.fill={color:LIGHT}, o.color=PRIM;   // subtotal
    if(tipo===4) o.bold=true, o.fill={color:PRIM}, o.color="FFFFFF";
+   if(tipo===5) o.bold=true, o.fill={color:ORA2}, o.color=DARK;
    if(tipo===0 && ci>1) o.color=G1;                          // comun, sin peso
    return {text:c, options:o};}));
- s.addTable(rows, Object.assign(tOpt(),{y:1.74, colW:[2.86,1.05].concat(Array(5).fill(1.644)), rowH:0.345}));
- [["Común a los cinco",LIGHT],["Del banco",BLUE3],["Supuesto",ORA3]].forEach((l,i)=>chip(s,M+i*1.62,6.06,l[0],l[1]));
- s.addText("Ningún banco publica precio ni comisiones de PYME, así que las cinco primeras filas y el impuesto son idénticos por construcción. Lo que separa a un banco de otro es solo riesgo, gastos y capital.",
-   {x:M+5.1, y:6.00, w:7.1, h:0.48, fontFace:BF, fontSize:9, color:MUT, isTextBox:true, margin:0});
- fuente(s,"Precio, comisiones y coste de los recursos: los de España del modelo de países, comunes a los cinco. Coste del riesgo: PD × LGD de PYME de España escalado por la mora PYME española de cada banco (supuesto). Gastos: eficiencia del banco sobre el margen. Capital: densidad de RWA de su cartera PYME española por su ratio CET1, ambos del EU-wide Transparency Exercise del EBA con contraparte de Country = 28, junio de 2025. Eficiencia y CET1 son de grupo consolidado. Impuesto del 30 % (art. 29 LIS) para los cinco.");
+ s.addTable(rows, Object.assign(tOpt(),{y:1.70, colW:[3.10,1.20].concat(Array(5).fill(1.566)), rowH:0.325}));
+ [["Común a los cinco",LIGHT],["PYME del banco",BLUE3],["Supuesto",ORA3]].forEach((l,i)=>chip(s,M+i*1.62,6.30,l[0],l[1]));
+ s.addText("La última fila da la vuelta a la pregunta: con su propio riesgo, capital, gastos y fondeo, qué precio necesitaría cada banco para un ROE del 15 %. Ese número no depende del precio de PYME, que no es obtenible, y mide la capacidad competitiva de cada uno: Bankinter puede vender 119 pb más barato que BBVA y ganar lo mismo.",
+   {x:M+5.1, y:6.20, w:7.1, h:0.56, fontFace:BF, fontSize:8, color:MUT, isTextBox:true, margin:0});
+ fuente(s,"Precio, comisiones y coste de los recursos: los de España del modelo de países, comunes a los cinco. Coste del riesgo: PD × LGD, con la PD escalada por la mora PYME española del banco y la LGD por su cobertura PYME, las dos observadas. Gastos: eficiencia del banco sobre el margen. Capital: densidad de RWA de su cartera PYME española por su ratio CET1, ambos del EU-wide Transparency Exercise del EBA con contraparte de Country = 28, junio de 2025. Eficiencia y CET1 son de grupo consolidado. Impuesto del 30 % (art. 29 LIS) para los cinco.");
 };
 
 /* 15 — supuestos */
@@ -1007,7 +1009,7 @@ L.limites = () => {const s=pres.addSlide(); s.background={color:DARK};
 
 /* 17 — fuentes */
 L.fuentes = () => {const s=pres.addSlide();
- titulo(s,"Fuentes","Once fuentes, 38.813 observaciones, cada fila trazable a su serie de origen");
+ titulo(s,"Fuentes","Once fuentes, 38.843 observaciones, cada fila trazable a su serie de origen");
  const L=[["Bloque","Fuente","Cobertura","Último dato"],
   ["Precio y volumen","BCE, ECB Data Portal, dataset MIR","7 países, mensual","2026-07"],
   ["Tipos oficiales","BCE, dataset FM (facilidad de depósito, MRO, Euríbor)","Zona euro, diario","2026-09"],

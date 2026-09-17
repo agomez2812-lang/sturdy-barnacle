@@ -269,6 +269,12 @@ def main():
         "eficiencia": sb(te, "Ratio de eficiencia (cost-to-income)", 1),
         "mora": sb(te, "Tasa de exposicion PYME en default en Espana"),
         "cor": sb(ban, "Coste del riesgo PYME"),
+        "pd": sb(ban, "PD PYME"),
+        "lgd": sb(ban, "LGD PYME", 1),
+        "cobertura": sb(te, "Cobertura de la exposicion PYME en default en "
+                            "Espana", 1),
+        "precio_eq": sb(ban, "Precio del prestamo PYME para un ROE del 15%"),
+        "sens_precio": sb(ban, "Sensibilidad del ROE a 100 pb de precio", 1),
         "gastos": sb(ban, "Gastos de explotacion del prestamo PYME"),
         "bai": sb(ban, "Resultado antes de impuestos del prestamo PYME"),
         "capital": sb(ban, "Capital asignado al prestamo PYME"),

@@ -12,6 +12,7 @@ De `tr_cre.csv`, con Country = 28 (Espana):
     2520513  Original Exposure - SME, del cual en default
     2520523  Exposure value - SME
     2520533  Risk exposure amount - SME
+    2520553  Value adjustments and provisions - SME
 
 De `tr_oth.csv`, a nivel de GRUPO (no hay desglose por pais):
     2520102  CET1, importe. Se usa el importe y no el ratio porque el
@@ -58,7 +59,8 @@ BANCOS = {
 DOMESTICO = {"CaixaBank", "Sabadell", "Bankinter"}
 
 CRE_ITEMS = {"2520503": "exp_original", "2520513": "exp_default",
-             "2520523": "exp_valor", "2520533": "rwa"}
+             "2520523": "exp_valor", "2520533": "rwa",
+             "2520553": "provisiones"}
 OTH_ITEMS = {"2520102": "cet1_importe", "2520316": "ingresos",
              "2520317": "gastos_admin", "2520324": "deterioro",
              "2520138": "rwa_total"}
@@ -106,9 +108,9 @@ def main():
     n = 0
     per = "%s-%s" % (a.periodo[:4], a.periodo[4:])
     print("Cartera PYME en Espana, %s\n" % per)
-    print("%-11s %13s %13s %10s %10s %9s %9s"
-          % ("banco", "exposicion", "RWA", "densidad", "default", "CET1",
-             "eficiencia"))
+    print("%-11s %12s %11s %9s %9s %10s %8s %9s"
+          % ("banco", "exposicion", "RWA", "densidad", "mora", "cobertura",
+             "CET1", "eficiencia"))
     for banco in sorted(BANCOS.values()):
         c, o = cre[banco], oth[banco]
         if not c.get("exp_valor") or not c.get("rwa"):
@@ -117,12 +119,15 @@ def main():
         dens = 100 * c["rwa"] / c["exp_valor"]
         defa = (100 * c["exp_default"] / c["exp_original"]
                 if c.get("exp_original") else float("nan"))
+        cob = (100 * c["provisiones"] / c["exp_default"]
+               if c.get("exp_default") else float("nan"))
         cet1 = (100 * o["cet1_importe"] / o["rwa_total"]
                 if o.get("rwa_total") else float("nan"))
         efi = (100 * abs(o["gastos_admin"]) / o["ingresos"]
                if o.get("ingresos") else float("nan"))
-        print("%-11s %13.0f %13.0f %9.1f%% %9.2f%% %8.2f%% %8.1f%%"
-              % (banco, c["exp_valor"], c["rwa"], dens, defa, cet1, efi))
+        print("%-11s %12.0f %11.0f %8.1f%% %8.2f%% %9.1f%% %7.2f%% %8.1f%%"
+              % (banco, c["exp_valor"], c["rwa"], dens, defa, cob, cet1,
+                 efi))
         alcance = ("grupo consolidado; para este banco el grupo es "
                    "practicamente el negocio domestico"
                    if banco in DOMESTICO else
@@ -154,6 +159,19 @@ def main():
              "gastos de administracion sobre margen bruto, partidas 2520317 "
              "y 2520316; " + alcance),
         ]
+        if cob == cob:
+            filas.append(
+                ("Provisiones de la cartera PYME en Espana | %s" % banco,
+                 c["provisiones"], "eur_millones", "importe",
+                 "partida 2520553, contraparte espanola"))
+            filas.append(
+                ("Cobertura de la exposicion PYME en default en Espana | %s"
+                 % banco, cob, "pct_cartera", "ratio",
+                 "OBSERVADO. Provisiones de la cartera PYME sobre su "
+                 "exposicion en default. Incluye provisiones de las fases 1 "
+                 "y 2, asi que sobreestima la cobertura del default en si; "
+                 "el sesgo es el mismo para los cinco, de modo que sirve "
+                 "para comparar entre bancos, no como nivel absoluto"))
         if defa == defa:
             filas.append(
                 ("Tasa de exposicion PYME en default en Espana | %s" % banco,
