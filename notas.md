@@ -1690,6 +1690,81 @@ Se reaplican encima las correcciones de §2.50, que la versión 8 no llevaba:
 coste de los recursos por vencimiento total, ROE actualizados, franja
 comparativa empresa frente a sistema y la conclusión 1 corregida.
 
+### 2.53 Corrección: el circulante era total de empresas, no PYME
+
+Pregunta del usuario sobre §2.51. Respuesta corta: **total de empresas**. La
+advertencia de perímetro estaba en la lámina y en la nota, pero el modelo
+del ROE la contradecía sin decirlo: usaba un **precio del total de
+sociedades no financieras** con un **coste del riesgo y una densidad de RWA
+de la cartera PYME**. Era un híbrido incoherente, y el sesgo iba en la
+dirección de castigar al circulante.
+
+**Qué entraba de cada perímetro, antes de corregir:**
+
+| Entrada | Perímetro | Fuente |
+|---|---|---|
+| Tipo del circulante | **Todas las empresas** | MIR A2Z1, sector 2240, sin tramo |
+| Coste de los recursos | Todas las empresas | Depósitos sector 2240 |
+| Coste del riesgo | **PYME** | COREP C 9.02, «Corporates – Of Which: SME» |
+| Densidad de RWA | **PYME** | Transparency Exercise, cartera PYME |
+| Eficiencia, CET1, fiscalidad | Grupo / sector bancario | EBA Risk Dashboard |
+
+**Corrección aplicada.** El caso base pasa a ser coherente de perímetro:
+riesgo y capital del **total de empresas**, igual que el precio.
+
+- Coste del riesgo: PD × LGD de la clase IRB **«Empresas, total»**, que ya
+  estaba extraída pero no se usaba (España: PD 0,94 % × LGD 38,57 % =
+  **0,36 %**, frente al 0,59 % de PYME).
+- Densidad de RWA: clase de exposición **`Corporates` (código 303)** del
+  Transparency Exercise. Extractor nuevo, `scripts/eba_te_corporates.py`,
+  salida en `transversal/eba_te_capital_empresas.csv`.
+
+| País | Densidad empresas | Densidad PYME del modelo | Peso PYME |
+|---|---|---|---|
+| España | 63,9 % | 59,5 % | 17,2 % |
+| Alemania | 44,8 % | 35,3 % | 18,4 % |
+| Francia | 52,6 % | 43,0 % | 17,5 % |
+| Italia | 51,5 % | 46,3 % | 21,1 % |
+| Portugal | 72,9 % | 61,3 % | 38,0 % |
+| P. Bajos | 37,3 % | 37,2 % | 20,4 % |
+| Irlanda | 85,2 % | 70,0 % | 7,7 % |
+
+La densidad de empresas es **mayor** que la de la cartera PYME en los siete
+países. No es una paradoja: la «cartera PYME» del modelo del préstamo agrega
+tres clases de exposición —Corporates-SME, Retail-SME y Secured by mortgages
+- SME— y las dos últimas tienen densidades bajas por el tratamiento minorista
+y por la garantía real. Se deja anotado en el CSV para que no se confunda
+`Densidad de RWA de Corporates - SME` con `Densidad de RWA de la cartera
+PYME`: son cosas distintas y difieren mucho (España, 71,8 % frente a 59,5 %).
+
+**Efecto de la corrección en el ROE del circulante:**
+
+| País | Antes (híbrido) | Ahora (empresas) | Dif. |
+|---|---|---|---|
+| España | 9,0 | **10,2** | +1,2 |
+| Alemania | 15,3 | **12,6** | −2,7 |
+| Francia | 0,9 | **3,6** | +2,6 |
+| Italia | 9,8 | **12,8** | +3,0 |
+| Portugal | 12,0 | **11,7** | −0,3 |
+| P. Bajos | 4,4 | **5,1** | +0,7 |
+| Irlanda | 9,9 | **9,3** | −0,6 |
+
+Hasta 3 puntos, y cambia el orden: Italia pasa de quinta a primera entre las
+siete. El caso con parámetros de PYME se conserva en el CSV, etiquetado como
+incoherente de perímetro, para poder acotar el sesgo.
+
+**Lo que esto obliga a decir en la lámina.** La comparación entre el ROE del
+circulante y el del préstamo PYME **no es entre dos productos del mismo
+negocio**: es circulante a todas las empresas frente a préstamo a PYME. Dos
+diferencias a la vez, perímetro y producto, más el supuesto de comisiones.
+Añadido como caja propia en la lámina, como fila nueva en la de supuestos y
+en el subtítulo del mapa de fiabilidad.
+
+**Lo que no se puede arreglar.** No existe un ROE del circulante de PYME con
+fuentes públicas, porque no existe el precio: el MIR solo publica A2Z1 en
+categoría total y se comprobó contra la API (`AMOUNT_CAT` solo admite `A`).
+Cualquier cifra de circulante PYME exigiría dato interno.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

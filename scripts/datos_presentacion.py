@@ -63,6 +63,12 @@ def D_total_prestamo():
     return out
 
 
+def D_dens_pyme():
+    """Densidad de RWA de la cartera PYME, la que usa el modelo del prestamo."""
+    return serie(lee("transversal/eba_te_capital_pyme.csv"),
+                 "Densidad de RWA de la cartera PYME", 1)
+
+
 def lee(rel):
     ruta = os.path.join(ROOT, rel)
     if not os.path.exists(ruta):
@@ -223,6 +229,9 @@ def main():
         "roe_cuna": serie(
             cir, "ROE del circulante con la cuna de comisiones del "
                  "prestamo", 1),
+        "roe_par_pyme": serie(
+            cir, "ROE del circulante con parametros de riesgo y capital de "
+                 "PYME", 1),
         "f_neutral": serie(cir, "Comision de disponibilidad neutral", 3),
         "f_equilibrio": serie(
             cir, "Comision de disponibilidad de equilibrio con el prestamo "
@@ -230,6 +239,11 @@ def main():
         "grid": {k: [rejilla[k][str(u)] for u in U]
                  for k in sorted(rejilla, key=float)},
         "u_grid": U, "u_base": 60, "f_base": 0.30, "ccf": 10, "cuna": 0.87,
+        "dens_emp": serie(lee("transversal/eba_te_capital_empresas.csv"),
+                          "Densidad de RWA de la cartera de empresas", 1),
+        "dens_pyme": D_dens_pyme(),
+        "peso_pyme": serie(lee("transversal/eba_te_capital_empresas.csv"),
+                           "Peso de la PYME en la exposicion a empresas", 1),
     }
 
     D = json.load(open(DESTINO, encoding="utf-8"))

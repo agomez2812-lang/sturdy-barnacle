@@ -88,10 +88,10 @@ L.objetivo = () => {const s=pres.addSlide();
 
 /* 3 — mapa de fiabilidad */
 L.fiabilidad = () => {const s=pres.addSlide();
- titulo(s,"Mapa de fiabilidad del dato","Qué se puede afirmar y con qué respaldo, producto a producto y país a país");
+ titulo(s,"Mapa de fiabilidad del dato","Qué se puede afirmar y con qué respaldo, producto a producto y país a país · El circulante es la única fila cuyo perímetro es el total de empresas: el MIR no lo publica por tramo de importe");
  const filas=[["Producto","Precio","Volumen","Comisiones","Riesgo","Capital"],
   ["Préstamo PYME por tramo","OBSERVADO","OBSERVADO","SOLO ESPAÑA","OBSERVADO","OBSERVADO"],
-  ["Circulante","OBSERVADO","SOLO ESPAÑA","NO EXISTE","OBSERVADO","OBSERVADO"],
+  ["Circulante (todas las empresas)","OBSERVADO","SOLO ESPAÑA","NO EXISTE","OBSERVADO","OBSERVADO"],
   ["Hipoteca PYME","NO EXISTE","PROXY CRE","NO EXISTE","OBSERVADO","OBSERVADO"],
   ["Factoring","NO EXISTE","OBSERVADO","NO EXISTE","PARCIAL","NO EXISTE"],
   ["Confirming","NO EXISTE","SOLO ES e IT","NO EXISTE","NO EXISTE","NO EXISTE"],
@@ -820,7 +820,8 @@ L.supuestos = () => {const s=pres.addSlide();
   ["Eficiencia","EBA por país","Observada, pero de grupo consolidado y no de segmento PYME","MEDIO. Penaliza a países con banca universal compleja"],
   ["Disposición del circulante",`${D.circ.u_base} %`,"SUPUESTO. Ni el BCE ni el EBA ni el Banco de España publican límite y dispuesto de las líneas de crédito","MEDIO. Solo pesa si la comisión de disponibilidad se aparta de la neutral"],
   ["Comisión de disponibilidad",`${n1(D.circ.f_base,2)} %`,"SUPUESTO. Ninguna estadística publica comisiones de líneas de crédito, ni siquiera el cuadro 19.6 del Banco de España","ALTO en el circulante. Mueve su ROE entre el 7 % y el 11 %"],
-  ["Conversión del disponible",`CCF ${D.circ.ccf} %`,"YA NO ES SUPUESTO. CRR3, compromiso cancelable incondicionalmente. El no cancelable va al 40 %","MEDIO. Al 40 % el ROE del circulante cae entre 1,3 y 3,1 puntos"]];
+  ["Conversión del disponible",`CCF ${D.circ.ccf} %`,"YA NO ES SUPUESTO. CRR3, compromiso cancelable incondicionalmente. El no cancelable va al 40 %","MEDIO. Al 40 % el ROE del circulante cae entre 1,1 y 2,5 puntos"],
+  ["Perímetro del circulante","Todas las empresas","NO ES SUPUESTO, ES UN LÍMITE DE LA FUENTE. La serie A2Z1 del MIR solo existe en categoría total. Riesgo y capital se toman del mismo perímetro para que cierre","ALTO para comparar con el préstamo PYME: no son el mismo negocio"]];
  const rows=L.map((r,ri)=>r.map((c,ci)=>{
    if(ri===0) return {text:c, options:Object.assign({},hdr,{align:"left", fontSize:11})};
    const o=cel(null,{align:"left", fontSize:10, color:TXT});
@@ -979,7 +980,7 @@ L.circulante_precio = () => {const s=pres.addSlide();
 
 /* 12c — ROE del circulante */
 L.circulante_roe = () => {const s=pres.addSlide();
- titulo(s,"ROE del circulante: se cobra por dos sitios, se consume capital por dos","Por euro dispuesto · Disposición 60 % y comisión de disponibilidad 0,30 % son SUPUESTOS, no datos · CCF del 10 % del CRR3");
+ titulo(s,"ROE del circulante: se cobra por dos sitios, se consume capital por dos","Perímetro: TOTAL DE EMPRESAS, no PYME · Por euro dispuesto · Disposición 60 % y comisión de disponibilidad 0,30 % son SUPUESTOS, no datos · CCF del 10 % del CRR3");
  const C=D.circ;
  s.addChart(pres.ChartType.bar, [
    {name:"ROE del circulante", labels:P, values:C.roe},
@@ -990,9 +991,9 @@ L.circulante_roe = () => {const s=pres.addSlide();
     catAxisLabelColor:TXT, catAxisLabelFontSize:9.5, valAxisLabelColor:MUT,
     valAxisLabelFormatCode:'0"%"', valGridLine:{color:"E3E9EB", size:1},
     catGridLine:{style:"none"}, valAxisMaxVal:22});
- s.addText("Los dos no son comparables tal cual: el modelo del préstamo aplica 0,87 % de comisiones sobre el saldo y el del circulante no aplica ninguna sobre el dispuesto. Con la misma carga, el circulante da "
+ s.addText("Las dos barras NO son el mismo negocio ni llevan las mismas comisiones: la izquierda es circulante a todas las empresas y la derecha préstamo a PYME, y el modelo del préstamo aplica 0,87 % de comisiones sobre el saldo mientras que el del circulante no aplica ninguna sobre el dispuesto. Con esa misma carga, el circulante daría "
    + P.map((p,i)=>`${p} ${n1(C.roe_cuna[i])}`).join(" · ") + " %.",
-   {x:M, y:5.02, w:7.35, h:0.52, fontFace:BF, fontSize:8, color:G1, isTextBox:true, margin:0});
+   {x:M, y:4.98, w:7.35, h:0.60, fontFace:BF, fontSize:8, color:G1, isTextBox:true, margin:0});
 
  /* rejilla de sensibilidad */
  s.addText("Sensibilidad a los dos supuestos",{x:M, y:5.62, w:7.35, h:0.24,
@@ -1011,28 +1012,37 @@ L.circulante_roe = () => {const s=pres.addSlide();
 
  /* columna derecha */
  const CX=8.15, CW=W-M-CX;
- s.addShape(pres.ShapeType.roundRect,{x:CX, y:1.92, w:CW, h:1.52, fill:{color:LIGHT},
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:1.92, w:CW, h:1.12, fill:{color:LIGHT},
    rectRadius:0.05, line:{color:G3}});
  s.addText("Cómo se cobra y cómo consume",{x:CX+0.16, y:2.00, w:CW-0.32, h:0.24,
    fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
- s.addText("Ingreso = tipo sobre el DISPUESTO + comisión sobre el DISPONIBLE.\nExposición = dispuesto + CCF × disponible.\nSolo se fondea lo dispuesto; el riesgo y el capital van sobre la exposición.",
-   {x:CX+0.16, y:2.26, w:CW-0.32, h:1.10, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+ s.addText("Ingreso = tipo sobre el DISPUESTO + comisión sobre el DISPONIBLE.\nExposición = dispuesto + CCF × disponible.\nSolo se fondea lo dispuesto; riesgo y capital van sobre la exposición.",
+   {x:CX+0.16, y:2.26, w:CW-0.32, h:0.72, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
 
- s.addShape(pres.ShapeType.roundRect,{x:CX, y:3.54, w:CW, h:1.46, fill:{color:ORA3},
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:3.14, w:CW, h:1.30, fill:{color:MAG3},
+   rectRadius:0.05, line:{color:MAG}});
+ s.addText("Esto no es PYME: es total de empresas",{x:CX+0.16, y:3.22, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("El MIR no publica el circulante por tramo de importe, así que riesgo y capital se toman también del total de empresas para que el perímetro cierre: densidad de RWA del "
+   + n1(C.dens_emp[0]) + " % frente al " + n1(C.dens_pyme[0]) + " % de la cartera PYME en España. Con los parámetros de PYME el ROE se movería hasta 3 puntos ("
+   + P.map((p,i)=>`${p} ${n1(C.roe_par_pyme[i])}`).join(" · ") + " %), pero eso mezclaría perímetros.",
+   {x:CX+0.16, y:3.48, w:CW-0.32, h:0.90, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
+
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:4.54, w:CW, h:1.24, fill:{color:ORA3},
    rectRadius:0.05, line:{color:ORA2}});
- s.addText("La comisión neutral es el CCF por el margen",{x:CX+0.16, y:3.62, w:CW-0.32, h:0.24,
+ s.addText("La comisión neutral es el CCF por el margen",{x:CX+0.16, y:4.62, w:CW-0.32, h:0.24,
    fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
  s.addText("Imponiendo que el ROE no dependa de la disposición sale f = CCF × (tipo − coste de los recursos). Por debajo de esa comisión, una línea poco dispuesta destruye ROE; por encima, lo crea. Va de "
    + n1(Math.min(...C.f_neutral),2) + " % en Países Bajos a " + n1(Math.max(...C.f_neutral),2) + " % en Irlanda.",
-   {x:CX+0.16, y:3.88, w:CW-0.32, h:1.04, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+   {x:CX+0.16, y:4.88, w:CW-0.32, h:0.84, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
 
- s.addShape(pres.ShapeType.roundRect,{x:CX, y:5.10, w:CW, h:1.52, fill:{color:MAG3},
-   rectRadius:0.05, line:{color:MAG}});
- s.addText("Dos huecos duros y un cambio regulatorio",{x:CX+0.16, y:5.18, w:CW-0.32, h:0.24,
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:5.88, w:CW, h:0.74, fill:{color:LIGHT},
+   rectRadius:0.05, line:{color:G3}});
+ s.addText("Dos huecos duros y un cambio regulatorio",{x:CX+0.16, y:5.94, w:CW-0.32, h:0.22,
    fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
- s.addText("Ni la comisión de disponibilidad ni la tasa de disposición las publica ninguna estadística: ni el BCE, ni el EBA, ni el Boletín del Banco de España, que sí da TAE de préstamo por tramo pero no de líneas de crédito. Y el CRR3, en vigor desde 2025, subió del 0 % al 10 % el factor de conversión de los compromisos cancelables: el disponible consume capital por primera vez. Con compromiso no cancelable (40 %) el ROE cae entre 1,3 y 3,1 puntos.",
-   {x:CX+0.16, y:5.44, w:CW-0.32, h:1.10, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
- fuente(s,"Cálculo propio. Tipo del circulante del MIR (A2Z1); coste de los recursos, coste del riesgo (PD × LGD de la clase IRB de PYME), densidad de RWA, CET1, eficiencia y tipo impositivo, los mismos que usa el modelo del préstamo. La disposición y la comisión de disponibilidad son supuestos declarados: la rejilla muestra el efecto de moverlos. El coste del riesgo se aplica sobre la exposición, no solo sobre el dispuesto, que es como lo trata la NIIF 9 en compromisos.");
+ s.addText("Ni la comisión de disponibilidad ni la disposición las publica nadie. Y el CRR3 subió del 0 % al 10 % el factor de conversión del compromiso cancelable: al 40 % el ROE cae entre 1,1 y 2,5 puntos.",
+   {x:CX+0.16, y:6.16, w:CW-0.32, h:0.42, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Cálculo propio. Tipo del circulante del MIR (A2Z1, total de sociedades no financieras); coste del riesgo = PD × LGD de la clase IRB «Empresas, total» y densidad de RWA de la clase de exposición «Corporates» del Transparency Exercise, ambos del mismo perímetro que el precio; coste de los recursos, CET1, eficiencia y tipo impositivo, los mismos que usa el modelo del préstamo. La disposición y la comisión de disponibilidad son supuestos declarados: la rejilla muestra el efecto de moverlos. El coste del riesgo se aplica sobre la exposición, no solo sobre el dispuesto, que es como lo trata la NIIF 9 en compromisos.");
 };
 
 /* --- orden final de la presentacion --- */

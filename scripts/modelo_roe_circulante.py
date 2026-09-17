@@ -134,17 +134,40 @@ def precios():
 
 
 def entradas():
-    """Coste de los recursos, riesgo, capital, eficiencia y fiscalidad."""
+    """Coste de los recursos, riesgo, capital, eficiencia y fiscalidad.
+
+    Se devuelven DOS juegos de riesgo y capital, porque el perimetro del
+    precio obliga a ello:
+
+      `cor` / `densidad`            cartera PYME. Es lo que usa el modelo
+                                    del prestamo, cuyo precio SI es del
+                                    tramo <=1 M EUR.
+      `cor_emp` / `densidad_emp`    total de empresas. Es el perimetro
+                                    HOMOLOGO del tipo de circulante, que el
+                                    MIR solo publica para el total de
+                                    sociedades no financieras.
+    """
     e = collections.defaultdict(dict)
     for x in lee("liquidez/coste_recursos_pyme.csv"):
         if x["metrica"].startswith("Coste ponderado"):
             e[x["pais"]]["coste_rec"] = float(x["valor"])
+    pd_lgd = collections.defaultdict(dict)
     for x in lee("transversal/eba_parametros_riesgo.csv"):
         if x["metrica"].startswith("Coste del riesgo PYME"):
             e[x["pais"]]["cor"] = float(x["valor"])
+        elif x["metrica"] == "PD ajustada (mediana) | Empresas, total":
+            pd_lgd[x["pais"]]["pd"] = float(x["valor"])
+        elif x["metrica"] == "LGD (mediana) | Empresas, total":
+            pd_lgd[x["pais"]]["lgd"] = float(x["valor"])
+    for pais, v in pd_lgd.items():
+        if "pd" in v and "lgd" in v:
+            e[pais]["cor_emp"] = v["pd"] * v["lgd"] / 100.0
     for x in lee("transversal/eba_te_capital_pyme.csv"):
         if x["metrica"].startswith("Densidad de RWA"):
             e[x["pais"]]["densidad"] = float(x["valor"]) / 100.0
+    for x in lee("transversal/eba_te_capital_empresas.csv"):
+        if x["metrica"] == "Densidad de RWA de la cartera de empresas":
+            e[x["pais"]]["densidad_emp"] = float(x["valor"]) / 100.0
     for x in lee("transversal/eba_indicadores.csv"):
         if x["periodo_referencia"] != "2026-Q1":
             continue
@@ -158,16 +181,23 @@ def entradas():
     return e
 
 
-def cuenta(tipo_circ, ent, u, f_disp, ccf, t):
-    """Cuenta del circulante por euro DISPUESTO. Devuelve el detalle."""
+def cuenta(tipo_circ, ent, u, f_disp, ccf, t, perimetro="empresas"):
+    """Cuenta del circulante por euro DISPUESTO.
+
+    `perimetro` elige el juego de riesgo y capital:
+      "empresas" (por defecto) es el HOMOLOGO del precio del MIR;
+      "pyme" replica los parametros del modelo del prestamo, para poder
+      ver cuanto del resultado viene del perimetro y no del negocio.
+    """
+    suf = "_emp" if perimetro == "empresas" else ""
     libre = (1.0 - u) / u                      # disponible por euro dispuesto
     ingreso = tipo_circ + f_disp * libre
     ead = 1.0 + ccf * libre
     margen = ingreso - ent["coste_rec"]
-    cor = ent["cor"] * ead
+    cor = ent["cor" + suf] * ead
     gastos = margen * ent["eficiencia"]
     bai = margen - cor - gastos
-    capital = ent["densidad"] * ent["cet1"] * ead
+    capital = ent["densidad" + suf] * ent["cet1"] * ead
     roe = bai * (1.0 - t) / capital * 100.0 if capital else float("nan")
     return {"libre": libre, "ingreso": ingreso, "ead": ead, "margen": margen,
             "cor": cor, "gastos": gastos, "bai": bai, "capital": capital,
@@ -179,7 +209,8 @@ def main():
     ent = entradas()
     falta = [p for p in PAISES
              if p not in pr or any(k not in ent[p] for k in
-                                   ("coste_rec", "cor", "densidad",
+                                   ("coste_rec", "cor", "cor_emp",
+                                    "densidad", "densidad_emp",
                                     "eficiencia", "cet1"))]
     if falta:
         sys.exit("faltan entradas para: %s" % falta)
@@ -231,8 +262,8 @@ def main():
 
     # --- 2. ROE del circulante, caso base ---
     print()
-    print("ROE DEL CIRCULANTE: disposicion %.0f%%, comision de "
-          "disponibilidad %.2f%%, CCF %.0f%%\n"
+    print("ROE DEL CIRCULANTE (perimetro: TOTAL DE EMPRESAS, el del precio): "
+          "disposicion %.0f%%, comision de disponibilidad %.2f%%, CCF %.0f%%\n"
           % (100 * U_BASE, F_DISP_BASE, 100 * CCF_UCC))
     print("%-14s %8s %8s %8s %7s %7s %7s %8s %7s"
           % ("", "tipo", "ingreso", "EAD", "margen", "CoR", "gastos",
@@ -247,11 +278,14 @@ def main():
               "%6.1f%%" % (p[:13], pr[p]["circulante"], c["ingreso"],
                            c["ead"], c["margen"], c["cor"], c["gastos"],
                            c["capital"], c["roe"]))
-        sup = ("SUPUESTO: disposicion %.0f%% y comision de disponibilidad "
-               "%.2f%% anual sobre el disponible; ninguna de las dos es "
-               "observable. CCF del %.0f%% (CRR3, compromiso cancelable "
-               "incondicionalmente)" % (100 * U_BASE, F_DISP_BASE,
-                                        100 * CCF_UCC))
+        sup = ("PERIMETRO: total de sociedades no financieras, no PYME. El "
+               "MIR no publica el tipo de circulante por tramo de importe, "
+               "asi que el riesgo y el capital se toman tambien del total de "
+               "empresas para que el perimetro sea coherente. SUPUESTO: "
+               "disposicion %.0f%% y comision de disponibilidad %.2f%% anual "
+               "sobre el disponible; ninguna de las dos es observable. CCF "
+               "del %.0f%% (CRR3, compromiso cancelable incondicionalmente)"
+               % (100 * U_BASE, F_DISP_BASE, 100 * CCF_UCC))
         for metrica, valor, unidad, td in [
                 ("Ingreso total del circulante", c["ingreso"], "pct_anual",
                  "nivel"),
@@ -302,6 +336,30 @@ def main():
               "pct_roe", "nivel",
               "mismo caso base pero con CCF del %.0f%%: compromiso no "
               "cancelable incondicionalmente" % (100 * CCF_NO_UCC),
+              pond="media_simple")
+
+    # --- 4c. contraste de perimetro: empresas frente a parametros PYME
+    # El caso base usa riesgo y capital del TOTAL DE EMPRESAS, que es el
+    # perimetro del precio. Aqui se recalcula con los parametros de PYME
+    # que usa el modelo del prestamo, para ver cuanto del resultado viene
+    # del perimetro y no del negocio.
+    print()
+    print("CONTRASTE DE PERIMETRO (caso base de disposicion y comision)")
+    print("%-14s %13s %13s %9s %11s %11s"
+          % ("", "ROE empresas", "ROE c/par.PYME", "dif pp", "CoR emp.",
+             "CoR PYME"))
+    for p in PAISES:
+        b2 = cuenta(pr[p]["circulante"], ent[p], U_BASE, F_DISP_BASE,
+                    CCF_UCC, TIPO_IMPOSITIVO[p], perimetro="pyme")
+        print("%-14s %12.1f%% %12.1f%% %8.1f %10.2f%% %10.2f%%"
+              % (p[:13], base[p]["roe"], b2["roe"],
+                 b2["roe"] - base[p]["roe"], ent[p]["cor_emp"],
+                 ent[p]["cor"]))
+        emite(p, "ROE del circulante con parametros de riesgo y capital de "
+                 "PYME", b2["roe"], "pct_roe", "nivel",
+              "mismo precio, que es del total de empresas, pero con el coste "
+              "del riesgo y la densidad de RWA de la cartera PYME. NO es "
+              "coherente de perimetro: sirve solo para acotar el sesgo",
               pond="media_simple")
 
     # --- 4b. comparacion homologa: mismo peso de comisiones que el prestamo
