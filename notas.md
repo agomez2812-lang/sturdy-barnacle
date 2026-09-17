@@ -1038,6 +1038,51 @@ corporativa menciona **amarillo** donde la de la Fundación usa magenta.
 Si se quiere precisión total conviene contrastar contra el manual
 corporativo.
 
+### 2.42 El ROE, paso a paso, y el cambio a tipo impositivo por país
+
+**Fórmulas**, todo en porcentaje del saldo medio de la cartera PYME:
+
+```
+ingreso  = precio + comisiones
+margen   = ingreso − coste de los recursos
+gastos   = margen × (cost-income / 100)
+BAI      = margen − coste del riesgo − gastos
+capital  = densidad de RWA × ratio CET1 / 100
+ROE      = BAI × (1 − tipo impositivo) / capital × 100
+```
+
+Comprobación para España: ingreso 3,41 + 0,87 = 4,28; margen 4,28 − 0,75 =
+3,54; gastos 3,54 × 0,4214 = 1,49; BAI 3,54 − 0,59 − 1,49 = 1,45; capital
+59,46 % × 13,67 % = 8,13; ROE 1,45 × 0,75 / 8,13 × 100 = **13,4 %**.
+
+**Cambio: el tipo impositivo deja de ser uniforme.** Se usaba un 25 % plano
+para todos. Pasa al **tipo combinado del impuesto de sociedades de cada
+país** (estatal más recargos locales), 2026, Tax Foundation:
+
+| País | Tipo | ROE con 25 % plano | ROE con tipo real |
+|---|---|---|---|
+| Países Bajos | 25,8 % | 20,4 % | **20,2 %** |
+| Alemania | 30,1 % | 18,1 % | 16,9 % |
+| Italia | 27,8 % | 15,8 % | 15,2 % |
+| **Irlanda** | **12,5 %** | 12,2 % | **14,2 %** |
+| Portugal | 29,5 % | 14,9 % | 14,0 % |
+| España | 25,0 % | 13,4 % | 13,4 % |
+| Francia | 25,8 % | 5,0 % | 5,0 % |
+
+El cambio es material solo en dos países: **Irlanda gana 2,0 puntos** y pasa
+del sexto al cuarto puesto por su tipo del 12,5 %, y **Alemania pierde 1,2**.
+España no se mueve porque su tipo es justamente el 25 % que se asumía.
+
+**Francia, decisión pendiente.** Se aplica el tipo ordinario del 25,8 %. La
+contribución excepcional que lo eleva al **36,1 %** solo afecta a grupos con
+cifra de negocio superior a 1.500 M€, que es el caso de los grandes bancos
+franceses pero no de todo el sistema. Con ella el ROE francés bajaría del
+5,0 % al **4,3 %**. Queda como variante a decidir, no aplicada por defecto.
+
+Con esto el modelo conserva **un solo supuesto material: la cuña de
+comisiones fuera de España**. Precio, recursos, riesgo, capital, eficiencia
+e impuesto son todos observados por país.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

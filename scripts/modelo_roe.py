@@ -33,7 +33,16 @@ TRAMO = "Hasta 1 M EUR"
 PLAZO = "Total initial rate fixation"
 
 # --- supuestos, todos declarados en el CSV de salida ---
-TASA_IMPOSITIVA = 0.25          # tipo efectivo uniforme
+# Tipo del impuesto de sociedades combinado (estatal mas recargos locales),
+# 2026, Tax Foundation. Sustituye al 25% uniforme que se usaba antes.
+# Francia: se usa el tipo ordinario del 25,8%. La contribucion excepcional
+# que lo eleva al 36,1% solo aplica a grupos con cifra de negocio superior a
+# 1.500 M EUR; con ella el ROE frances bajaria del 5,0% al 4,3%.
+TIPO_IMPOSITIVO = {
+    "Espana": 0.250, "Alemania": 0.301, "Francia": 0.258, "Italia": 0.278,
+    "Portugal": 0.295, "Paises Bajos": 0.258, "Irlanda": 0.125,
+}
+TASA_IMPOSITIVA = 0.25          # respaldo si falta el pais
 # La densidad de RWA y el coste del riesgo ya NO son supuestos: se leen de
 # las dos extracciones nuevas. DENSIDAD_RWA solo queda como respaldo si
 # faltara el dato de algun pais.
@@ -150,7 +159,7 @@ def recoge():
     return out
 
 
-def modelo(e, cuna_pb, k=FACTOR_FLUJO_STOCK):
+def modelo(e, cuna_pb, k=FACTOR_FLUJO_STOCK, tipo=TASA_IMPOSITIVA):
     """Cuenta de resultados del prestamo, en % del saldo medio, y ROE.
 
     Todo en PORCENTAJE sobre saldo medio. El capital asignado tambien, para
@@ -168,10 +177,10 @@ def modelo(e, cuna_pb, k=FACTOR_FLUJO_STOCK):
     opex = margen * (e["eficiencia"] / 100.0)
     bai = margen - cor - opex
     capital_pct = e["densidad"] * e["cet1"]        # en % del saldo
-    roe = (bai * (1 - TASA_IMPOSITIVA)) / capital_pct * 100 if capital_pct else None
+    roe = (bai * (1 - tipo)) / capital_pct * 100 if capital_pct else None
     return dict(ingreso=ingreso, comisiones=cuna_pb / 100.0, margen=margen,
                 fondos=fondos, cor=cor, opex=opex, bai=bai,
-                capital=capital_pct, roe=roe)
+                capital=capital_pct, roe=roe, tipo=tipo)
 
 
 def main():
@@ -190,15 +199,15 @@ def main():
 
     print("\nCuna de comisiones observada en Espana, tramo <=1 M, %s: %.0f pb\n"
           % (ANIO, cuna_es))
-    print("%-14s %7s %7s %7s %7s %7s %7s %8s" % (
-        "", "precio", "comis", "fondos", "CoR", "gastos", "BAI", "ROE"))
+    print("%-14s %7s %7s %7s %7s %7s %7s %7s %8s" % (
+        "", "precio", "comis", "fondos", "CoR", "gastos", "BAI", "imp.", "ROE"))
     for p in PAISES:
         if p not in ent or any(v is None for v in ent[p].values()):
             continue
-        m = modelo(ent[p], cuna_es)
-        print("%-14s %7.2f %7.2f %7.2f %7.2f %7.2f %7.2f %7.1f%%" % (
+        m = modelo(ent[p], cuna_es, tipo=TIPO_IMPOSITIVO.get(p, TASA_IMPOSITIVA))
+        print("%-14s %7.2f %7.2f %7.2f %7.2f %7.2f %7.2f %6.1f%% %7.1f%%" % (
             p[:13], ent[p]["precio"], m["comisiones"], m["fondos"],
-            m["cor"], m["opex"], m["bai"], m["roe"]))
+            m["cor"], m["opex"], m["bai"], 100 * m["tipo"], m["roe"]))
         obs = p == "Espana"
         for metrica, valor, unidad, td, nota in [
             ("Precio (tipo MIR, tramo <=1 M)", ent[p]["precio"], "pct_anual", "nivel",
@@ -228,7 +237,10 @@ def main():
              "Transparency Exercise) sobre CET1 observado"
              % (100 * ent[p]["densidad"])),
             ("ROE del prestamo PYME", m["roe"], "pct_roe", "ratio",
-             "MODELIZADO. Tipo impositivo supuesto %.0f%%" % (100 * TASA_IMPOSITIVA)),
+             "MODELIZADO. Tipo del impuesto de sociedades de %s: %.1f%% "
+             "(combinado 2026, Tax Foundation)" % (p, 100 * m["tipo"])),
+            ("Tipo impositivo aplicado", 100 * m["tipo"], "pct_roe", "ratio",
+             "OBSERVADO. Tipo combinado del impuesto de sociedades, 2026"),
         ]:
             w.writerow(schema.row(
                 pais=p, producto="prestamo_pyme_modelo", metrica=metrica,
@@ -248,7 +260,7 @@ def main():
             continue
         fila = []
         for c in barrido:
-            m = modelo(ent[p], c)
+            m = modelo(ent[p], c, tipo=TIPO_IMPOSITIVO.get(p, TASA_IMPOSITIVA))
             fila.append("%8.1f%%" % m["roe"])
             w.writerow(schema.row(
                 pais=p, producto="prestamo_pyme_modelo",

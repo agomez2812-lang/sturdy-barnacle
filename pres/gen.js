@@ -29,7 +29,7 @@ function titulo(s, t, sub){
                 color:MUT, isTextBox:true, margin:0});
 }
 function fuente(s, t){
-  s.addText(t, {x:M, y:6.92, w:W-2*M, h:0.3, fontFace:BF, fontSize:9,
+  s.addText(t, {x:M, y:6.76, w:W-2*M, h:0.56, fontFace:BF, fontSize:7.5,
                 color:MUT, italic:true, isTextBox:true, margin:0});
 }
 function chip(s, x, y, txt, col){
@@ -177,45 +177,46 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    ["− Gastos"].concat(D.pl.opex.map(v=>v.toFixed(2))),
    ["= Resultado antes de imp."].concat(D.pl.bai.map(v=>v.toFixed(2))),
    ["Capital asignado (RWA × CET1)"].concat(D.pl.capital.map(v=>v.toFixed(2))),
+   ["Tipo impositivo"].concat(D.pl.tipo.map(v=>v.toFixed(1)+" %")),
    ["ROE"].concat(D.pl.roe.map(v=>v.toFixed(1)+" %"))];
- const sup=[2,6,7,9], tot=[3,5,8,10];
+ const sup=[2], tot=[3,5,8,11];
  const rows=L.map((r,ri)=>r.map((c,ci)=>{
    if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center"})};
    const o=cel(null,{align: ci===0?"left":"center"});
    if(sup.includes(ri)) o.fill={color:"FBF2EA"}, o.color="8A5A2B";
-   if(tot.includes(ri)) o.bold=true, o.fill={color: ri===10?PRIM:LIGHT}, o.color= ri===10?"FFFFFF":PRIM;
+   if(tot.includes(ri)) o.bold=true, o.fill={color: ri===11?PRIM:LIGHT}, o.color= ri===11?"FFFFFF":PRIM;
    return {text:c, options:o};}));
- s.addTable(rows, Object.assign(tOpt(),{y:1.78, colW:[2.7].concat(Array(7).fill(1.347)), rowH:0.37}));
+ s.addTable(rows, Object.assign(tOpt(),{y:1.78, colW:[2.7].concat(Array(7).fill(1.347)), rowH:0.345}));
  [["Observado",PRIM],["Supuesto",MED]].forEach((l,i)=>chip(s,M+i*1.7,6.15,l[0],l[1]));
- s.addText("Solo la fila de comisiones es supuesto. Precio, recursos, riesgo y capital son observados por país.",
+ s.addText("Solo la fila de comisiones es supuesto. Precio, recursos, riesgo, capital e impuesto son observados por país.",
    {x:M+3.7, y:6.15, w:8.5, h:0.3, fontFace:BF, fontSize:10, color:MUT, isTextBox:true, margin:0});
- fuente(s,"Precio: BCE MIR. Comisiones: cuña española de 87 pb aplicada a los siete (único supuesto material). Recursos: tipos de depósito de empresa del MIR ponderados por los saldos del BSI. Riesgo: PD × LGD de la clase IRB de PYME (COREP C 9.02). Gastos: eficiencia EBA sobre margen. Capital: densidad de RWA observada sobre CET1. Impuesto 25 %.");
+ fuente(s,"Precio: BCE MIR. Comisiones: cuña española de 87 pb aplicada a los siete (único supuesto material). Recursos: tipos de depósito de empresa del MIR ponderados por los saldos del BSI. Riesgo: PD × LGD de la clase IRB de PYME (COREP C 9.02). Gastos: eficiencia EBA sobre margen. Capital: densidad de RWA observada sobre CET1. Impuesto: tipo combinado de sociedades 2026 de cada país.");
 }
 
 /* 7 — ROE por pais */
 {const s=pres.addSlide();
- titulo(s,"ROE modelizado del préstamo PYME","Con la cuña de comisiones española aplicada a los seis países · 2026");
+ titulo(s,"ROE modelizado del préstamo PYME","Cuña de comisiones española aplicada a los siete países · Tipo impositivo real de cada uno · 2026");
  s.addChart(pres.ChartType.bar, [{name:"ROE", labels:P, values:D.pl.roe}],
    {x:M, y:1.8, w:7.4, h:4.1, barDir:"col", chartColors:[PRIM],
     showTitle:false, showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:12,
     dataLabelColor:TXT, showLegend:false, catAxisLabelColor:TXT, catAxisLabelFontSize:11,
     valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
-    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:13});
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:22});
  s.addShape(pres.ShapeType.roundRect,{x:8.3, y:1.8, w:4.43, h:4.1, fill:{color:LIGHT},
    rectRadius:0.06, line:{color:"DCE4E7"}});
  s.addText("Cómo leerlo",{x:8.5, y:1.95, w:4.05, h:0.32, fontFace:HF, fontSize:15,
    bold:true, color:PRIM, isTextBox:true, margin:0});
  s.addText([
   {text:"Países Bajos y Alemania encabezan", options:{bold:true, breakLine:true}},
-  {text:"por la misma razón: un coste del riesgo bajo (0,35 % y 0,40 %) y la menor densidad de RWA (37 % y 35 %), que reduce el capital a inmovilizar.\n\n", options:{breakLine:true}},
-  {text:"España cae al quinto puesto", options:{bold:true, breakLine:true}},
-  {text:"por combinar el precio más bajo con una densidad de RWA del 59,5 %: consume casi el doble de capital que Alemania.\n\n", options:{breakLine:true}},
-  {text:"Irlanda lo ilustra al revés", options:{bold:true, breakLine:true}},
-  {text:"— precio más alto (5,37 %) y mejor PD, pero densidad del 70 % y cost-income del 57 %: se queda en 7,7 %.\n\n", options:{breakLine:true}},
+  {text:"por coste del riesgo bajo (0,35 % y 0,40 %) y la menor densidad de RWA (37 % y 35 %), que reduce el capital a inmovilizar.\n\n", options:{breakLine:true}},
+  {text:"España queda en 13,4 %", options:{bold:true, breakLine:true}},
+  {text:"pese al precio más bajo, gracias a la segunda mejor eficiencia. Su freno es una densidad de RWA del 59,5 %.\n\n", options:{breakLine:true}},
+  {text:"Irlanda sube al cuarto puesto", options:{bold:true, breakLine:true}},
+  {text:"por el impuesto: 12,5 % frente al 25-30 % del resto. Con tipo uniforme quedaría la sexta.\n\n", options:{breakLine:true}},
   {text:"Francia queda última", options:{bold:true, breakLine:true}},
-  {text:"con un 1,7 %, y en negativo si no se asume comisión alguna.", options:{}}],
+  {text:"con un 5,0 %: precio bajo, recursos caros y la peor eficiencia (65,6 %).", options:{}}],
   {x:8.5, y:2.32, w:4.05, h:3.52, fontFace:BF, fontSize:9, color:TXT, isTextBox:true, margin:0});
- fuente(s,"ROE modelizado, no observado. Depende del supuesto de comisiones: ver lámina siguiente de sensibilidad. Tipo impositivo 25 % uniforme.");
+ fuente(s,"ROE modelizado, no observado. Depende del supuesto de comisiones: ver lámina siguiente de sensibilidad. Tipo de sociedades combinado 2026 (Tax Foundation): ES 25,0 · DE 30,1 · FR 25,8 · IT 27,8 · PT 29,5 · NL 25,8 · IE 12,5. En Francia, la contribución excepcional del 36,1 % para grupos de más de 1.500 M€ de cifra de negocio dejaría su ROE en 4,3 %.");
 }
 
 /* 8 — sensibilidad */
@@ -540,7 +541,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
   ["Coste de los recursos","0,41 % a 1,34 % por país","Observado. Tipos del MIR ponderados por saldos del BSI. Supone financiar el crédito PYME con depósito de empresa","ALTO. Con fondeo en mercado al 2,23 % los ROE caerían entre 6 y 12 puntos"],
   ["Coste del riesgo","PD × LGD por país","YA NO ES SUPUESTO. Parámetros IRB de la clase «Corporates – Of Which: SME», mediana de entidades (COREP C 9.02)","—"],
   ["Densidad de RWA","35 % a 61 % por país","YA NO ES SUPUESTO. RWA sobre exposición de la cartera PYME (EBA Transparency Exercise)","—"],
-  ["Tipo impositivo","25 %","Uniforme, no por país","BAJO. Escala proporcional"],
+  ["Tipo impositivo","12,5 % a 30,1 %","YA NO ES SUPUESTO. Tipo combinado del impuesto de sociedades 2026 por país (Tax Foundation)","—"],
   ["Eficiencia","EBA por país","Observada, pero de grupo consolidado y no de segmento PYME","MEDIO. Penaliza a países con banca universal compleja"]];
  const rows=L.map((r,ri)=>r.map((c,ci)=>{
    if(ri===0) return {text:c, options:Object.assign({},hdr,{align:"left", fontSize:11})};
