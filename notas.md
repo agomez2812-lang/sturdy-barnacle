@@ -1104,6 +1104,70 @@ y se reserva para la serie principal de cada gráfico y para los totales.
 Verificación automática del fichero: **los 13 colores presentes en las 21
 láminas pertenecen todos a la paleta del manual**, sin ninguno fuera.
 
+### 2.44 Escenario de entrante eficiente
+
+Simulación pedida: un banco extranjero que entra con **sus** ratios de
+balance y coste, pero enfrentando el mercado local tal y como es.
+
+**Del entrante** (parámetros del escenario, no observados): coste de los
+recursos 0,80 %, eficiencia 40 %, CET1 12,9 %.
+**Del mercado local** (observado): precio, coste del riesgo PD × LGD,
+densidad de RWA y tipo impositivo de banca. La cuña de comisiones sigue
+siendo el supuesto de siempre.
+
+| País | ROE local | ROE entrante | Gana |
+|---|---|---|---|
+| Países Bajos | 20,2 % | **37,0 %** | +16,8 |
+| Alemania | 16,9 % | **35,0 %** | +18,1 |
+| Irlanda | 13,8 % | 27,0 % | +13,1 |
+| Francia | 5,0 % | 21,8 % | +16,8 |
+| Italia | 15,2 % | 21,6 % | +6,4 |
+| Portugal | 14,0 % | 16,9 % | +3,0 |
+| **España** | 12,5 % | **13,7 %** | **+1,2** |
+
+**El orden de atractivo cambia por completo:**
+
+- Local: P. Bajos > Alemania > Italia > Portugal > Irlanda > España > Francia
+- Entrante: P. Bajos > Alemania > **Irlanda > Francia** > Italia > Portugal > España
+
+**Francia pasa del último puesto al cuarto.** Es el mercado peor para su
+propia banca y de los mejores para un entrante, porque el incumbente es el
+más ineficiente de los siete (65,6 % de cost-income) y el más caro en
+recursos (1,34 %). Lo que compra el entrante no es el margen del mercado
+sino **la distancia respecto al incumbente**.
+
+**España es donde menos vale entrar eficiente: solo 1,2 puntos.** Su banca
+ya es la segunda más eficiente (42,1 %) y sus recursos ya son más baratos
+que los del entrante (0,75 % frente a 0,80 %: el entrante pagaría *más*).
+Y siguen pesando la densidad de RWA del 59,5 % y el 30 % de impuesto, que
+el entrante no puede cambiar.
+
+**Lo que el escenario NO incluye**, y hay que decirlo antes de usarlo para
+decidir: coste de entrada, escala mínima viable, curva de aprendizaje del
+riesgo en un mercado nuevo, y el hecho de que la densidad de RWA usada es la
+del mercado local; un entrante con método estándar o con menos garantía real
+tendría una densidad distinta, y es el factor que más pesa en el resultado.
+
+### 2.45 Conclusiones incorporadas a la presentación
+
+Cinco conclusiones y seis recomendaciones, en dos láminas nuevas. Las cuatro
+primeras conclusiones se apoyan en datos observados por país; la quinta
+señala el supuesto que las condiciona.
+
+1. **El capital manda sobre el precio.** La densidad de RWA va del 35 % al
+   70 %; el precio solo del 3,41 % al 5,37 %.
+2. **El atractivo para un entrante no coincide con la rentabilidad del
+   local.** Se compra la distancia respecto al incumbente, no el margen.
+3. **España es el mercado donde menos vale entrar eficiente.**
+4. **Países Bajos y Alemania son los objetivos naturales.**
+5. **La comisión es el único supuesto material que queda.**
+
+Recomendaciones: priorizar Países Bajos y Alemania; estudiar Francia e
+Irlanda; descartar España y Portugal por diferencial insuficiente; validar
+la comisión en el mercado objetivo antes de decidir; recalcular la densidad
+de RWA con el método propio del entrante; y cerrar el precio del factoring
+por vía no pública si el producto entra en el plan.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

@@ -245,6 +245,46 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  fuente(s,"87 pb es la cuña observada en España (TAE − TEDR, tramo ≤1 M€, media 2026, Banco de España). Para los otros cinco países no existe dato equivalente.");
 }
 
+/* 8b — simulacion de entrante eficiente */
+{const s=pres.addSlide();
+ titulo(s,"Simulación: entrante eficiente","Un banco extranjero con sus propios ratios de balance, enfrentando el precio, el riesgo, el capital y la fiscalidad de cada mercado local");
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:1.72, w:W-2*M, h:0.52, fill:{color:ORA3},
+   rectRadius:0.06, line:{color:ORA2}});
+ s.addText([{text:"Parámetros del entrante:   ", options:{bold:true}},
+   {text:"coste de los recursos 0,80 %     ·     eficiencia 40 %     ·     CET1 12,9 %", options:{}},
+   {text:"          Del mercado local: precio, comisiones, PD × LGD, densidad de RWA y tipo impositivo.", options:{color:MUT}}],
+   {x:M+0.25, y:1.83, w:11.8, h:0.32, fontFace:BF, fontSize:10, color:DARK, isTextBox:true, margin:0});
+ s.addChart(pres.ChartType.bar, [
+   {name:"ROE del banco local", labels:P, values:D.pl.roe},
+   {name:"ROE del entrante eficiente", labels:P, values:D.ent.roe}],
+   {x:M, y:2.4, w:7.6, h:3.45, barDir:"col", chartColors:[G2,PRIM],
+    showTitle:false, showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:8,
+    dataLabelColor:DARK, showLegend:true, legendPos:"b", legendFontSize:9,
+    catAxisLabelColor:DARK, catAxisLabelFontSize:9, valAxisLabelColor:MUT,
+    valAxisLabelFormatCode:'0"%"', valGridLine:{color:LIGHT, size:1},
+    catGridLine:{style:"none"}, valAxisMaxVal:40});
+ const L=[["","Local","Entrante","Gana"]].concat(
+   P.map((p,i)=>[p, D.pl.roe[i].toFixed(1)+" %", D.ent.roe[i].toFixed(1)+" %",
+                 "+"+D.ent.dif[i].toFixed(1)]));
+ const rows=L.map((r,ri)=>r.map((c,ci)=>{
+   if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:9.5})};
+   const o=cel(null,{align: ci===0?"left":"center", fontSize:10, bold: ci===0});
+   if(ci===2) o.bold=true, o.fill={color:ORA3};
+   if(ci===3){ const g=parseFloat(String(c).replace("+",""));
+     o.bold=true; o.fill={color: g>10?ORA2:(g>5?ORA3:LIGHT)}; }
+   return {text:c, options:o};}));
+ s.addTable(rows, {x:8.25, y:2.4, w:4.48, colW:[1.38,1.02,1.08,1.00], rowH:0.34,
+   fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});
+ s.addShape(pres.ShapeType.roundRect,{x:8.25, y:5.18, w:4.48, h:0.68, fill:{color:LIGHT},
+   rectRadius:0.06, line:{color:G3}});
+ s.addText("Ranking del entrante:\nP. Bajos > Alemania > Irlanda > Francia > Italia > Portugal > España",
+   {x:8.42, y:5.26, w:4.15, h:0.55, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+ s.addText([{text:"El orden de atractivo cambia por completo. ", options:{bold:true}},
+   {text:"Francia pasa del último puesto (5,0 %) al cuarto (21,8 %) porque su banca local es la más ineficiente de las siete y la más cara en recursos: ahí es donde más vale entrar eficiente. España es justo lo contrario, solo gana 1,2 puntos, porque su banca ya es eficiente y sus recursos ya son baratos —el entrante incluso pagaría más— y sigue arrastrando una densidad de RWA del 59,5 % y el 30 % de impuesto.", options:{}}],
+   {x:M, y:5.95, w:W-2*M, h:0.72, fontFace:BF, fontSize:10, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Escenario, no observación. Se mantienen del mercado local el precio (MIR), la cuña de comisiones supuesta, el coste del riesgo (PD × LGD), la densidad de RWA (Transparency Exercise) y el tipo impositivo de banca. Se sustituyen coste de los recursos, eficiencia y CET1 por los del entrante. No incorpora coste de entrada, escala mínima ni curva de aprendizaje de riesgo.");
+}
+
 /* 9 — coste de recursos */
 {const s=pres.addSlide();
  titulo(s,"Coste de los recursos de empresa","Tipos del MIR ponderados por la mezcla real de saldos del BSI · Media 2026 · Es el coste de fondos que usa el modelo");
@@ -555,6 +595,57 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
    return {text:c, options:o};}));
  s.addTable(rows, Object.assign(tOpt(),{y:1.78, colW:[2.7,1.75,4.5,3.17], rowH:0.62}));
  fuente(s,"El modelo completo y reproducible está en scripts/modelo_roe.py del repositorio. Cada fila del CSV de salida declara si el valor es observado o supuesto.");
+}
+
+/* 19b — conclusiones y recomendaciones */
+{const s=pres.addSlide();
+ titulo(s,"Conclusiones y recomendaciones","Lo que sostienen los datos y lo que se deriva para una decisión de entrada");
+ const C=[
+  ["1","El capital manda sobre el precio",
+   "La densidad de RWA va del 35 % en Alemania al 70 % en Irlanda. Esa horquilla separa más el ROE que el precio, que solo va del 3,41 % al 5,37 %. Irlanda lo demuestra: tiene el precio más alto de las siete y la mejor PD, y aun así queda sexta entre los bancos locales."],
+  ["2","El atractivo para un entrante no coincide con la rentabilidad del local",
+   "Francia es el peor mercado para su banca (5,0 %) y el cuarto mejor para un entrante eficiente (21,8 %). Lo que se compra al entrar no es el margen del mercado, es la distancia respecto al incumbente."],
+  ["3","España es el mercado donde menos vale entrar eficiente",
+   "Solo gana 1,2 puntos de ROE. Su banca ya es la segunda más eficiente (42,1 %), sus recursos ya son baratos (0,75 %, por debajo del 0,80 % del entrante) y arrastra una densidad de RWA del 59,5 % y el 30 % de impuesto del art. 29 LIS."],
+  ["4","Países Bajos y Alemania son los objetivos naturales",
+   "37,0 % y 35,0 % de ROE para el entrante. Combinan el menor coste del riesgo (0,35 % y 0,40 %) con la menor densidad de RWA (37 % y 35 %) e incumbentes con eficiencia mediocre (53,5 % y 55,2 %)."],
+  ["5","La comisión es el único supuesto material que queda",
+   "Solo España publica un tipo con comisiones para empresas, y allí vale 87 pb sobre el tramo ≤1 M€. Aplicarla a los demás es una hipótesis. Antes de decidir, conviene validarla en el mercado objetivo: mueve el ROE entre 3 y 8 puntos."]];
+ let y=1.72;
+ C.forEach((c,i)=>{
+   s.addShape(pres.ShapeType.ellipse,{x:M, y:y+0.04, w:0.36, h:0.36, fill:{color:PRIM}, line:{color:PRIM}});
+   s.addText(c[0], {x:M, y:y+0.04, w:0.36, h:0.36, fontFace:HF, fontSize:13, bold:true,
+     color:"FFFFFF", align:"center", valign:"middle", isTextBox:true, margin:0});
+   s.addText(c[1], {x:M+0.55, y:y, w:11.6, h:0.3, fontFace:HF, fontSize:12.5, bold:true,
+     color:DARK, isTextBox:true, margin:0});
+   s.addText(c[2], {x:M+0.55, y:y+0.31, w:11.6, h:0.62, fontFace:BF, fontSize:9.5,
+     color:G1, isTextBox:true, margin:0});
+   y+=1.03;});
+ fuente(s,"Las conclusiones 1 a 4 se apoyan en datos observados por país; la 5 señala el supuesto que las condiciona. El escenario de entrante no incorpora coste de entrada, escala mínima ni curva de aprendizaje de riesgo.");
+}
+
+/* 19c — recomendaciones accionables */
+{const s=pres.addSlide();
+ titulo(s,"Recomendaciones","Qué haría falta para convertir este análisis en una decisión");
+ const R=[
+  ["Priorizar","Países Bajos y Alemania","37,0 % y 35,0 % de ROE simulado. Incumbentes ineficientes, riesgo bajo y capital barato. Son los dos mercados donde el modelo eficiente rinde más."],
+  ["Estudiar","Francia e Irlanda","21,8 % y 27,0 %. Francia por la distancia respecto a un incumbente muy ineficiente; Irlanda por el 15 % de impuesto, aunque con la mayor densidad de RWA y una cartera PYME pequeña (16.964 M€)."],
+  ["Descartar","España y Portugal","13,7 % y 16,9 %. El diferencial frente al banco local es de 1,2 y 3,0 puntos: no compensa el coste de entrada."],
+  ["Validar antes de decidir","La comisión en el mercado objetivo","Es el único supuesto material. Mueve el ROE entre 3 y 8 puntos y solo está observada en España."],
+  ["Completar","Densidad de RWA propia","La del modelo es la del mercado. Un entrante con método estándar o con menos garantía real tendría una densidad distinta, y ese es el factor que más pesa."],
+  ["Cerrar","Precio del factoring y del confirming","No es obtenible con fuentes públicas gratuitas. Si el producto entra en el plan, hay que ir a registros de pago o a datos de mercado."]];
+ let y=1.75;
+ R.forEach((r,i)=>{
+   s.addShape(pres.ShapeType.roundRect,{x:M, y:y, w:2.25, h:0.72, fill:{color: i<3?ORA3:LIGHT},
+     rectRadius:0.05, line:{color: i<3?ORA2:G3}});
+   s.addText(r[0], {x:M, y:y, w:2.25, h:0.72, fontFace:HF, fontSize:11, bold:true,
+     color:DARK, align:"center", valign:"middle", isTextBox:true, margin:0});
+   s.addText(r[1], {x:M+2.45, y:y+0.03, w:3.3, h:0.66, fontFace:HF, fontSize:11, bold:true,
+     color:DARK, valign:"middle", isTextBox:true, margin:0});
+   s.addText(r[2], {x:M+5.9, y:y+0.03, w:6.25, h:0.66, fontFace:BF, fontSize:9,
+     color:G1, valign:"middle", isTextBox:true, margin:0});
+   y+=0.84;});
+ fuente(s,"ROE simulado del entrante con coste de los recursos 0,80 %, eficiencia 40 % y CET1 12,9 %, sobre el precio, riesgo, capital y fiscalidad de cada mercado. No incorpora coste de entrada ni escala mínima.");
 }
 
 /* 16 — lo que no se puede afirmar */

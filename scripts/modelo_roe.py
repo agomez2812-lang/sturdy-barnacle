@@ -189,6 +189,13 @@ def modelo(e, cuna_pb, k=FACTOR_FLUJO_STOCK, tipo=TASA_IMPOSITIVA):
                 capital=capital_pct, roe=roe, tipo=tipo)
 
 
+# --- escenario de entrante eficiente -----------------------------------
+# Un banco extranjero que entra con SUS ratios de balance y coste, pero
+# enfrentando el precio, el riesgo, el consumo de capital y la fiscalidad
+# de cada mercado local.
+ENTRANTE = {"coste_rec": 0.80, "eficiencia": 40.0, "cet1": 12.9}
+
+
 def main():
     cuna_es = cuna_espanola()
     ent = recoge()
@@ -282,6 +289,45 @@ def main():
                 notas="SENSIBILIDAD. Cuna supuesta, no observada salvo en "
                       "Espana")); n += 1
         print("%-14s %s" % (p[:13], "".join(fila)))
+    # --- escenario de entrante eficiente ---
+    print("\nENTRANTE EFICIENTE: recursos %.2f%%, eficiencia %.0f%%, CET1 %.1f%%\n"
+          % (ENTRANTE["coste_rec"], ENTRANTE["eficiencia"], ENTRANTE["cet1"]))
+    print("%-14s %8s %8s %9s %9s %9s" % (
+        "", "BAI loc", "BAI ent", "ROE local", "ROE ent", "dif pp"))
+    for p2 in PAISES:
+        if p2 not in ent or any(v is None for v in ent[p2].values()):
+            continue
+        tipo = TIPO_IMPOSITIVO.get(p2, TASA_IMPOSITIVA)
+        loc = modelo(ent[p2], cuna_es, tipo=tipo)
+        e2 = dict(ent[p2]); e2.update(ENTRANTE)
+        sim = modelo(e2, cuna_es, tipo=tipo)
+        print("%-14s %8.2f %8.2f %8.1f%% %8.1f%% %+8.1f" % (
+            p2[:13], loc["bai"], sim["bai"], loc["roe"], sim["roe"],
+            sim["roe"] - loc["roe"]))
+        for metrica, valor, unidad, td, nota in [
+            ("Coste de los recursos, entrante", ENTRANTE["coste_rec"], "pct_anual", "nivel",
+             "PARAMETRO DEL ESCENARIO, no observado"),
+            ("Gastos de explotacion, entrante", sim["opex"], "pct_cartera", "ratio",
+             "eficiencia del %.0f%% aplicada al margen" % ENTRANTE["eficiencia"]),
+            ("Resultado antes de impuestos, entrante", sim["bai"], "pct_cartera", "ratio",
+             "margen menos riesgo menos gastos"),
+            ("Capital asignado, entrante", sim["capital"], "pct_rwa", "ratio",
+             "densidad de RWA del pais (observada) por CET1 del %.1f%% del "
+             "entrante" % ENTRANTE["cet1"]),
+            ("ROE del entrante eficiente", sim["roe"], "pct_roe", "ratio",
+             "ESCENARIO. Precio, riesgo, densidad de RWA y fiscalidad del "
+             "mercado local; recursos, eficiencia y CET1 del entrante"),
+            ("Diferencia de ROE frente al banco local", sim["roe"] - loc["roe"],
+             "pct_roe", "ratio", "ROE del entrante menos ROE modelizado local"),
+        ]:
+            w.writerow(schema.row(
+                pais=p2, producto="entrante_eficiente", metrica=metrica,
+                valor="%.4f" % valor, unidad=unidad, periodo_referencia=ANIO,
+                fuente="Modelo propio, escenario de entrante", url="",
+                fecha_publicacion=hoy, tramo_importe=TRAMO, plazo_fijacion=PLAZO,
+                criterio_segmentacion="tamano_prestamo", tipo_de_dato=td,
+                ponderacion="media_ponderada_volumen", notas=nota)); n += 1
+
     # --- negocio de deposito: lo que el banco gana por la liquidez de las
     # empresas frente a lo que puede obtener en el BCE ---
     dep = collections.defaultdict(lambda: collections.defaultdict(list))
