@@ -658,5 +658,18 @@
    1.03,
    1.68
   ]
+ },
+ "es_spread": {
+  "tedr_a": 3.4173,
+  "tedr_b": 3.4404,
+  "tae_a": 4.4348,
+  "tae_b": 3.622,
+  "spread_tedr_pb": -2.3,
+  "spread_tae_pb": 81.3,
+  "cunas": {
+   "Hasta 0,25 M EUR": 101.9,
+   "Mas de 0,25 y hasta 1 M EUR": 35.9,
+   "Mas de 1 M EUR": 18.1
+  }
  }
 }

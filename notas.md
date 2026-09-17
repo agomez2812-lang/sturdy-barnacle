@@ -957,6 +957,87 @@ ejecutando. Queda anotado porque el mismo patrón puede repetirse con
 cualquiera de los extractores: **no canalizar su salida a `head` o `tail` si
 escriben ficheros después de imprimir**.
 
+### 2.40 Aclaraciones de cálculo pedidas sobre la presentación
+
+**Spread de comisiones en España.** Se calcula entre los **dos tramos
+extremos**, no contra el intermedio:
+
+    Spread = tramo ≤0,25 M€ − tramo >1 M€
+    TEDR:  3,4173 − 3,4404 = −0,0231 pp = −2,3 pb
+    TAE:   4,4348 − 3,6220 = +0,8129 pp = +81,3 pb
+
+Las cifras del gráfico van redondeadas a dos decimales; el spread sale del
+valor completo. Si en su lugar se compara el tramo bajo contra el intermedio
+(0,25–1 M€) el resultado es distinto: +5,9 pb en TEDR y +71,7 pb en TAE. La
+lámina 5 lleva ahora la fórmula y los cuatro decimales.
+
+**Capital asignado.** Es el producto de dos magnitudes observadas, sin
+supuesto:
+
+    Capital asignado = densidad de RWA × ratio CET1
+
+| País | Densidad de RWA | × CET1 | = Capital |
+|---|---|---|---|
+| España | 59,46 % | 13,67 % | 8,13 % |
+| Alemania | 35,34 % | 16,94 % | 5,99 % |
+| Francia | 43,00 % | 15,88 % | 6,83 % |
+| Italia | 46,35 % | 15,56 % | 7,21 % |
+| Portugal | 61,33 % | 17,82 % | 10,93 % |
+| Países Bajos | 37,20 % | 16,38 % | 6,09 % |
+| Irlanda | 69,97 % | 18,31 % | 12,81 % |
+
+La densidad viene del Transparency Exercise y el CET1 del Risk Dashboard. La
+lámina 13 lleva ahora la descomposición en tabla.
+
+**NPL frente a coste del riesgo.** Son dos cosas distintas y estaban en
+láminas contiguas sin decirlo:
+
+- **Ratio de NPL** (lámina 10): **stock** de dudosos sobre cartera. No entra
+  en el modelo.
+- **Coste del riesgo** (lámina 11): **flujo** anual de pérdida esperada,
+  calculado como **PD × LGD**. Ejemplo España: 1,73 % × 34,38 % = 0,59 %. Es
+  la línea de riesgo de la cuenta de resultados.
+
+Ambas láminas llevan ahora el aviso y la fórmula.
+
+**Gráfico de la lámina de hipotecas.** Muestra el **ratio de NPL de la
+cartera de inmueble comercial**, es decir el porcentaje en mora. No es precio
+ni margen: es calidad de activo. El gráfico lleva ahora título propio.
+
+### 2.41 Identidad visual: paleta corporativa de Bankinter
+
+La presentación pasa a la paleta de marca, tomada del manual de marca de
+mayo de 2021 (Fundación Innovación Bankinter, 83 páginas), que incluye una
+página específica de **colores para gráficos**:
+
+| Uso | Color | Hex | Pantone |
+|---|---|---|---|
+| Primario | Naranja | `#F56600` | 165 C |
+| Secundario | Azul | `#237DFF` | 2727 C |
+| Secundario | Magenta | `#DC005F` | 2040 C |
+| Negro | Negro | `#2B2B2B` | — |
+| Terciarios | Grises | `#818181` `#A1A1A1` `#CACACA` `#E5E5E5` | — |
+| Ampliada | Naranja 2 / Azul 2 | `#FFAB70` `#77BFEE` | — |
+
+Criterio aplicado: naranja dominante, azul para la serie de contraste,
+magenta reservado a avisos y huecos, grises para neutralizar.
+
+**Tipografía.** La de marca es Bankinter Sans, que no está disponible ni
+aquí ni en un PowerPoint estándar. El propio manual fija la sustituta:
+**«En caso de no poder utilizar Bankinter Sans se sustituirá por la
+tipografía de sistema: Verdana»**. Se usa Verdana. Al ser más ancha que la
+tipografía anterior hubo que bajar los títulos de 30 a 25 puntos y acortar
+cuatro de ellos.
+
+**Salvedad honesta:** el manual accesible es el de la **Fundación**
+Innovación Bankinter, una submarca. El brand center corporativo
+(`marca.bankinter.com`) devuelve 403 a descarga automatizada. Los colores
+nucleares coinciden con lo que describe la documentación corporativa
+(naranja PMS 165 como principal, más blanco, azul y negro), pero la
+corporativa menciona **amarillo** donde la de la Fundación usa magenta.
+Si se quiere precisión total conviene contrastar contra el manual
+corporativo.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

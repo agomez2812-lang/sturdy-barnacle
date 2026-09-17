@@ -1,9 +1,19 @@
 const pptxgen = require("pptxgenjs");
 const D = require("./datos.json");
 
-const PRIM="1C3F4E", DARK="122C36", LIGHT="EEF2F3", ACC="C97B3C";
-const OK="2E7D5B", MED="C9992B", BAD="B04A3F", TXT="2B3A42", MUT="6E7F88";
-const HF="Cambria", BF="Calibri";
+/* Paleta corporativa Bankinter (manual de marca, mayo 2021).
+   Primario naranja PMS 165 C; secundarios azul PMS 2727 C y magenta
+   PMS 2040 C; terciarios, gama de grises para neutralizar. */
+const PRIM="F56600";            // naranja, color principal
+const BLUE="237DFF";            // azul, secundario
+const MAG ="DC005F";            // magenta, secundario
+const DARK="2B2B2B";            // negro corporativo
+const G1="818181", G2="A1A1A1", G3="CACACA", LIGHT="E5E5E5";
+const ORA2="FFAB70", BLUE2="77BFEE";   // paleta ampliada para graficos
+const OK=BLUE, MED=PRIM, BAD=MAG, ACC=PRIM, TXT=DARK, MUT=G1;
+/* Bankinter Sans es la tipografia de marca; el propio manual fija Verdana
+   como sustituta de sistema cuando no esta disponible. */
+const HF="Verdana", BF="Verdana";
 const P = D.paises;
 
 const pres = new pptxgen();
@@ -13,9 +23,9 @@ pres.author = "Analisis PYME Europa";
 const W = 13.33, M = 0.6;
 
 function titulo(s, t, sub){
-  s.addText(t, {x:M, y:0.34, w:W-2*M, h:0.72, fontFace:HF, fontSize:30, bold:true,
+  s.addText(t, {x:M, y:0.32, w:W-2*M, h:0.82, fontFace:HF, fontSize:25, bold:true,
                 color:PRIM, isTextBox:true, margin:0});
-  if(sub) s.addText(sub, {x:M, y:1.02, w:W-2*M, h:0.42, fontFace:BF, fontSize:13,
+  if(sub) s.addText(sub, {x:M, y:1.08, w:W-2*M, h:0.42, fontFace:BF, fontSize:11,
                 color:MUT, isTextBox:true, margin:0});
 }
 function fuente(s, t){
@@ -91,7 +101,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
 
 /* 4 — precio por tramo */
 {const s=pres.addSlide();
- titulo(s,"Precio: tipo de nueva producción por tramo de importe","Media 2026 ponderada por volumen · Fijación inicial total · Sin comisiones");
+ titulo(s,"Precio por tramo de importe","Media 2026 ponderada por volumen · Fijación inicial total · Sin comisiones");
  s.addChart(pres.ChartType.bar, [
    {name:"Hasta 0,25 M€", labels:P, values:D.tramos["Hasta 0,25 M EUR"]},
    {name:"Más de 1 M€",   labels:P, values:D.tramos["Mas de 1 M EUR"]}],
@@ -118,7 +128,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
 
 /* 5 — Espana: TEDR vs TAE */
 {const s=pres.addSlide();
- titulo(s,"El hallazgo que cambia la lectura: España cobra por comisión","Único país de los seis donde existe un tipo con comisiones para empresas · Media 2026");
+ titulo(s,"Las comisiones son muy relevantes: impacto en España","Único país de los siete donde existe un tipo con comisiones para empresas · Media 2026");
  const T=D.es_tae, tr=["Hasta 0,25 M EUR","Mas de 0,25 y hasta 1 M EUR","Mas de 1 M EUR"];
  const nom=["≤0,25 M€","0,25–1 M€",">1 M€"];
  s.addChart(pres.ChartType.bar, [
@@ -130,21 +140,25 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
     catAxisLabelColor:TXT, valAxisLabelColor:MUT, catAxisLabelFontSize:12,
     valAxisLabelFormatCode:'0.0"%"', valGridLine:{color:"E3E9EB", size:1},
     catGridLine:{style:"none"}, valAxisMaxVal:5.0});
- s.addShape(pres.ShapeType.roundRect,{x:8.1, y:1.8, w:4.63, h:1.75, fill:{color:"F7EDE4"},
-   rectRadius:0.06, line:{color:ACC}});
- s.addText("Spread PYME según qué se mida",{x:8.3, y:1.95, w:4.25, h:0.32, fontFace:HF,
-   fontSize:14, bold:true, color:ACC, isTextBox:true, margin:0});
- s.addText([{text:"−2 pb", options:{bold:true, fontSize:20, color:BAD, breakLine:false}},
-            {text:"  medido en TEDR", options:{fontSize:12, color:TXT, breakLine:true}},
-            {text:"+81 pb", options:{bold:true, fontSize:20, color:OK, breakLine:false}},
-            {text:"  medido en TAE", options:{fontSize:12, color:TXT}}],
-   {x:8.3, y:2.4, w:4.25, h:1.0, fontFace:BF, isTextBox:true, margin:0});
- s.addShape(pres.ShapeType.roundRect,{x:8.1, y:3.75, w:4.63, h:1.85, fill:{color:LIGHT},
-   rectRadius:0.06, line:{color:"DCE4E7"}});
- s.addText("Cuña de comisiones por tramo",{x:8.3, y:3.9, w:4.25, h:0.3, fontFace:HF,
-   fontSize:13, bold:true, color:PRIM, isTextBox:true, margin:0});
- s.addText(tr.map((t,i)=>`${nom[i]}:  +${Math.round(T[t].cuna)} pb`).join("\n"),
-   {x:8.3, y:4.3, w:4.25, h:1.1, fontFace:BF, fontSize:13, color:TXT, isTextBox:true, margin:0, lineSpacing:20});
+ const E=D.es_spread;
+ s.addShape(pres.ShapeType.roundRect,{x:8.1, y:1.8, w:4.63, h:2.42, fill:{color:"FDEEE2"},
+   rectRadius:0.06, line:{color:PRIM}});
+ s.addText("Cómo se calcula el spread",{x:8.3, y:1.92, w:4.25, h:0.3, fontFace:HF,
+   fontSize:12, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addText("Spread = tramo ≤0,25 M€ − tramo >1 M€\n(los dos tramos extremos, no el intermedio)",
+   {x:8.3, y:2.26, w:4.25, h:0.5, fontFace:BF, fontSize:9, color:TXT, italic:true,
+    isTextBox:true, margin:0});
+ s.addText([
+   {text:"TEDR   ", options:{bold:true, breakLine:false}},
+   {text:E.tedr_a.toFixed(4)+" − "+E.tedr_b.toFixed(4)+" = ", options:{breakLine:false}},
+   {text:E.spread_tedr_pb.toFixed(1)+" pb", options:{bold:true, color:MAG, breakLine:true}},
+   {text:"TAE      ", options:{bold:true, breakLine:false}},
+   {text:E.tae_a.toFixed(4)+" − "+E.tae_b.toFixed(4)+" = ", options:{breakLine:false}},
+   {text:"+"+E.spread_tae_pb.toFixed(1)+" pb", options:{bold:true, color:BLUE}}],
+   {x:8.3, y:2.82, w:4.25, h:0.75, fontFace:BF, fontSize:10, color:TXT,
+    isTextBox:true, margin:0, lineSpacing:19});
+ s.addText("Las cifras del gráfico van redondeadas a dos decimales; el spread se calcula sobre el valor completo.",
+   {x:8.3, y:3.62, w:4.25, h:0.5, fontFace:BF, fontSize:8.5, color:MUT, isTextBox:true, margin:0});
  s.addText("La banca española sí cobra más caro a la PYME: 81 pb más en coste total. Lo hace por comisión, no por tipo nominal. El MIR del BCE, que publica solo el tipo sin comisiones, no lo ve.",
    {x:M, y:5.85, w:W-2*M, h:0.7, fontFace:BF, fontSize:12, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuente: Banco de España, Boletín Estadístico, cuadros 19.5 (TEDR), 19.6 (TAE) y 19.13 (volúmenes). Cuña = TAE − TEDR, cálculo propio. Media enero-julio 2026.");
@@ -152,7 +166,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
 
 /* 6 — cuenta de resultados modelizada */
 {const s=pres.addSlide();
- titulo(s,"Cuenta de resultados modelizada del préstamo PYME","En % del saldo medio · Tramo ≤1 M€ · 2026 · Las filas en ocre son supuestos, no observaciones");
+ titulo(s,"Cuenta de resultados del préstamo PYME","En % del saldo medio · Tramo ≤1 M€ · 2026 · Las filas en ocre son supuestos, no observaciones");
  const L=[["Concepto"].concat(P),
    ["Precio (tipo MIR)"].concat(D.pl.precio.map(v=>v.toFixed(2))),
    ["+ Comisiones"].concat(D.pl.comisiones.map(v=>v.toFixed(2))),
@@ -162,7 +176,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    ["− Coste del riesgo"].concat(D.pl.cor.map(v=>v.toFixed(2))),
    ["− Gastos"].concat(D.pl.opex.map(v=>v.toFixed(2))),
    ["= Resultado antes de imp."].concat(D.pl.bai.map(v=>v.toFixed(2))),
-   ["Capital asignado"].concat(D.pl.capital.map(v=>v.toFixed(2))),
+   ["Capital asignado (RWA × CET1)"].concat(D.pl.capital.map(v=>v.toFixed(2))),
    ["ROE"].concat(D.pl.roe.map(v=>v.toFixed(1)+" %"))];
  const sup=[2,6,7,9], tot=[3,5,8,10];
  const rows=L.map((r,ri)=>r.map((c,ci)=>{
@@ -200,7 +214,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
   {text:"— precio más alto (5,37 %) y mejor PD, pero densidad del 70 % y cost-income del 57 %: se queda en 7,7 %.\n\n", options:{breakLine:true}},
   {text:"Francia queda última", options:{bold:true, breakLine:true}},
   {text:"con un 1,7 %, y en negativo si no se asume comisión alguna.", options:{}}],
-  {x:8.5, y:2.36, w:4.05, h:3.46, fontFace:BF, fontSize:10.5, color:TXT, isTextBox:true, margin:0});
+  {x:8.5, y:2.32, w:4.05, h:3.52, fontFace:BF, fontSize:9, color:TXT, isTextBox:true, margin:0});
  fuente(s,"ROE modelizado, no observado. Depende del supuesto de comisiones: ver lámina siguiente de sensibilidad. Tipo impositivo 25 % uniforme.");
 }
 
@@ -259,7 +273,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
 
 /* 10 — coste del riesgo */
 {const s=pres.addSlide();
- titulo(s,"Coste del riesgo por segmento","La PYME es el peor segmento en los seis países · Ratio de NPL · 2026-Q1 · Muestra de bancos del EBA");
+ titulo(s,"NPL por segmento","La PYME es el peor segmento en los siete países · Ratio de NPL, stock de dudosos · 2026-Q1 · Muestra de bancos del EBA");
  s.addChart(pres.ChartType.bar, [
    {name:"Total cartera", labels:P, values:D.npl_seg.total},
    {name:"Empresas",      labels:P, values:D.npl_seg.empresas},
@@ -275,15 +289,17 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
  s.addShape(pres.ShapeType.roundRect,{x:8.85, y:1.8, w:3.88, h:4.1, fill:{color:"FBEDEB"},
    rectRadius:0.06, line:{color:BAD}});
  s.addText("Prima de riesgo PYME",{x:9.05, y:1.95, w:3.5, h:0.32, fontFace:HF,
-   fontSize:14, bold:true, color:BAD, isTextBox:true, margin:0});
+   fontSize:13, bold:true, color:MAG, isTextBox:true, margin:0});
  s.addText("Diferencia entre el NPL de PYME y el de empresas, en puntos:\n\nEspaña  +2,39\nItalia  +1,50\nFrancia  +1,19\nPortugal  +0,58\nAlemania  +0,51\nP. Bajos  +0,27\n\nEspaña tiene el peor NPL de PYME de los seis (5,38 %) y a la vez el spread de precio más estrecho.",
    {x:9.05, y:2.4, w:3.5, h:3.3, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
+ s.addText("ATENCIÓN: esto es el ratio de NPL, un STOCK de dudosos sobre cartera. NO es el coste del riesgo que usa el modelo, que es un flujo anual calculado como PD × LGD (lámina siguiente).",
+   {x:M, y:5.98, w:8.0, h:0.55, fontFace:BF, fontSize:10, color:MAG, bold:true, isTextBox:true, margin:0});
  fuente(s,"Fuente: EBA Risk Dashboard, anexo de datos Q1 2026, desgloses «of which SMEs» y «of which CRE». Es la muestra de bancos del EBA, no el sistema completo.");
 }
 
 /* 10b — PD x LGD */
 {const s=pres.addSlide();
- titulo(s,"Coste del riesgo: PD × LGD de la cartera PYME","Parámetros IRB de la clase «Corporates – Of Which: SME» · Mediana de entidades declarantes · 2026-Q1");
+ titulo(s,"Coste del riesgo = PD × LGD","Parámetros IRB de la clase «Corporates – Of Which: SME» · Mediana de entidades declarantes · 2026-Q1 · Es la línea de riesgo de la cuenta de resultados");
  s.addChart(pres.ChartType.bar, [{name:"PD × LGD", labels:P, values:D.irb.cor}],
    {x:M, y:1.8, w:7.1, h:3.9, barDir:"col", chartColors:[BAD], showTitle:false,
     showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:12, dataLabelColor:TXT,
@@ -299,14 +315,17 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    return {text:c, options:o};}));
  s.addTable(rows, {x:8.0, y:1.8, w:4.73, colW:[1.6,1.02,1.02,1.09], rowH:0.385,
    fontFace:BF, border:{pt:0.5,color:"D6DEE1"}, valign:"middle", autoPage:false});
- s.addText("Italia tiene la peor combinación (PD 2,26 % y LGD 35,6 %) y Países Bajos la mejor (1,18 % y 29,7 %). Irlanda tiene la PD más baja de los siete, 1,08 %, pero una LGD del 37,3 %. Portugal tiene la LGD más alta, un 40 %, compensada por una PD baja.",
-   {x:M, y:5.85, w:W-2*M, h:0.7, fontFace:BF, fontSize:12, color:TXT, isTextBox:true, margin:0});
+ s.addText([{text:"Fórmula: ", options:{bold:true}},
+   {text:"coste del riesgo = PD (probabilidad de impago a un año) × LGD (severidad de la pérdida). Ejemplo España: 1,73 % × 34,38 % = 0,59 %. Es pérdida esperada anual sobre el saldo, no el stock de dudosos de la lámina anterior.", options:{}}],
+   {x:M, y:5.80, w:W-2*M, h:0.45, fontFace:BF, fontSize:10.5, color:TXT, isTextBox:true, margin:0});
+ s.addText("Italia tiene la peor combinación y Países Bajos la mejor. Irlanda tiene la PD más baja de los siete, 1,08 %, pero una LGD del 37,3 %.",
+   {x:M, y:6.28, w:W-2*M, h:0.35, fontFace:BF, fontSize:10.5, color:MUT, isTextBox:true, margin:0});
  fuente(s,"Fuente: EBA, anexo de parámetros de riesgo del Risk Dashboard Q1 2026, origen COREP C 9.02. Se usa la mediana de entidades y no la media ponderada, que se deja arrastrar por carteras grandes con parámetros extremos.");
 }
 
 /* 11b — spread PYME vs gran empresa en PD y LGD */
 {const s=pres.addSlide();
- titulo(s,"Spread PYME frente a gran empresa en PD y LGD","Parámetros IRB, mediana de entidades · 2026-Q1 · La PYME falla más pero recupera mejor");
+ titulo(s,"Spread PYME frente a gran empresa: PD y LGD","Parámetros IRB, mediana de entidades · 2026-Q1 · La PYME falla más pero recupera mejor");
  const C=D.irb_cmp;
  s.addChart(pres.ChartType.bar, [
    {name:"PD PYME", labels:P, values:C.pd_pyme},
@@ -351,7 +370,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
 
 /* 10c — consumo de capital */
 {const s=pres.addSlide();
- titulo(s,"Consumo de capital: densidad de RWA de la cartera PYME","RWA sobre valor de exposición · EU-wide Transparency Exercise · Junio 2025 · Incorpora ya el factor de apoyo a PYME del art. 501 CRR");
+ titulo(s,"Consumo de capital de la cartera PYME","RWA sobre valor de exposición · EU-wide Transparency Exercise · Junio 2025 · Incorpora ya el factor de apoyo a PYME del art. 501 CRR");
  s.addChart(pres.ChartType.bar, [{name:"Densidad de RWA", labels:P, values:D.capital.densidad}],
    {x:M, y:1.85, w:7.3, h:3.9, barDir:"col", chartColors:[PRIM], showTitle:false,
     showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:12, dataLabelColor:TXT,
@@ -364,19 +383,25 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
    fontFace:HF, fontSize:13, bold:true, color:ACC, isTextBox:true, margin:0});
  s.addText("Va del 35,3 % en Alemania al 70,0 % en Irlanda: un euro de préstamo PYME consume el doble de capital en Irlanda que en Alemania. Sobre el mismo margen, eso divide el ROE por dos. Es el factor que más mueve el ranking, por delante del precio.",
    {x:8.42, y:2.58, w:4.1, h:1.25, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
- s.addShape(pres.ShapeType.roundRect,{x:8.2, y:4.15, w:4.53, h:1.6, fill:{color:LIGHT},
-   rectRadius:0.06, line:{color:"DCE4E7"}});
- s.addText("Exposición PYME (M€)",{x:8.42, y:4.28, w:4.1, h:0.3, fontFace:HF,
-   fontSize:12, bold:true, color:PRIM, isTextBox:true, margin:0});
- s.addText(P.map((p,i)=>`${p}: ${Math.round(D.capital.exposicion[i]/1000)}k`).join("   ·   "),
-   {x:8.42, y:4.62, w:4.1, h:1.0, fontFace:BF, fontSize:10.5, color:TXT, isTextBox:true, margin:0});
+ const LC=[["","Densidad","× CET1","= Capital"]].concat(P.map((p,i)=>
+   [p, D.capital.densidad[i].toFixed(1)+" %", D.eba.cet1[i].toFixed(2)+" %",
+    D.pl.capital[i].toFixed(2)+" %"]));
+ const rc=LC.map((r,ri)=>r.map((c,ci)=>{
+   if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:9})};
+   const o=cel(null,{align: ci===0?"left":"center", fontSize:9.5, bold: ci===0});
+   if(ci===3) o.bold=true, o.fill={color:"FDEEE2"}, o.color=PRIM;
+   return {text:c, options:o};}));
+ s.addTable(rc, {x:8.2, y:4.02, w:4.53, colW:[1.33,1.09,1.05,1.06], rowH:0.235,
+   fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});
+ s.addText("Capital asignado = densidad de RWA × ratio CET1. Ambos observados por país; no hay supuesto en esta línea.",
+   {x:M, y:5.9, w:W-2*M, h:0.55, fontFace:BF, fontSize:10.5, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuente: EBA, EU-wide Transparency Exercise 2025, fichero tr_cre.csv, partidas 2520523 (valor de exposición PYME) y 2520533 (RWA PYME), agregadas por supervisor nacional. La diferencia refleja el peso de modelos internos frente a método estándar y la garantía aportada.");
 }
 
 
 /* 11 — eficiencia, capital, comisiones */
 {const s=pres.addSlide();
- titulo(s,"Eficiencia, capital y peso de las comisiones","Indicadores del sistema bancario · 2026-Q1 · Nivel de grupo consolidado, no de segmento PYME");
+ titulo(s,"Eficiencia, capital y comisiones en Sistema Bancario","2026-Q1 · Nivel de grupo consolidado, no de segmento PYME");
  const L=[["Indicador"].concat(P),
    ["Ratio de NPL"].concat(D.eba.npl.map(v=>v.toFixed(2)+" %")),
    ["Coste del riesgo"].concat(D.eba.cor.map(v=>v.toFixed(2)+" %")),
@@ -430,17 +455,21 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
 
 /* 13 — hipotecas */
 {const s=pres.addSlide();
- titulo(s,"Hipoteca PYME: no existe como estadística oficial europea","El bloque se cubre con exposición a inmueble comercial, que es el proxy disponible");
+ titulo(s,"Hipoteca PYME: no existe estadística oficial","El bloque se cubre con exposición a inmueble comercial, que es el proxy disponible");
  s.addShape(pres.ShapeType.roundRect,{x:M, y:1.8, w:W-2*M, h:1.25, fill:{color:"FBEDEB"},
    rectRadius:0.06, line:{color:BAD}});
  s.addText("Qué falta y por qué",{x:M+0.25, y:1.93, w:11.8, h:0.3, fontFace:HF,
    fontSize:14, bold:true, color:BAD, isTextBox:true, margin:0});
  s.addText("El dataset MIR del BCE publica préstamos para adquisición de vivienda solo del sector hogares. No hay desglose de préstamo con garantía inmobiliaria a empresas en ninguno de los seis países. El crédito con garantía real a PYME queda subsumido en la serie genérica por tramo de importe, y su precio no es observable por separado.",
    {x:M+0.25, y:2.28, w:11.8, h:0.7, fontFace:BF, fontSize:12, color:TXT, isTextBox:true, margin:0});
- s.addText("Proxy disponible: calidad de la cartera de inmueble comercial", {x:M, y:3.3,
-   w:11.8, h:0.35, fontFace:HF, fontSize:16, bold:true, color:PRIM, isTextBox:true, margin:0});
- s.addChart(pres.ChartType.bar, [{name:"NPL inmueble comercial", labels:P, values:D.npl_seg.cre}],
-   {x:M, y:3.8, w:11.8, h:2.4, barDir:"col", chartColors:[ACC], showTitle:false,
+ s.addText("Proxy disponible: ratio de NPL de la cartera de inmueble comercial (CRE)", {x:M, y:3.28,
+   w:11.8, h:0.35, fontFace:HF, fontSize:15, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addText("El gráfico muestra el porcentaje de la cartera de inmueble comercial que está en mora. No es un precio ni un margen: es calidad de activo.",
+   {x:M, y:3.62, w:11.8, h:0.3, fontFace:BF, fontSize:10, color:MUT, isTextBox:true, margin:0});
+ s.addChart(pres.ChartType.bar, [{name:"Ratio de NPL, cartera CRE", labels:P, values:D.npl_seg.cre}],
+   {x:M, y:3.98, w:11.8, h:2.22, barDir:"col", chartColors:[PRIM],
+    showTitle:true, title:"Ratio de NPL de la cartera de inmueble comercial (%)",
+    titleFontSize:11, titleColor:TXT,
     showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:12, dataLabelColor:TXT,
     showLegend:false, catAxisLabelColor:TXT, catAxisLabelFontSize:12,
     valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
@@ -507,7 +536,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:"D6DEE
 {const s=pres.addSlide();
  titulo(s,"Supuestos del modelo","Cada uno declarado, con su origen y su efecto · Dos de los iniciales han dejado de ser supuestos");
  const L=[["Supuesto","Valor","Origen","Efecto si cambia"],
-  ["Cuña de comisiones","87 pb","Observada en España (TAE − TEDR, tramo ≤1 M€). Aplicada a los otros cinco países","ALTO. Mueve el ROE entre 3 y 12 puntos"],
+  ["% de comisiones","87 pb","Observada en España (TAE − TEDR, tramo ≤1 M€). Aplicada a los otros cinco países","ALTO. Mueve el ROE entre 3 y 12 puntos"],
   ["Coste de los recursos","0,41 % a 1,34 % por país","Observado. Tipos del MIR ponderados por saldos del BSI. Supone financiar el crédito PYME con depósito de empresa","ALTO. Con fondeo en mercado al 2,23 % los ROE caerían entre 6 y 12 puntos"],
   ["Coste del riesgo","PD × LGD por país","YA NO ES SUPUESTO. Parámetros IRB de la clase «Corporates – Of Which: SME», mediana de entidades (COREP C 9.02)","—"],
   ["Densidad de RWA","35 % a 61 % por país","YA NO ES SUPUESTO. RWA sobre exposición de la cartera PYME (EBA Transparency Exercise)","—"],
