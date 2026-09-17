@@ -21,6 +21,7 @@ const HF="Verdana", BF="Verdana";
 const P = D.paises;
 const n1=(v,d=1)=>v.toFixed(d).replace(".",",");   // numero en formato es-ES
 const sg=v=>v>0?"+"+v:(v<0?"−"+Math.abs(v):"0"); // signo con menos tipografico
+const sg2=v=>(v>0?"+":(v<0?"−":""))+n1(Math.abs(v));
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";            // 13.33 x 7.5
@@ -61,7 +62,7 @@ L.portada = () => {const s=pres.addSlide(); s.background={color:DARK};
    {x:M, y:3.45, w:10.5, h:0.5, fontFace:BF, fontSize:18, color:G2, isTextBox:true, margin:0});
  s.addText("Cinco productos · Datos oficiales 2026 · Modelo de ROE con supuestos declarados",
    {x:M, y:4.15, w:10.5, h:0.4, fontFace:BF, fontSize:13, color:ACC, isTextBox:true, margin:0});
- s.addText("38.689 observaciones · 11 fuentes · Septiembre 2026",
+ s.addText("38.813 observaciones · 11 fuentes · Septiembre 2026",
    {x:M, y:6.5, w:10.5, h:0.35, fontFace:BF, fontSize:11, color:MUT, isTextBox:true, margin:0});
  s.addNotes("Deck construido sobre datos oficiales del BCE, EBA, OCDE, Banco de España, Banca d'Italia, EUF y cuentas de resultados de bancos. El ROE es modelizado, no observado.");
 };
@@ -808,6 +809,62 @@ L.comparables = () => {const s=pres.addSlide();
  fuente(s,"Fuentes: comunicado de resultados Q2 2026 de Commerzbank; informe intermedio Q2 2026 de ABN AMRO; resultados 1H26 de Intesa Sanpaolo; Actividad y Resultados 1S26 de CaixaBank; resultados 1H26 de BPER. Cifras de segmento donde existe, de grupo en el resto.");
 };
 
+/* 14c — ROE PYME de la banca espanola */
+L.bancos_es = () => {const s=pres.addSlide();
+ const B=D.bancos, N=B.nombres;
+ titulo(s,"ROE PYME de la banca española, banco a banco","Modelizado, no publicado: ningún banco reporta un segmento PYME · Solo cambia entre bancos lo que cada uno sí publica · Junio 2025");
+ s.addChart(pres.ChartType.bar, [{name:"ROE PYME modelizado", labels:N, values:B.roe}],
+   {x:M, y:1.92, w:7.05, h:2.62, barDir:"col", chartColors:[PRIM], showTitle:false,
+    showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:11, dataLabelColor:TXT,
+    showLegend:false, catAxisLabelColor:TXT, catAxisLabelFontSize:10.5,
+    valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:24});
+ {const T=[["","Cartera PYME\nen España, M€","Densidad\nde RWA","CET1","Eficiencia","Mora PYME\nen España","Coste del\nriesgo","ROE"]]
+   .concat(N.map((b,i)=>[b, B.exposicion[i].toLocaleString("es-ES"),
+     n1(B.densidad[i])+" %", n1(B.cet1[i],2)+" %", n1(B.eficiencia[i])+" %",
+     n1(B.mora[i],2)+" %", n1(B.cor[i],2)+" %", n1(B.roe[i])+" %"]));
+  const rows=T.map((r,ri)=>r.map((c,ci)=>{
+    if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:7.5})};
+    const o=cel(null,{align: ci===0?"left":"center", fontSize:9, bold: ci===0});
+    if(ci===7){ o.bold=true; o.fill={color: B.roe[ri-1]>=20?ORA2:(B.roe[ri-1]>=16?ORA3:LIGHT)}; }
+    if(ci===2||ci===5){ o.fill={color:"FFFFFF"}; o.color=G1; }
+    return {text:c, options:o};}));
+  s.addTable(rows, Object.assign(tOpt(),{y:4.72, colW:[1.55,1.72,1.30,1.05,1.24,1.45,1.28,1.13], rowH:0.30}));}
+ s.addText("Las dos columnas en gris son las que más separan a un banco de otro. Las de eficiencia y CET1 son de grupo consolidado; las de cartera, densidad y mora son de contraparte española.",
+   {x:M, y:6.52, w:W-2*M, h:0.22, fontFace:BF, fontSize:8, color:MUT, italic:true, isTextBox:true, margin:0});
+
+ const CX=7.88, CW=W-M-CX;
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:1.92, w:CW, h:1.24, fill:{color:MAG3},
+   rectRadius:0.05, line:{color:MAG}});
+ s.addText("Esto no mide habilidad comercial",{x:CX+0.16, y:2.00, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("Precio, comisiones, coste de los recursos y fiscalidad son COMUNES a los cinco: ningún banco los publica por segmento. Todos ingresan el mismo "
+   + n1(D.bancos.margen[0]+D.pl.fondos[0],2) + " %. Lo que separa es riesgo, capital y gastos, no el precio que cada uno consigue.",
+   {x:CX+0.16, y:2.26, w:CW-0.32, h:0.84, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
+
+ s.addText("Qué le falta a cada uno para llegar a " + N[0],
+   {x:CX, y:3.30, w:CW, h:0.24, fontFace:HF, fontSize:11.5, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addText("Puntos de ROE que ganaría igualando cada palanca al mejor de los cinco",
+   {x:CX, y:3.54, w:CW, h:0.22, fontFace:BF, fontSize:7.5, color:MUT, isTextBox:true, margin:0});
+ {const T2=[["","Riesgo","Capital","Gastos"]].concat(
+    N.slice(1).map((b,k)=>{const i=k+1; return [b, sg2(B.pal_riesgo[i]), sg2(B.pal_capital[i]), sg2(B.pal_gastos[i])];}));
+  const rows=T2.map((r,ri)=>r.map((c,ci)=>{
+    if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:8})};
+    const o=cel(null,{align: ci===0?"left":"center", fontSize:8.5, bold: ci===0});
+    if(ci>0){ const v=[B.pal_riesgo,B.pal_capital,B.pal_gastos][ci-1][ri];
+      o.bold=true; o.fill={color: v>=3?ORA2:(v>0?ORA3:BLUE3)}; }
+    return {text:c, options:o};}));
+  s.addTable(rows, {x:CX, y:3.80, w:CW, colW:[1.70,1.05,1.05,1.05], rowH:0.27,
+    fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});}
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:5.26, w:CW, h:1.20, fill:{color:ORA3},
+   rectRadius:0.05, line:{color:ORA2}});
+ s.addText("Sabadell y BBVA son el contraste",{x:CX+0.16, y:5.34, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("Sabadell tiene la peor eficiencia de los cinco y aun así queda segundo, por una densidad de RWA del 37,3 %, la más baja. BBVA tiene la mejor eficiencia tras Bankinter y queda cuarto, por una densidad del 71,0 %, la más alta. El capital manda otra vez sobre todo lo demás.",
+   {x:CX+0.16, y:5.60, w:CW-0.32, h:0.78, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Cálculo propio. Cartera PYME, densidad de RWA y mora: EBA, EU-wide Transparency Exercise, partidas 2520503 a 2520533 con contraparte de Country = 28 (España), junio de 2025, que es el dato armonizado más reciente. CET1 y eficiencia: mismo ejercicio, nivel de GRUPO consolidado, que en Santander y BBVA está dominado por el negocio internacional; igualar su eficiencia a la del mejor solo movería su ROE 1,0 y 0,2 puntos, así que no altera el orden. Coste del riesgo: PD × LGD de PYME de España (0,59 %) escalado por la mora relativa de cada banco, que es un supuesto; sin escalar, el orden sería " + N.map((b,i)=>b+" "+n1(B.roe_sin_escalar[i])).join(" · ") + " %. Tipo impositivo del 30 % (art. 29 LIS) para los cinco.");
+};
+
 /* 15 — supuestos */
 L.supuestos = () => {const s=pres.addSlide();
  titulo(s,"Supuestos del modelo","Cada uno declarado, con su origen y su efecto · Dos de los iniciales han dejado de ser supuestos");
@@ -914,7 +971,7 @@ L.limites = () => {const s=pres.addSlide(); s.background={color:DARK};
 
 /* 17 — fuentes */
 L.fuentes = () => {const s=pres.addSlide();
- titulo(s,"Fuentes","Once fuentes, 38.689 observaciones, cada fila trazable a su serie de origen");
+ titulo(s,"Fuentes","Once fuentes, 38.813 observaciones, cada fila trazable a su serie de origen");
  const L=[["Bloque","Fuente","Cobertura","Último dato"],
   ["Precio y volumen","BCE, ECB Data Portal, dataset MIR","7 países, mensual","2026-07"],
   ["Tipos oficiales","BCE, dataset FM (facilidad de depósito, MRO, Euríbor)","Zona euro, diario","2026-09"],
@@ -1052,7 +1109,7 @@ const ORDEN = [
   "recursos", "riesgo", "infraestructura", "dos_ejes", "apetito",
   "capital", "eficiencia",
   "circulante", "circulante_precio", "circulante_roe",
-  "comparables", "conclusiones", "recomendaciones",
+  "comparables", "bancos_es", "conclusiones", "recomendaciones",
   "anexos", "datos", "fuentes", "fiabilidad", "limites", "supuestos",
   "info_relevante", "npl", "spread_pd_lgd", "palanca", "hipotecas", "factoring",
 ];

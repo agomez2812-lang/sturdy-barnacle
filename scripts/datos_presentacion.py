@@ -8,7 +8,7 @@ porque el CSV se habia escrito a medias). Aqui se reconstruyen desde los
 CSV, de modo que rehacer el modelo y rehacer el deck sean el mismo gesto.
 
 Bloques que toca: `pl`, `sens`, `ent`, `rec`, `sistema`, `apetito`, `marco`
-y `circ`. El resto se deja como esta, porque vienen de extractores distintos.
+y `circ` y `bancos`. El resto se deja como esta, porque vienen de extractores distintos.
 
 Uso:
     python3 scripts/modelo_roe.py
@@ -246,15 +246,63 @@ def main():
                            "Peso de la PYME en la exposicion a empresas", 1),
     }
 
+    ban = lee("comparables_bancos/modelo_roe_bancos_es.csv")
+    te = lee("comparables_bancos/eba_te_bancos_es.csv")
+    BN = ["Bankinter", "Sabadell", "CaixaBank", "BBVA", "Santander"]
+
+    def sb(filas, metrica, dec=2):
+        d = {}
+        for x in filas:
+            met, _, banco = x["metrica"].partition(" | ")
+            if met == metrica and banco in BN:
+                d[banco] = round(float(x["valor"]), dec)
+        falta = [x for x in BN if x not in d]
+        if falta:
+            sys.exit("falta %r para: %s" % (metrica, falta))
+        return [d[x] for x in BN]
+
+    bancos = {
+        "nombres": BN,
+        "exposicion": [int(v) for v in sb(te, "Exposicion PYME en Espana", 0)],
+        "densidad": sb(te, "Densidad de RWA de la cartera PYME en Espana", 1),
+        "cet1": sb(te, "Ratio CET1"),
+        "eficiencia": sb(te, "Ratio de eficiencia (cost-to-income)", 1),
+        "mora": sb(te, "Tasa de exposicion PYME en default en Espana"),
+        "cor": sb(ban, "Coste del riesgo PYME"),
+        "gastos": sb(ban, "Gastos de explotacion del prestamo PYME"),
+        "bai": sb(ban, "Resultado antes de impuestos del prestamo PYME"),
+        "capital": sb(ban, "Capital asignado al prestamo PYME"),
+        "roe": sb(ban, "ROE modelizado del prestamo PYME", 1),
+        "roe_sin_escalar": sb(
+            ban, "ROE modelizado del prestamo PYME sin escalar el riesgo", 1),
+        "margen": sb(ban, "Margen bruto del prestamo PYME"),
+        "periodo": "2025-06",
+    }
+    # palancas: solo estan para los cuatro que no son el mejor
+    for clave, metrica in (
+            ("pal_riesgo", "Mejora de ROE igualando el riesgo al mejor de "
+                           "los cinco"),
+            ("pal_capital", "Mejora de ROE igualando el capital al mejor de "
+                            "los cinco"),
+            ("pal_gastos", "Mejora de ROE igualando la eficiencia al mejor "
+                           "de los cinco")):
+        d = {}
+        for x in ban:
+            met, _, banco = x["metrica"].partition(" | ")
+            if met == metrica and banco in BN:
+                d[banco] = round(float(x["valor"]), 1)
+        bancos[clave] = [d.get(x, 0.0) for x in BN]
+
     D = json.load(open(DESTINO, encoding="utf-8"))
     claves = ("pl", "sens", "ent", "rec", "sistema", "apetito", "marco",
-              "circ")
+              "circ", "bancos")
     antes = {k: D.get(k) for k in claves}
     D["pl"], D["sens"], D["ent"] = pl, sens, ent
     D["rec"], D["sistema"] = recb, sistema
     # el bloque `riesgo` (tabla documental de infraestructura crediticia)
     # no deriva de ningun CSV y no se toca aqui
     D["apetito"], D["marco"], D["circ"] = apetito, marco, circ
+    D["bancos"] = bancos
     D.pop("dep", None)          # bloque muerto: quedo a cero y no se usa
     json.dump(D, open(DESTINO, "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)

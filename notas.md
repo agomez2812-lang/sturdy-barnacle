@@ -1765,6 +1765,106 @@ fuentes públicas, porque no existe el precio: el MIR solo publica A2Z1 en
 categoría total y se comprobó contra la API (`AMOUNT_CAT` solo admite `A`).
 Cualquier cifra de circulante PYME exigiría dato interno.
 
+### 2.54 ROE PYME de los cinco grandes bancos españoles
+
+Petición del usuario: construir el ROE de PYME de BBVA, CaixaBank,
+Santander, Sabadell y Bankinter, con datos de 2026 o cierre de 2025.
+
+**Lo primero, qué NO existe.** Ningún banco español publica una cuenta de
+resultados de PYME con capital asignado. Ya estaba comprobado en el bloque
+de comparables: la NIIF 8 obliga a reportar por los segmentos que usa la
+dirección y ninguno usa «PYME». Así que un ROE PYME **observado** no se
+puede construir, ni para 2025 ni para 2026.
+
+**Lo que sí existe, y resulta ser bastante.** El EU-wide Transparency
+Exercise del EBA publica por **entidad** y con desglose por **país de la
+contraparte**. Filtrando `Country = 28` se aísla la cartera PYME
+**española** de cada banco, que es justo lo que interesa: el agregado de
+grupo de Santander y BBVA está dominado por México, Brasil, Reino Unido y
+Turquía y no dice nada de su negocio PYME en España. Extractor en
+`scripts/eba_te_bancos_es.py`. Se descargó además `tr_oth.csv` del mismo
+ejercicio, que da capital y cuenta de resultados por entidad.
+
+| Banco | Cartera PYME España, M€ | Densidad RWA | CET1 | Eficiencia | Mora PYME |
+|---|---|---|---|---|---|
+| Bankinter | 14.553 | 53,3 % | 12,57 % | 33,7 % | 2,34 % |
+| Sabadell | 22.324 | **37,3 %** | 13,06 % | 41,0 % | 5,91 % |
+| CaixaBank | 48.736 | 49,2 % | 12,25 % | 40,5 % | 5,30 % |
+| BBVA | 24.410 | **71,0 %** | 13,34 % | 34,3 % | 3,98 % |
+| Santander | 32.325 | 62,7 % | 12,98 % | 37,0 % | **7,80 %** |
+
+**Qué es propio de cada banco y qué es común.** Esto define lo que el
+ejercicio puede y no puede decir:
+
+- *Propio*: densidad de RWA de su cartera PYME española, mora de esa misma
+  cartera, CET1 y eficiencia.
+- *Común a los cinco*: precio (MIR de España, tramo ≤1 M€), cuña de
+  comisiones (87 pb del Boletín), coste de los recursos y tipo impositivo
+  (30 %, art. 29 LIS). **Ningún banco publica esas magnitudes por segmento.**
+
+Por tanto **esto no compara la habilidad comercial de cada banco, que no es
+observable: compara su estructura de riesgo, capital y coste.** Los cinco
+ingresan el mismo 4,28 %.
+
+**Resultado (junio 2025):**
+
+| Banco | ROE PYME | CoR | Capital asignado | ROE sin escalar el riesgo |
+|---|---|---|---|---|
+| Bankinter | **21,7 %** | 0,26 % | 6,71 % | 18,2 % |
+| Sabadell | **20,5 %** | 0,65 % | 4,88 % | 21,3 % |
+| CaixaBank | 17,6 % | 0,58 % | 6,02 % | 17,5 % |
+| BBVA | 13,9 % | 0,43 % | 9,47 % | 12,7 % |
+| Santander | 11,8 % | 0,85 % | 8,14 % | 14,0 % |
+
+**El contraste que más enseña: Sabadell frente a BBVA.** Sabadell tiene la
+**peor eficiencia** de los cinco (41,0 %) y aun así queda segundo, por una
+densidad de RWA del 37,3 %, la más baja. BBVA tiene la **segunda mejor
+eficiencia** (34,3 %) y queda cuarto, por una densidad del 71,0 %, la más
+alta. Es la misma conclusión que en el análisis por países —el capital manda
+sobre lo demás— pero ahora dentro de un mismo mercado, con el mismo precio y
+la misma fiscalidad, lo que la hace más limpia: aquí no hay diferencias de
+mercado que la expliquen.
+
+**Descomposición de palancas contra el mejor (puntos de ROE):**
+
+```
+              riesgo   capital   gastos
+Sabadell        +5,6      -5,6     +3,7
+CaixaBank       +3,8      -1,8     +2,8
+BBVA            +1,3      +5,7     +0,2
+Santander       +5,1      +2,5     +1,0
+```
+
+**Supuestos y límites, todos en la lámina:**
+
+1. El coste del riesgo se escala: se parte del PD × LGD de PYME de España
+   (0,59 %) y se ajusta por la mora relativa de cada banco frente al
+   agregado de los cinco (5,43 %). Es un supuesto; se publica también el
+   caso sin escalar, que cambia el orden entre Bankinter y Sabadell.
+2. La mora es un ratio de **stock** (exposición en default sobre exposición
+   original), no una PD de flujo.
+3. **CET1 y eficiencia son de grupo consolidado**, porque el Transparency
+   Exercise no los desglosa por país. Para CaixaBank, Sabadell y Bankinter
+   el grupo es casi el negocio doméstico; para Santander y BBVA no. Ahora
+   bien, el sesgo está acotado: igualar la eficiencia de Santander y BBVA a
+   la del mejor solo movería su ROE **1,0 y 0,2 puntos**, así que no altera
+   el orden. Las dos palancas que sí mandan —riesgo y capital— son de
+   contraparte española.
+4. **La fecha es junio de 2025**, no cierre de 2025 ni 2026. Es el dato
+   armonizado más reciente del ejercicio de transparencia de 2025. Se
+   intentó completar CET1 y eficiencia a diciembre de 2025 desde las
+   presentaciones de resultados de Santander y BBVA y las dos descargas
+   fallaron (404 y respuesta vacía), igual que había pasado con ING, Société
+   Générale y BNP Paribas. Queda como pendiente de aportación manual, como
+   los otros tres.
+
+**Salidas:** lámina «ROE PYME de la banca española, banco a banco» tras la
+de comparables; `scripts/eba_te_bancos_es.py`,
+`scripts/modelo_roe_bancos_es.py`,
+`comparables_bancos/eba_te_bancos_es.csv`,
+`comparables_bancos/modelo_roe_bancos_es.csv`; bloque `bancos` en
+`pres/datos.json`.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
