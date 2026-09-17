@@ -736,5 +736,71 @@
    1.83,
    2.18
   ]
+ },
+ "riesgo": {
+  "ahorro_pd": [
+   22,
+   6,
+   34,
+   42,
+   7,
+   3,
+   0
+  ],
+  "ahorro_lgd": [
+   8,
+   3,
+   4,
+   13,
+   13,
+   0,
+   8
+  ],
+  "mejor_pd": 1.08,
+  "mejor_lgd": 29.7,
+  "infra": {
+   "España": [
+    "CIRBE (BdE)",
+    "1.000 €",
+    "Informa D&B, Axesor, Iberinform",
+    "Registro Mercantil, depósito obligatorio"
+   ],
+   "Alemania": [
+    "Millionenkredite",
+    "1.000.000 €",
+    "Creditreform, Schufa, CRIF",
+    "Bundesanzeiger, obligatorio"
+   ],
+   "Francia": [
+    "FIBEN + cotación BdF",
+    "adhesión I-FIBEN",
+    "Altares D&B, Ellisphere, Coface",
+    "Confidencialidad opcional para micro y pequeña"
+   ],
+   "Italia": [
+    "Centrale dei Rischi",
+    "30.000 €",
+    "Cerved, CRIF",
+    "Registro Imprese, obligatorio"
+   ],
+   "Portugal": [
+    "CRC (BdP)",
+    "50 €",
+    "Informa D&B, Iberinform",
+    "IES, obligatorio"
+   ],
+   "P. Bajos": [
+    "no existe para empresas",
+    "—",
+    "Graydon (desde 1888), Altares D&B",
+    "KvK, abreviado para pequeñas"
+   ],
+   "Irlanda": [
+    "Central Credit Register",
+    "500 €, consulta obligatoria >2.000 €",
+    "Vision-net, CRIF, Creditsafe",
+    "CRO, obligatorio"
+   ]
+  }
  }
 }

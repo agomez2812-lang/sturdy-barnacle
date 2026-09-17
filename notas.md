@@ -1168,6 +1168,80 @@ la comisión en el mercado objetivo antes de decidir; recalcular la densidad
 de RWA con el método propio del entrante; y cerrar el precio del factoring
 por vía no pública si el producto entra en el plan.
 
+### 2.46 Mitigación del coste del riesgo: la palanca es la PD, no la LGD
+
+Pregunta del usuario: cómo mitigar el coste del riesgo en PYME (bureaus de
+crédito, cuentas auditadas, etc.) y qué países están mejor posicionados.
+
+**Descomposición.** Sobre los parámetros IRB del EBA (COREP C 9.02, clase
+«Corporates – Of Which: SME», mediana de entidades, 2026-Q1), se recalcula
+el coste del riesgo `PD x LGD` de cada país sustituyendo primero la PD por
+la mejor de las siete y después la LGD por la mejor de las siete:
+
+```
+Dispersión del coste del riesgo entre países:
+  real                                : 0,45 pp
+  igualando la PD a la mejor  (1,08 %): 0,11 pp  -> queda el 25 %
+  igualando la LGD a la mejor (29,7 %): 0,35 pp  -> queda el 78 %
+```
+
+Es decir, **igualar la PD elimina el 75 % de la dispersión entre países;
+igualar la LGD solo el 22 %**. Ahorro por país en puntos básicos
+(ES, DE, FR, IT, PT, NL, IE):
+
+```
+con la mejor PD : [22,  6, 34, 42,  7,  3,  0]
+con la mejor LGD: [ 8,  3,  4, 13, 13,  0,  8]
+```
+
+Italia (−42 pb) y Francia (−34 pb) son los que más recorrido tienen por
+selección; Irlanda y Países Bajos ya están en la frontera.
+
+**Matiz que hay que mantener siempre junto al dato.** Esto mide la
+dispersión *entre países*, no el recorrido de un banco concreto. Para un
+prestamista individual la garantía, el aval y el SGR sí bajan su LGD propia.
+Lo que el dato dice es que las diferencias *de mercado* vienen de la calidad
+de la cartera admitida, no de la capacidad de recobro del sistema.
+
+**Infraestructura de información crediticia (evidencia documental, no
+estadística).** Umbrales de declaración obligatoria al registro público
+vigentes en 2026:
+
+| País | Registro público | Umbral | Bureaus privados | Cuentas depositadas |
+|---|---|---|---|---|
+| España | CIRBE (BdE) | 1.000 € | Informa D&B, Axesor, Iberinform | Registro Mercantil, obligatorio |
+| Alemania | Millionenkredite (Bundesbank) | 1.000.000 € | Creditreform, Schufa, CRIF | Bundesanzeiger, obligatorio |
+| Francia | FIBEN + cotación BdF | adhesión I-FIBEN | Altares D&B, Ellisphere, Coface | confidencialidad opcional para micro y pequeña |
+| Italia | Centrale dei Rischi | 30.000 € (250 € si deteriorado) | Cerved, CRIF | Registro Imprese, obligatorio |
+| Portugal | CRC (BdP) | 50 € | Informa D&B, Iberinform | IES, obligatorio |
+| Países Bajos | no existe para empresas | — | Graydon (desde 1888), Altares D&B | KvK, abreviado para pequeñas |
+| Irlanda | Central Credit Register | 500 €, consulta obligatoria > 2.000 € | Vision-net, CRIF, Creditsafe | CRO, obligatorio |
+
+**Hallazgo contraintuitivo: el registro público NO explica la PD observada.**
+Los dos países con el registro público más débil para PYME —Alemania, que
+solo cubre exposiciones de más de un millón, y Países Bajos, que no tiene
+registro de empresas— están entre las PD más bajas (1,26 % y 1,18 %), junto
+con Irlanda (1,08 %). España, con uno de los umbrales más bajos de Europa
+(1.000 €), tiene 1,73 %. Lo que sí acompaña a las PD bajas es la profundidad
+del *bureau* privado y la disponibilidad real de cuentas depositadas.
+
+Con siete observaciones esto es **indicativo, no causal**: no se puede
+descartar que la PD baja de Alemania y Países Bajos venga de la composición
+sectorial de su tejido empresarial y no de la información disponible. Se
+etiqueta como evidencia documental y se presenta como tal en la lámina.
+
+**Lastre específico de Francia.** Las microempresas pueden declarar
+confidencial la totalidad de sus cuentas, y las pequeñas su cuenta de
+resultados. Un entrante sin adhesión a I-FIBEN entra a ciegas, lo que
+refuerza la lectura de la lámina 9 (Francia es atractiva para un entrante
+eficiente, 21,8 %, pero el acceso a información es una barrera real de
+entrada, no un detalle operativo).
+
+**Salidas:** dos láminas nuevas en la presentación (14 «Mitigar el coste del
+riesgo: dónde está la palanca» y 15 «Infraestructura de información
+crediticia de PYME»), y el bloque `riesgo` en `pres/datos.json` con
+`ahorro_pd`, `ahorro_lgd`, `mejor_pd`, `mejor_lgd` e `infra`.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

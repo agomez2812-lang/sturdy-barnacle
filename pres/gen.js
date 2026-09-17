@@ -413,6 +413,58 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  fuente(s,"Fuente: EBA, anexo de parámetros de riesgo del Risk Dashboard Q1 2026, origen COREP C 9.02. Clases «Corporates – Of Which: SME» y «Corporates – Of Which: Large corporates».");
 }
 
+/* 13b — mitigacion del coste del riesgo: donde esta la palanca */
+{const s=pres.addSlide();
+ titulo(s,"Mitigar el coste del riesgo: dónde está la palanca","Cuánto cae el coste del riesgo de cada país si iguala la mejor PD o la mejor LGD de las siete · Puntos básicos");
+ s.addChart(pres.ChartType.bar, [
+   {name:"Con la mejor PD (1,08 %)", labels:P, values:D.riesgo.ahorro_pd.map(v=>-v)},
+   {name:"Con la mejor LGD (29,7 %)", labels:P, values:D.riesgo.ahorro_lgd.map(v=>-v)}],
+   {x:M, y:1.78, w:7.5, h:3.55, barDir:"col", chartColors:[PRIM,G2],
+    showTitle:false, showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:8,
+    dataLabelColor:DARK, showLegend:true, legendPos:"b", legendFontSize:9,
+    catAxisLabelColor:DARK, catAxisLabelFontSize:9, valAxisLabelColor:MUT,
+    valAxisLabelFormatCode:'0" pb"', valGridLine:{color:LIGHT, size:1},
+    catGridLine:{style:"none"}});
+ s.addShape(pres.ShapeType.roundRect,{x:8.15, y:1.78, w:4.58, h:2.05, fill:{color:ORA3},
+   rectRadius:0.06, line:{color:ORA2}});
+ s.addText("La selección pesa el triple que la recuperación",{x:8.35, y:1.9, w:4.2, h:0.5,
+   fontFace:HF, fontSize:12, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("Igualar la PD a la mejor de las siete elimina el 75 % de la dispersión del coste del riesgo entre países. Igualar la LGD solo elimina el 22 %.\n\nLa diferencia entre mercados está en a quién se presta, no en cuánto se recupera.",
+   {x:8.35, y:2.4, w:4.2, h:1.3, fontFace:BF, fontSize:9.5, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:8.15, y:3.95, w:4.58, h:1.38, fill:{color:LIGHT},
+   rectRadius:0.06, line:{color:G3}});
+ s.addText("Dónde más margen hay",{x:8.35, y:4.05, w:4.2, h:0.28, fontFace:HF,
+   fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("Italia −42 pb y Francia −34 pb mejorando selección. España −22 pb. Irlanda y Países Bajos ya están en la frontera: no tienen recorrido por esa vía.",
+   {x:8.35, y:4.36, w:4.2, h:0.85, fontFace:BF, fontSize:9, color:G1, isTextBox:true, margin:0});
+ s.addText("Matiz importante: esto mide la dispersión ENTRE países, no el recorrido de un banco concreto. Para un prestamista individual la garantía y el aval sí bajan su LGD propia; lo que dice el dato es que las diferencias de mercado vienen de la calidad de la cartera admitida.",
+   {x:M, y:5.55, w:W-2*M, h:0.6, fontFace:BF, fontSize:9.5, color:G1, isTextBox:true, margin:0});
+ fuente(s,"Cálculo propio sobre los parámetros IRB del EBA (COREP C 9.02), clase «Corporates – Of Which: SME», mediana de entidades, 2026-Q1. La mejor PD es la irlandesa (1,08 %) y la mejor LGD la neerlandesa (29,7 %).");
+}
+
+/* 13c — infraestructura de informacion crediticia */
+{const s=pres.addSlide();
+ titulo(s,"Infraestructura de información crediticia de PYME","Lo que un prestamista puede saber antes de conceder · Evidencia documental, no estadística");
+ const I=D.riesgo.infra;
+ const L=[["País","Registro público","Umbral","Bureaus privados","Cuentas depositadas","PD PYME"]].concat(
+   P.map((p,i)=>[p].concat(I[p]).concat([D.irb_cmp.pd_pyme[i].toFixed(2).replace(".",",")+" %"])));
+ const rows=L.map((r,ri)=>r.map((c,ci)=>{
+   if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"left", fontSize:8.5})};
+   const o=cel(null,{align: ci===5?"center":"left", fontSize:8, bold: ci===0});
+   if(ci===5){ const v=D.irb_cmp.pd_pyme[ri-1]; o.bold=true;
+     o.fill={color: v<1.3?ORA3:(v<1.8?LIGHT:MAG3)}; }
+   if(ci===2 && (String(c).indexOf("1.000.000")>=0 || String(c)==="—")) o.color=G1, o.italic=true;
+   return {text:c, options:o};}));
+ s.addTable(rows, Object.assign(tOpt(),{y:1.78, colW:[1.25,2.05,1.72,2.72,2.72,1.67], rowH:0.44}));
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:5.2, w:W-2*M, h:1.45, fill:{color:ORA3},
+   rectRadius:0.06, line:{color:ORA2}});
+ s.addText("El registro público NO explica la PD observada",{x:M+0.25, y:5.3, w:11.8, h:0.28,
+   fontFace:HF, fontSize:12.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("Los dos países con el registro público más débil para PYME —Alemania, que solo cubre exposiciones de más de un millón, y Países Bajos, que no tiene registro de empresas— son los que registran la PD más baja junto con Irlanda. Y España, con uno de los umbrales más bajos de Europa (1.000 €), tiene una PD de 1,73 %. Lo que sí acompaña a las PD bajas es la profundidad del bureau privado (Creditreform en Alemania, Graydon en Países Bajos, activo desde 1888) y la disponibilidad real de cuentas depositadas. Francia arrastra un lastre propio: micro y pequeñas empresas pueden declarar sus cuentas confidenciales, de modo que un entrante sin adhesión a I-FIBEN entra a ciegas.",
+   {x:M+0.25, y:5.62, w:11.8, h:0.95, fontFace:BF, fontSize:9.5, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Fuentes: Banco de España (CIRBE), Banca d'Italia (Centrale dei Rischi), Banco de Portugal (CRC), Central Bank of Ireland (Central Credit Register), Deutsche Bundesbank (Millionenkredite), Banque de France (FIBEN). Umbrales vigentes 2026. Correlación sobre siete países: indicativa, no causal.");
+}
+
 /* 10c — consumo de capital */
 {const s=pres.addSlide();
  titulo(s,"Consumo de capital de la cartera PYME","RWA sobre valor de exposición · EU-wide Transparency Exercise · Junio 2025 · Incorpora ya el factor de apoyo a PYME del art. 501 CRR");
