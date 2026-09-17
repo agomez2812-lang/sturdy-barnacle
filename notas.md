@@ -1055,33 +1055,54 @@ Comprobación para España: ingreso 3,41 + 0,87 = 4,28; margen 4,28 − 0,75 =
 3,54; gastos 3,54 × 0,4214 = 1,49; BAI 3,54 − 0,59 − 1,49 = 1,45; capital
 59,46 % × 13,67 % = 8,13; ROE 1,45 × 0,75 / 8,13 × 100 = **13,4 %**.
 
-**Cambio: el tipo impositivo deja de ser uniforme.** Se usaba un 25 % plano
-para todos. Pasa al **tipo combinado del impuesto de sociedades de cada
-país** (estatal más recargos locales), 2026, Tax Foundation:
+**Cambio: del 25 % uniforme al tipo que paga la banca en cada país.** No es
+el tipo general de sociedades: dos países tienen regla propia para el sector
+y usar la genérica los deja mal.
 
-| País | Tipo | ROE con 25 % plano | ROE con tipo real |
+| País | Tipo | Base legal | ROE |
 |---|---|---|---|
-| Países Bajos | 25,8 % | 20,4 % | **20,2 %** |
-| Alemania | 30,1 % | 18,1 % | 16,9 % |
-| Italia | 27,8 % | 15,8 % | 15,2 % |
-| **Irlanda** | **12,5 %** | 12,2 % | **14,2 %** |
-| Portugal | 29,5 % | 14,9 % | 14,0 % |
-| España | 25,0 % | 13,4 % | 13,4 % |
-| Francia | 25,8 % | 5,0 % | 5,0 % |
+| Países Bajos | 25,8 % | combinado 2026 | **20,2 %** |
+| Alemania | 30,1 % | combinado 2026 | 16,9 % |
+| Italia | 27,8 % | combinado 2026 | 15,2 % |
+| Portugal | 29,5 % | combinado 2026 | 14,0 % |
+| Irlanda | **15,0 %** | **mínimo de Pilar Dos** para grupos >750 M€, en vigor desde 2024. El 12,5 % histórico solo aplica a los que quedan fuera, y los bancos irlandeses no | 13,8 % |
+| España | **30,0 %** | **art. 29 LIS**: las entidades de crédito tributan al 30 %, no al 25 % general | 12,5 % |
+| Francia | 25,8 % | tipo **ordinario**, confirmado | 5,0 % |
 
-El cambio es material solo en dos países: **Irlanda gana 2,0 puntos** y pasa
-del sexto al cuarto puesto por su tipo del 12,5 %, y **Alemania pierde 1,2**.
-España no se mueve porque su tipo es justamente el 25 % que se asumía.
+Las dos correcciones sectoriales las señaló el usuario y son acertadas: con
+el tipo genérico, España salía 0,9 puntos de ROE por encima de lo que le
+corresponde e Irlanda 0,4 por debajo.
 
-**Francia, decisión pendiente.** Se aplica el tipo ordinario del 25,8 %. La
-contribución excepcional que lo eleva al **36,1 %** solo afecta a grupos con
-cifra de negocio superior a 1.500 M€, que es el caso de los grandes bancos
-franceses pero no de todo el sistema. Con ella el ROE francés bajaría del
-5,0 % al **4,3 %**. Queda como variante a decidir, no aplicada por defecto.
+**Francia: aplicado el tipo ordinario del 25,8 %**, por decisión expresa. La
+contribución excepcional que lo eleva al 36,1 % solo alcanza a grupos con
+cifra de negocio superior a 1.500 M€; con ella el ROE francés sería 4,3 %.
+Queda documentada como variante, no aplicada.
 
 Con esto el modelo conserva **un solo supuesto material: la cuña de
 comisiones fuera de España**. Precio, recursos, riesgo, capital, eficiencia
 e impuesto son todos observados por país.
+
+### 2.43 Ajuste de la paleta: pastel en vez de secundarios saturados
+
+El azul `#237DFF` y el magenta `#DC005F` del manual resultan estridentes en
+pantalla proyectada. Se sustituyen por los **matices pastel de la propia
+paleta ampliada**, que el manual define precisamente en su página de
+«colores para gráficos», de modo que el deck sigue siendo cien por cien
+corporativo:
+
+| Antes | Ahora | Nombre en el manual |
+|---|---|---|
+| `#237DFF` azul | `#77BFEE` / `#C7E3F9` | Azul 2 y Azul 3 |
+| `#DC005F` magenta | `#FF8AC2` / `#FFCCE8` | Magenta 2 y Magenta 3 |
+| — | `#FFAB70` / `#FFD6BA` | Naranja 2 y Naranja 3 |
+
+Regla aplicada: **el color vive en los rellenos pastel y el texto va en
+negro corporativo**; nunca texto blanco sobre pastel, que era lo que obligaba
+a usar tonos saturados. El naranja `#F56600` queda como único acento fuerte
+y se reserva para la serie principal de cada gráfico y para los totales.
+
+Verificación automática del fichero: **los 13 colores presentes en las 21
+láminas pertenecen todos a la paleta del manual**, sin ninguno fuera.
 
 ## 3. Estado de las decisiones
 
