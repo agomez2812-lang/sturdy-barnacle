@@ -7,17 +7,19 @@ ya provoco un error (notas.md 2.39: el grafico de depositos quedo vacio
 porque el CSV se habia escrito a medias). Aqui se reconstruyen desde los
 CSV, de modo que rehacer el modelo y rehacer el deck sean el mismo gesto.
 
-Bloques que toca: `pl`, `sens`, `ent`, `rec`, `sistema`, `apetito` y
-`marco`. El resto se deja como esta, porque vienen de extractores distintos.
+Bloques que toca: `pl`, `sens`, `ent`, `rec`, `sistema`, `apetito`, `marco`
+y `circ`. El resto se deja como esta, porque vienen de extractores distintos.
 
 Uso:
     python3 scripts/modelo_roe.py
+    python3 scripts/modelo_roe_circulante.py
     python3 scripts/apetito_riesgo.py
     python3 scripts/datos_presentacion.py
 """
 import csv
 import json
 import os
+import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +30,37 @@ PAISES = [("Espana", "España"), ("Alemania", "Alemania"),
           ("Francia", "Francia"), ("Italia", "Italia"),
           ("Portugal", "Portugal"), ("Paises Bajos", "P. Bajos"),
           ("Irlanda", "Irlanda")]
+
+
+def D_total_prestamo():
+    """Tipo medio del prestamo al TOTAL de empresas, ponderado por volumen.
+
+    Es el perimetro homologo del circulante, que no tiene tramo de importe.
+    """
+    tip = {}
+    vol = {}
+    for x in lee("prestamos_personales/prestamos_empresas_ecb_mir.csv"):
+        if (x["plazo_fijacion"] != "Total initial rate fixation"
+                or x["tramo_importe"] != "Total"):
+            continue
+        d = tip if x["unidad"] == "pct_anual" else (
+            vol if x["unidad"] == "eur_millones" else None)
+        if d is not None:
+            d.setdefault(x["pais"], {})[x["periodo_referencia"]] = \
+                float(x["valor"])
+    out = []
+    for a, _ in PAISES:
+        t = {k: v for k, v in tip.get(a, {}).items() if k.startswith("2026")}
+        v = vol.get(a, {})
+        con = [k for k in t if k in v and v[k]]
+        if con:
+            out.append(round(sum(t[k] * v[k] for k in con)
+                             / sum(v[k] for k in con), 2))
+        elif t:
+            out.append(round(sum(t.values()) / len(t), 2))
+        else:
+            sys.exit("falta el tipo total de empresas de %s" % a)
+    return out
 
 
 def lee(rel):
@@ -160,14 +193,54 @@ def main():
         },
     }
 
+    cir = lee("circulante/modelo_roe_circulante.csv")
+    rejilla = {}
+    for x in cir:
+        m = re.match(r"ROE medio del circulante con disposicion (\d+)% y "
+                     r"comision ([\d.]+)%", x["metrica"])
+        if m:
+            rejilla.setdefault(m.group(2), {})[m.group(1)] = \
+                round(float(x["valor"]), 1)
+    U = [40, 50, 60, 70, 80, 100]
+    circ = {
+        "tipo": serie(cir, "Tipo del circulante"),
+        "prestamo_total": D_total_prestamo(),
+        "dif_pyme": [int(v) for v in serie(
+            cir, "Diferencia de precio del circulante frente al prestamo "
+                 "PYME", 0)],
+        "dif_tot": [int(v) for v in serie(
+            cir, "Diferencia de precio del circulante frente al prestamo "
+                 "total de empresas", 0)],
+        "ingreso": serie(cir, "Ingreso total del circulante"),
+        "margen": serie(cir, "Margen bruto del circulante"),
+        "cor": serie(cir, "Coste del riesgo del circulante"),
+        "gastos": serie(cir, "Gastos de explotacion del circulante"),
+        "bai": serie(cir, "Resultado antes de impuestos del circulante"),
+        "capital": serie(cir, "Capital asignado al circulante"),
+        "roe": serie(cir, "ROE del circulante", 1),
+        "roe_ccf40": serie(
+            cir, "ROE del circulante con compromiso no cancelable", 1),
+        "roe_cuna": serie(
+            cir, "ROE del circulante con la cuna de comisiones del "
+                 "prestamo", 1),
+        "f_neutral": serie(cir, "Comision de disponibilidad neutral", 3),
+        "f_equilibrio": serie(
+            cir, "Comision de disponibilidad de equilibrio con el prestamo "
+                 "PYME", 2),
+        "grid": {k: [rejilla[k][str(u)] for u in U]
+                 for k in sorted(rejilla, key=float)},
+        "u_grid": U, "u_base": 60, "f_base": 0.30, "ccf": 10, "cuna": 0.87,
+    }
+
     D = json.load(open(DESTINO, encoding="utf-8"))
-    claves = ("pl", "sens", "ent", "rec", "sistema", "apetito", "marco")
+    claves = ("pl", "sens", "ent", "rec", "sistema", "apetito", "marco",
+              "circ")
     antes = {k: D.get(k) for k in claves}
     D["pl"], D["sens"], D["ent"] = pl, sens, ent
     D["rec"], D["sistema"] = recb, sistema
     # el bloque `riesgo` (tabla documental de infraestructura crediticia)
     # no deriva de ningun CSV y no se toca aqui
-    D["apetito"], D["marco"] = apetito, marco
+    D["apetito"], D["marco"], D["circ"] = apetito, marco, circ
     D.pop("dep", None)          # bloque muerto: quedo a cero y no se usa
     json.dump(D, open(DESTINO, "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)

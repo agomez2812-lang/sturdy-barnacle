@@ -24,6 +24,7 @@ import collections
 import csv
 import os
 import sys
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import schema  # noqa: E402
@@ -148,6 +149,42 @@ def main():
                           "en el encargo" % (suf, TED[suf])))); n += 1
     fh.close()
     print("%d filas -> %s" % (n, path))
+
+    # --- circulante de empresa: el unico volumen por pais que existe ---
+    # El MIR publica el tipo de revolving y descubiertos (A2Z1) de los siete
+    # paises, pero el volumen solo del agregado de zona euro. Espana si lo
+    # publica en su boletin nacional, cuadro 19.13 serie 1. Es el unico
+    # ancla de volumen de circulante por pais del encargo.
+    path2 = os.path.join(ROOT, "circulante", "bde_circulante.csv")
+    if os.path.exists(path2):
+        os.remove(path2)
+    fh2, w2 = schema.writer(path2)
+    n2 = 0
+    for alias, metrica, unidad, td, pond, nota in [
+            ("BE_19_5.1", "TEDR de descubiertos y lineas de credito",
+             "pct_anual", "nivel", "media_ponderada_volumen",
+             "cuadro 19.5, serie BE_19_5.1; sin comisiones. El boletin no "
+             "publica TAE de este producto, asi que la comision de "
+             "disponibilidad no es observable ni siquiera en Espana"),
+            ("BE_19_13.1", "Saldo de descubiertos y lineas de credito",
+             "eur_millones", "volumen", "dato_unico",
+             "cuadro 19.13, serie BE_19_13.1. En revolving y descubiertos el "
+             "MIR mide SALDO VIVO, no nueva produccion: no existe el "
+             "concepto de nueva operacion")]:
+        tabla = t5 if alias.startswith("BE_19_5") else v13
+        for per, val in sorted(tabla.get(alias, {}).items()):
+            if not per.startswith(a.anio):
+                continue
+            w2.writerow(schema.row(
+                pais="Espana", producto="circulante", metrica=metrica,
+                valor=("%.4f" if unidad == "pct_anual" else "%.0f") % val,
+                unidad=unidad, periodo_referencia=per,
+                fuente="Banco de Espana, Boletin Estadistico, capitulo 19",
+                url=URL, fecha_publicacion=time.strftime("%Y-%m-%d"),
+                criterio_segmentacion="n/a", tipo_de_dato=td,
+                ponderacion=pond, notas=nota)); n2 += 1
+    fh2.close()
+    print("%d filas -> %s" % (n2, path2))
     return 0
 
 

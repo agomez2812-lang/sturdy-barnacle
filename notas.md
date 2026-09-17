@@ -1553,6 +1553,143 @@ estaba a cero y no se usaba, se elimina.
 franja comparativa al pie de la lámina 10 y su título y pie reescritos para
 decir explícitamente qué mide y qué no.
 
+### 2.51 Circulante: precio frente al préstamo y ROE
+
+Petición del usuario: comparar el precio del circulante con el del préstamo
+PYME y estimar un ROE del circulante, teniendo en cuenta que se cobra por el
+dispuesto y por el disponible. Extractor en
+`scripts/modelo_roe_circulante.py`, salida en
+`circulante/modelo_roe_circulante.csv`.
+
+**Advertencia de perímetro, la principal.** La serie A2Z1 del MIR **no
+tiene tramo de importe**: se comprobó contra la API y solo existe
+`AMOUNT_CAT = A`. El circulante mezcla, por tanto, PYME y gran empresa,
+mientras que el préstamo PYME del modelo es el tramo ≤1 M€. Por eso la
+lámina compara contra los dos: el tramo PYME y el **total de sociedades no
+financieras**, que es el único perímetro homólogo.
+
+| País | Circulante | Préstamo ≤1 M€ | Préstamo total | vs PYME | vs total |
+|---|---|---|---|---|---|
+| España | 3,58 | 3,41 | 3,42 | +17 | +16 |
+| Alemania | 4,95 | 4,39 | 3,57 | +56 | **+138** |
+| Francia | 3,39 | 3,77 | 3,57 | −38 | −18 |
+| Italia | 4,11 | 4,25 | 3,57 | −14 | +54 |
+| Portugal | 4,41 | 3,94 | 3,82 | +47 | +58 |
+| P. Bajos | 2,46 | 4,50 | 3,47 | **−204** | −100 |
+| Irlanda | 4,92 | 5,37 | 5,01 | −45 | −9 |
+
+No hay una regla: a perímetro homólogo el circulante es más caro en cuatro
+países y más barato en tres. Y el perímetro importa mucho donde el tramo
+PYME pesa poco: en Países Bajos el salto es de −204 pb contra el tramo
+≤1 M€ pero de −100 pb contra el total, porque allí ese tramo es solo el
+7,6 % de la nueva producción.
+
+**Dato nuevo: volumen de circulante para España.** El deck decía que no
+existe volumen por país. Es cierto en el BCE, pero el Boletín del Banco de
+España sí lo publica (cuadro 19.13, serie 1): **57.933 M€** de saldo medio
+2026, con un TEDR del **3,58 %**, idéntico al que da el MIR. Sirve de
+validación cruzada del precio y es el único ancla de volumen por país.
+Añadido en `circulante/bde_circulante.csv`. Corregida también la lámina, que
+además decía «nueva producción»: en revolving y descubiertos el MIR mide el
+tipo del **saldo vivo**, porque no existe el concepto de nueva operación.
+
+**Modelo del ROE.** Todo por euro **dispuesto**, para que sea comparable con
+el préstamo. Con `u` = tasa de disposición, el disponible por euro dispuesto
+es `(1−u)/u`:
+
+```
+ingreso = tipo + f_disp * (1-u)/u
+EAD     = 1 + CCF * (1-u)/u
+margen  = ingreso - coste de los recursos     (solo se fondea lo dispuesto)
+CoR     = coste del riesgo PYME * EAD
+BAI     = margen - CoR - margen * eficiencia
+capital = densidad de RWA * CET1 * EAD
+```
+
+El coste del riesgo se aplica sobre la EAD y no solo sobre el dispuesto,
+que es como trata la NIIF 9 la pérdida esperada de un compromiso.
+
+**Dos huecos duros.** Ni la **comisión de disponibilidad** ni la **tasa de
+disposición** las publica ninguna estadística. Se buscó: el cuadro 19.6 del
+Banco de España da TAE de préstamo por tramo pero **no de descubiertos y
+líneas de crédito**; el catálogo completo de series del Boletín (10 MB, 
+descargado y rastreado) no tiene ninguna serie de riesgo disponible, límite
+ni compromisos; y el único dato fuera de balance del Transparency Exercise
+del EBA (ítem 2520606) es del banco entero y sin desglose por sector —da una
+cota de orden de magnitud, del 27,8 % de los préstamos en Países Bajos al
+60,7 % en Italia, pero no una tasa de disposición de PYME. Por eso el caso
+base **no es una estimación, es un punto de una rejilla** que se publica
+entera.
+
+**El CCF sí es un parámetro, no un hueco.** El CRR3, en vigor desde 2025,
+subió del 0 % al **10 %** el factor de conversión de los compromisos
+cancelables incondicionalmente, que es la figura típica de la póliza de
+crédito a PYME. El disponible consume capital por primera vez. Con
+compromiso no cancelable (40 %) el ROE cae entre 1,3 y 3,1 puntos.
+
+**Resultado, caso base (disposición 60 %, comisión 0,30 %, CCF 10 %):**
+
+| País | ROE circulante | ROE préstamo | Circulante con la misma cuña de 87 pb |
+|---|---|---|---|
+| España | 9,0 | 12,4 | **13,0** |
+| Alemania | 15,3 | 17,2 | **19,5** |
+| Francia | 0,9 | 5,4 | 4,0 |
+| Italia | 9,8 | 15,3 | 14,1 |
+| Portugal | 12,0 | 13,9 | **15,4** |
+| P. Bajos | 4,4 | 20,3 | 9,0 |
+| Irlanda | 9,9 | 13,9 | 12,2 |
+
+La tercera columna es la comparación que hay que mirar: el modelo del
+préstamo aplica 87 pb de comisiones sobre el saldo y el del circulante no
+aplica ninguna sobre el dispuesto, así que comparar las dos primeras mezcla
+el efecto estructural con el del supuesto. **A igual carga de comisiones, el
+circulante gana al préstamo en España, Alemania y Portugal**, y pierde en
+los otros cuatro. Países Bajos pierde por precio, no por estructura: su
+circulante está a 2,46 %.
+
+**Resultado analítico: la comisión de disponibilidad neutral.** Imponiendo
+que el ROE no dependa de la tasa de disposición —es decir, que el BAI sea
+proporcional a la EAD— sale una expresión cerrada:
+
+```
+f_neutral = CCF x (tipo - coste de los recursos)
+```
+
+el CCF por el margen del dispuesto. Comprobado numéricamente: con esa
+comisión el ROE no se mueve nada entre una disposición del 40 % y una del
+100 %. Va del **0,14 %** en Países Bajos al **0,46 %** en Irlanda; España,
+0,28 %. Por debajo de ella, una línea poco dispuesta destruye ROE; por
+encima, lo crea. Es la lectura más accionable del bloque, porque no depende
+de ninguno de los dos huecos: solo del precio y del coste de los recursos,
+que sí son observados.
+
+**Salidas:** dos láminas nuevas, «Préstamo frente a circulante: el precio» y
+«ROE del circulante»; tres filas nuevas en la lámina de supuestos; la de
+fiabilidad pasa el volumen de circulante de «NO EXISTE» a «SOLO ESPAÑA»;
+bloque `circ` en `pres/datos.json`, reconstruido por
+`scripts/datos_presentacion.py`.
+
+### 2.52 Reestructuración de la presentación: narrativa y anexos
+
+El usuario devolvió la versión 8 reordenada, y se reproduce esa estructura.
+`pres/gen.js` pasa de ser una secuencia de bloques a un diccionario de
+funciones `L` más un array `ORDEN`, de modo que reordenar sea cambiar una
+lista y no mover cientos de líneas. El generador falla si una lámina de `L`
+no está en `ORDEN` o al revés, para que no se pierda ninguna en un futuro
+reorden.
+
+Orden nuevo: 21 láminas de narrativa, separador **Anexos**, separador
+**Datos** (fuentes, mapa de fiabilidad, límites, supuestos), separador
+**Información relevante** (NPL, spread PD/LGD, palanca del riesgo, hipoteca,
+factoring). Los separadores son solo el título en naranja, sin subtítulo.
+
+Cambio de título pedido: «Precio por tramo de importe» pasa a «Precio de
+Préstamos a Pymes por tramo de importe».
+
+Se reaplican encima las correcciones de §2.50, que la versión 8 no llevaba:
+coste de los recursos por vencimiento total, ROE actualizados, franja
+comparativa empresa frente a sistema y la conclusión 1 corregida.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

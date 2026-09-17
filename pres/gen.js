@@ -20,6 +20,7 @@ const OK=BLUE, MED=ORA2, BAD=MAG, ACC=PRIM, TXT=DARK, MUT=G1;
 const HF="Verdana", BF="Verdana";
 const P = D.paises;
 const n1=(v,d=1)=>v.toFixed(d).replace(".",",");   // numero en formato es-ES
+const sg=v=>v>0?"+"+v:(v<0?"−"+Math.abs(v):"0"); // signo con menos tipografico
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";            // 13.33 x 7.5
@@ -48,21 +49,25 @@ const cel = (v,o)=>Object.assign({fontSize:11, align:"center", color:TXT}, o||{}
 const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
                    autoPage:false, valign:"middle"});
 
+
+/* --- Cada lamina es una funcion; el orden se decide abajo, en ORDEN. --- */
+const L = {};
+
 /* 1 — portada */
-{const s=pres.addSlide(); s.background={color:DARK};
+L.portada = () => {const s=pres.addSlide(); s.background={color:DARK};
  s.addText("Rentabilidad del negocio PYME", {x:M, y:2.5, w:10.5, h:0.9, fontFace:HF,
    fontSize:42, bold:true, color:"FFFFFF", isTextBox:true, margin:0});
  s.addText("España · Alemania · Francia · Italia · Portugal · Países Bajos · Irlanda",
    {x:M, y:3.45, w:10.5, h:0.5, fontFace:BF, fontSize:18, color:G2, isTextBox:true, margin:0});
  s.addText("Cinco productos · Datos oficiales 2026 · Modelo de ROE con supuestos declarados",
    {x:M, y:4.15, w:10.5, h:0.4, fontFace:BF, fontSize:13, color:ACC, isTextBox:true, margin:0});
- s.addText("38.451 observaciones · 11 fuentes · Septiembre 2026",
+ s.addText("38.689 observaciones · 11 fuentes · Septiembre 2026",
    {x:M, y:6.5, w:10.5, h:0.35, fontFace:BF, fontSize:11, color:MUT, isTextBox:true, margin:0});
  s.addNotes("Deck construido sobre datos oficiales del BCE, EBA, OCDE, Banco de España, Banca d'Italia, EUF y cuentas de resultados de bancos. El ROE es modelizado, no observado.");
-}
+};
 
 /* 2 — objetivo y metodo */
-{const s=pres.addSlide();
+L.objetivo = () => {const s=pres.addSlide();
  titulo(s,"Objetivo y método","Qué se mide, con qué datos y dónde están los límites");
  const cajas=[
   ["Objetivo","Comparar la rentabilidad del negocio PYME entre siete países europeos, producto a producto, sobre datos oficiales y no sobre estimaciones de mercado."],
@@ -79,14 +84,14 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
      color:TXT, isTextBox:true, margin:0});
    y+=1.30;});
  fuente(s,"Detalle completo de fuentes, supuestos y huecos en notas.md del repositorio del proyecto.");
-}
+};
 
 /* 3 — mapa de fiabilidad */
-{const s=pres.addSlide();
+L.fiabilidad = () => {const s=pres.addSlide();
  titulo(s,"Mapa de fiabilidad del dato","Qué se puede afirmar y con qué respaldo, producto a producto y país a país");
  const filas=[["Producto","Precio","Volumen","Comisiones","Riesgo","Capital"],
   ["Préstamo PYME por tramo","OBSERVADO","OBSERVADO","SOLO ESPAÑA","OBSERVADO","OBSERVADO"],
-  ["Circulante","OBSERVADO","NO EXISTE","NO EXISTE","OBSERVADO","OBSERVADO"],
+  ["Circulante","OBSERVADO","SOLO ESPAÑA","NO EXISTE","OBSERVADO","OBSERVADO"],
   ["Hipoteca PYME","NO EXISTE","PROXY CRE","NO EXISTE","OBSERVADO","OBSERVADO"],
   ["Factoring","NO EXISTE","OBSERVADO","NO EXISTE","PARCIAL","NO EXISTE"],
   ["Confirming","NO EXISTE","SOLO ES e IT","NO EXISTE","NO EXISTE","NO EXISTE"],
@@ -102,11 +107,11 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
    {x:M, y:5.55, w:W-2*M, h:0.6, fontFace:BF, fontSize:12, color:TXT, isTextBox:true, margin:0});
  [["OBSERVADO",OK],["PARCIAL o SUPUESTO",MED],["NO EXISTE",BAD]].forEach((l,i)=>chip(s,M+i*2.0,6.35,l[0],l[1]));
  fuente(s,"Fuentes: BCE (MIR), EBA Risk Dashboard, Banco de España (Boletín Estadístico), Banca d'Italia (STACORIS), OCDE, EUF.");
-}
+};
 
 /* 4 — precio por tramo */
-{const s=pres.addSlide();
- titulo(s,"Precio por tramo de importe","Los tres tramos que publica el MIR, sin solapamiento · Media 2026 ponderada por volumen · Fijación inicial total · Sin comisiones");
+L.precio = () => {const s=pres.addSlide();
+ titulo(s,"Precio de Préstamos a Pymes por tramo de importe","Los tres tramos que publica el MIR, sin solapamiento · Media 2026 ponderada por volumen · Fijación inicial total · Sin comisiones");
  s.addChart(pres.ChartType.bar, [
    {name:"Hasta 0,25 M€",     labels:P, values:D.tramos["Hasta 0,25 M EUR"]},
    {name:"0,25 a 1 M€",       labels:P, values:D.tramos["Mas de 0,25 y hasta 1 M EUR"]},
@@ -130,10 +135,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("En España y Portugal la mitad de la nueva producción es de importe ≤1 M€. En Países Bajos es el 7,6 % y en Irlanda el 16,8 %. Cualquier comparación de rentabilidad debe normalizar por este peso.",
    {x:8.6, y:4.70, w:3.95, h:0.95, fontFace:BF, fontSize:10.5, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuente: BCE, ECB Data Portal, dataset MIR. Tipo anual equivalente (AAR/NDER), que excluye comisiones. Media enero-julio 2026 ponderada por volumen mensual, salvo en los dos tramos pequeños de Alemania, donde el Bundesbank no publica volumen y la media es simple. Los tres tramos no se solapan: el «hasta 1 M€» que se usa en el resto del deck es la suma ponderada de los dos primeros.");
-}
+};
 
 /* 5 — Espana: TEDR vs TAE */
-{const s=pres.addSlide();
+L.comisiones_es = () => {const s=pres.addSlide();
  titulo(s,"Las comisiones son muy relevantes: impacto en España","Único país de los siete donde existe un tipo con comisiones para empresas · Media 2026");
  const T=D.es_tae, tr=["Hasta 0,25 M EUR","Mas de 0,25 y hasta 1 M EUR","Mas de 1 M EUR"];
  const nom=["≤0,25 M€","0,25–1 M€",">1 M€"];
@@ -168,10 +173,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("La banca española sí cobra más caro a la PYME: 81 pb más en coste total. Lo hace por comisión, no por tipo nominal. El MIR del BCE, que publica solo el tipo sin comisiones, no lo ve.",
    {x:M, y:5.85, w:W-2*M, h:0.7, fontFace:BF, fontSize:12, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuente: Banco de España, Boletín Estadístico, cuadros 19.5 (TEDR), 19.6 (TAE) y 19.13 (volúmenes). Cuña = TAE − TEDR, cálculo propio. Media enero-julio 2026.");
-}
+};
 
 /* 6 — cuenta de resultados modelizada */
-{const s=pres.addSlide();
+L.cuenta = () => {const s=pres.addSlide();
  titulo(s,"Cuenta de resultados del préstamo PYME","En % del saldo medio · Tramo ≤1 M€ · 2026 · Las filas en ocre son supuestos, no observaciones");
  const L=[["Concepto"].concat(P),
    ["Precio (tipo MIR)"].concat(D.pl.precio.map(v=>v.toFixed(2))),
@@ -197,10 +202,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("Solo la fila de comisiones es supuesto. Precio, recursos, riesgo, capital e impuesto son observados por país.",
    {x:M+3.7, y:6.15, w:8.5, h:0.3, fontFace:BF, fontSize:10, color:MUT, isTextBox:true, margin:0});
  fuente(s,"Precio: BCE MIR. Comisiones: cuña española de 87 pb aplicada a los siete (único supuesto material). Recursos: tipos de depósito de empresa del MIR ponderados por los saldos del BSI. Riesgo: PD × LGD de la clase IRB de PYME (COREP C 9.02). Gastos: eficiencia EBA sobre margen. Capital: densidad de RWA observada sobre CET1. Impuesto: tipo combinado de sociedades 2026 de cada país.");
-}
+};
 
 /* 7 — ROE por pais */
-{const s=pres.addSlide();
+L.roe = () => {const s=pres.addSlide();
  titulo(s,"ROE modelizado del préstamo PYME","Cuña de comisiones española aplicada a los siete países · Tipo impositivo real de cada uno · 2026");
  s.addChart(pres.ChartType.bar, [{name:"ROE", labels:P, values:D.pl.roe}],
    {x:M, y:1.8, w:7.4, h:4.1, barDir:"col", chartColors:[PRIM],
@@ -223,10 +228,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
   {text:`con un ${n1(D.pl.roe[2])} %: precio bajo, recursos caros y la peor eficiencia (65,6 %).`, options:{}}],
   {x:8.5, y:2.32, w:4.05, h:3.52, fontFace:BF, fontSize:9, color:TXT, isTextBox:true, margin:0});
  fuente(s,"ROE modelizado, no observado. Depende del supuesto de comisiones: ver lámina siguiente. Tipo de sociedades aplicable a bancos: ES 30,0 (art. 29 LIS, entidades de crédito) · DE 30,1 · FR 25,8 · IT 27,8 · PT 29,5 · NL 25,8 · IE 15,0 (mínimo de Pilar Dos). En Francia, la contribución excepcional del 36,1 % para grupos de más de 1.500 M€ de cifra de negocio dejaría su ROE en 4,7 %.");
-}
+};
 
 /* 8 — sensibilidad */
-{const s=pres.addSlide();
+L.sensibilidad = () => {const s=pres.addSlide();
  titulo(s,"Sensibilidad al supuesto de comisiones","Cuánto depende el ROE de la cuña que se asuma · Solo la columna de 87 pb está observada, y solo para España");
  const cols=["0","25","50","87","100","150"];
  const L=[["País"].concat(cols.map(c=>c+" pb"))].concat(
@@ -245,10 +250,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("El nivel del ROE se mueve mucho: España pasa del 3,5 % al 11,8 % según se asuma cero o 150 pb de comisión. El ordenamiento se mueve menos: Francia es último en todos los escenarios e Italia, Portugal y Países Bajos encabezan en todos. Lo que sí cambia es la posición relativa de España, que sube conforme se asume más comisión — y es el único país donde sabemos que la comisión es alta.",
    {x:M+0.25, y:5.70, w:11.8, h:0.85, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
  fuente(s,"87 pb es la cuña observada en España (TAE − TEDR, tramo ≤1 M€, media 2026, Banco de España). Para los otros cinco países no existe dato equivalente.");
-}
+};
 
 /* 8b — simulacion de entrante eficiente */
-{const s=pres.addSlide();
+L.entrante = () => {const s=pres.addSlide();
  titulo(s,"Simulación: entrante eficiente","Un banco extranjero con sus propios ratios de balance, enfrentando el precio, el riesgo, el capital y la fiscalidad de cada mercado local");
  s.addShape(pres.ShapeType.roundRect,{x:M, y:1.72, w:W-2*M, h:0.52, fill:{color:ORA3},
    rectRadius:0.06, line:{color:ORA2}});
@@ -285,10 +290,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
    {text:`Francia pasa del último puesto (${n1(D.pl.roe[2])} %) al cuarto (${n1(D.ent.roe[2])} %) porque su banca local es la más ineficiente de las siete y la más cara en recursos: ahí es donde más vale entrar eficiente. España es justo lo contrario, solo gana 1,2 puntos, porque su banca ya es eficiente y sus recursos ya son baratos —el entrante incluso pagaría más— y sigue arrastrando una densidad de RWA del 59,5 % y el 30 % de impuesto.`, options:{}}],
    {x:M, y:5.95, w:W-2*M, h:0.72, fontFace:BF, fontSize:10, color:DARK, isTextBox:true, margin:0});
  fuente(s,"Escenario, no observación. Se mantienen del mercado local el precio (MIR), la cuña de comisiones supuesta, el coste del riesgo (PD × LGD), la densidad de RWA (Transparency Exercise) y el tipo impositivo de banca. Se sustituyen coste de los recursos, eficiencia y CET1 por los del entrante. No incorpora coste de entrada, escala mínima ni curva de aprendizaje de riesgo.");
-}
+};
 
 /* 9 — coste de recursos */
-{const s=pres.addSlide();
+L.recursos = () => {const s=pres.addSlide();
  titulo(s,"Coste de los recursos de empresa","Depósitos de sociedades no financieras, ponderados por la mezcla real de saldos · Media 2026 · No es el coste de financiación del sistema: ver la franja inferior");
  s.addChart(pres.ChartType.bar, [
    {name:"Coste ponderado de los recursos", labels:P, values:D.rec.coste},
@@ -336,10 +341,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addTable(band, {x:M, y:5.64, w:W-2*M, colW:[4.13].concat(new Array(7).fill(1.143)),
    rowH:0.24, fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});
  fuente(s,"Fuentes: BCE, dataset MIR (tipos de depósito, nueva producción, serie de vencimiento total) y dataset BSI (saldos, para la ponderación). El coste que usa el modelo es el de los depósitos de SOCIEDADES NO FINANCIERAS (sector 2240), no el coste de financiación del sistema: los depósitos de empresa son solo entre el 22 % y el 34 % del depósito minorista de cada país, y el depósito del sistema tampoco incluye deuda emitida, repos, financiación del banco central ni capital. Facilidad de depósito del BCE al 2,09 %.");
-}
+};
 
 /* 10 — coste del riesgo */
-{const s=pres.addSlide();
+L.npl = () => {const s=pres.addSlide();
  titulo(s,"NPL por segmento","La PYME es el peor segmento en los siete países · Ratio de NPL, stock de dudosos · 2026-Q1 · Muestra de bancos del EBA");
  s.addChart(pres.ChartType.bar, [
    {name:"Total cartera", labels:P, values:D.npl_seg.total},
@@ -362,10 +367,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("ATENCIÓN: esto es el ratio de NPL, un STOCK de dudosos sobre cartera. NO es el coste del riesgo que usa el modelo, que es un flujo anual calculado como PD × LGD (lámina siguiente).",
    {x:M, y:5.98, w:8.0, h:0.55, fontFace:BF, fontSize:10, color:DARK, bold:true, isTextBox:true, margin:0});
  fuente(s,"Fuente: EBA Risk Dashboard, anexo de datos Q1 2026, desgloses «of which SMEs» y «of which CRE». Es la muestra de bancos del EBA, no el sistema completo.");
-}
+};
 
 /* 10b — PD x LGD */
-{const s=pres.addSlide();
+L.riesgo = () => {const s=pres.addSlide();
  titulo(s,"Coste del riesgo = PD × LGD","Parámetros IRB de la clase «Corporates – Of Which: SME» · Mediana de entidades declarantes · 2026-Q1 · Es la línea de riesgo de la cuenta de resultados");
  s.addChart(pres.ChartType.bar, [{name:"PD × LGD", labels:P, values:D.irb.cor}],
    {x:M, y:1.8, w:7.1, h:3.9, barDir:"col", chartColors:[PRIM], showTitle:false,
@@ -388,10 +393,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("Italia tiene la peor combinación y Países Bajos la mejor. Irlanda tiene la PD más baja de los siete, 1,08 %, pero una LGD del 37,3 %.",
    {x:M, y:6.28, w:W-2*M, h:0.35, fontFace:BF, fontSize:10.5, color:MUT, isTextBox:true, margin:0});
  fuente(s,"Fuente: EBA, anexo de parámetros de riesgo del Risk Dashboard Q1 2026, origen COREP C 9.02. Se usa la mediana de entidades y no la media ponderada, que se deja arrastrar por carteras grandes con parámetros extremos.");
-}
+};
 
 /* 11b — spread PYME vs gran empresa en PD y LGD */
-{const s=pres.addSlide();
+L.spread_pd_lgd = () => {const s=pres.addSlide();
  titulo(s,"Spread PYME frente a gran empresa: PD y LGD","Parámetros IRB, mediana de entidades · 2026-Q1 · La PYME falla más pero recupera mejor");
  const C=D.irb_cmp;
  s.addChart(pres.ChartType.bar, [
@@ -433,10 +438,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
     options:{color:TXT}}],
    {x:M+0.22, y:6.05, w:11.85, h:0.68, fontFace:BF, fontSize:10, isTextBox:true, margin:0});
  fuente(s,"Fuente: EBA, anexo de parámetros de riesgo del Risk Dashboard Q1 2026, origen COREP C 9.02. Clases «Corporates – Of Which: SME» y «Corporates – Of Which: Large corporates».");
-}
+};
 
 /* 13b — mitigacion del coste del riesgo: donde esta la palanca */
-{const s=pres.addSlide();
+L.palanca = () => {const s=pres.addSlide();
  titulo(s,"Mitigar el coste del riesgo: dónde está la palanca","Cuánto cae el coste del riesgo de cada país si iguala la mejor PD o la mejor LGD de las siete · Puntos básicos");
  s.addChart(pres.ChartType.bar, [
    {name:"Con la mejor PD (1,08 %)", labels:P, values:D.riesgo.ahorro_pd.map(v=>-v)},
@@ -462,10 +467,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("Matiz importante: esto mide la dispersión ENTRE países, no el recorrido de un banco concreto. Para un prestamista individual la garantía y el aval sí bajan su LGD propia; lo que dice el dato es que las diferencias de mercado vienen de la calidad de la cartera admitida.",
    {x:M, y:5.55, w:W-2*M, h:0.6, fontFace:BF, fontSize:9.5, color:G1, isTextBox:true, margin:0});
  fuente(s,"Cálculo propio sobre los parámetros IRB del EBA (COREP C 9.02), clase «Corporates – Of Which: SME», mediana de entidades, 2026-Q1. La mejor PD es la irlandesa (1,08 %) y la mejor LGD la neerlandesa (29,7 %).");
-}
+};
 
 /* 13c — infraestructura de informacion crediticia */
-{const s=pres.addSlide();
+L.infraestructura = () => {const s=pres.addSlide();
  titulo(s,"Infraestructura de información crediticia de PYME","Lo que un prestamista puede saber antes de conceder · Evidencia documental, no estadística");
  const I=D.riesgo.infra;
  const L=[["País","Registro público","Umbral","Bureaus privados","Cuentas depositadas","PD PYME"]].concat(
@@ -485,10 +490,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("Los dos países con el registro público más débil para PYME —Alemania, que solo cubre exposiciones de más de un millón, y Países Bajos, que no tiene registro de empresas— son los que registran la PD más baja junto con Irlanda. Y España, con uno de los umbrales más bajos de Europa (1.000 €), tiene una PD de 1,73 %. Lo que sí acompaña a las PD bajas es la profundidad del bureau privado (Creditreform en Alemania, Graydon en Países Bajos, activo desde 1888) y la disponibilidad real de cuentas depositadas. Francia arrastra un lastre propio: micro y pequeñas empresas pueden declarar sus cuentas confidenciales, de modo que un entrante sin adhesión a I-FIBEN entra a ciegas.",
    {x:M+0.25, y:5.62, w:11.8, h:0.95, fontFace:BF, fontSize:9.5, color:DARK, isTextBox:true, margin:0});
  fuente(s,"Fuentes: Banco de España (CIRBE), Banca d'Italia (Centrale dei Rischi), Banco de Portugal (CRC), Central Bank of Ireland (Central Credit Register), Deutsche Bundesbank (Millionenkredite), Banque de France (FIBEN). Umbrales vigentes 2026. Correlación sobre siete países: indicativa, no causal.");
-}
+};
 
 /* 13d — los dos ejes: informacion (PD) y recobro (LGD) */
-{const s=pres.addSlide();
+L.dos_ejes = () => {const s=pres.addSlide();
  titulo(s,"Los dos ejes: información selecciona, recobro recupera",
         "Índice construido sobre Doing Business 2020 y normativa vigente · 100 = el mejor de los siete, no un óptimo absoluto");
  const MP=D.marco;
@@ -573,10 +578,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
    {x:CX+0.16, y:5.42, w:CW-0.32, h:1.10, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
 
  fuente(s,"Eje de información: profundidad de la información crediticia (0-8) y cobertura de bureau privado de Doing Business 2020, más dos ordinales propios sobre el umbral del registro público y el régimen de depósito de cuentas. Eje de recobro: fortaleza de los derechos legales del acreedor (0-12), tasa de recuperación, coste sobre la masa y tiempo de resolución, de la misma fuente. Doing Business se descontinuó en 2021 y su vintage es mayo de 2019; B-READY, su sucesor, solo cubre Portugal de los siete. PD y LGD del EBA, COREP C 9.02, 2026-Q1. n=7: indicativo, no causal. La PD de cada país es un resultado revelado y recoge también el apetito de riesgo del mercado, no solo su información y su entorno: ver la lámina siguiente.");
-}
+};
 
 /* 13e — se paga el riesgo? apetito frente a precio */
-{const s=pres.addSlide();
+L.apetito = () => {const s=pres.addSlide();
  titulo(s,"¿Se paga el riesgo? Entre mercados, no",
         "Si cobrar más compensara prestar peor, el margen neto de riesgo sería plano entre países · Ordenado por PD creciente");
  const A=D.apetito, pdv=D.irb_cmp.pd_pyme;
@@ -638,10 +643,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
    {x:CX+0.16, y:5.92, w:CW-0.32, h:0.66, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
 
  fuente(s,"Precio por tramo del dataset MIR del BCE, media ponderada por volumen de 2026-01 a 2026-07; Alemania no publica volumen de los tramos pequeños, así que su gradiente mezcla media simple y media ponderada. PD del EBA, COREP C 9.02, 2026-Q1, mediana de entidades. La comisión es un supuesto de 87 pb en los seis países que no la publican. El tramo de más de 1 M€ no es solo gran empresa, pero es el proxy más cercano que publica el MIR. n=7: indicativo, no causal.");
-}
+};
 
 /* 10c — consumo de capital */
-{const s=pres.addSlide();
+L.capital = () => {const s=pres.addSlide();
  titulo(s,"Consumo de capital de la cartera PYME","RWA sobre valor de exposición · EU-wide Transparency Exercise · Junio 2025 · Incorpora ya el factor de apoyo a PYME del art. 501 CRR");
  s.addChart(pres.ChartType.bar, [{name:"Densidad de RWA", labels:P, values:D.capital.densidad}],
    {x:M, y:1.85, w:7.3, h:3.9, barDir:"col", chartColors:[PRIM], showTitle:false,
@@ -668,11 +673,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("Capital asignado = densidad de RWA × ratio CET1. Ambos observados por país; no hay supuesto en esta línea.",
    {x:M, y:5.9, w:W-2*M, h:0.55, fontFace:BF, fontSize:10.5, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuente: EBA, EU-wide Transparency Exercise 2025, fichero tr_cre.csv, partidas 2520523 (valor de exposición PYME) y 2520533 (RWA PYME), agregadas por supervisor nacional. La diferencia refleja el peso de modelos internos frente a método estándar y la garantía aportada.");
-}
-
+};
 
 /* 11 — eficiencia, capital, comisiones */
-{const s=pres.addSlide();
+L.eficiencia = () => {const s=pres.addSlide();
  titulo(s,"Eficiencia, capital y comisiones en Sistema Bancario","2026-Q1 · Nivel de grupo consolidado, no de segmento PYME");
  const L=[["Indicador"].concat(P),
    ["Ratio de NPL"].concat(D.eba.npl.map(v=>v.toFixed(2)+" %")),
@@ -699,11 +703,11 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("Son de grupo consolidado. El coste del riesgo español (1,22 %) está inflado por el negocio internacional: CaixaBank, doméstico, reporta 0,24 %. Por eso el modelo no usa esta fila.",
    {x:7.07, y:5.62, w:5.45, h:0.85, fontFace:BF, fontSize:11.5, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuente: EBA Risk Dashboard, anexo de datos Q1 2026, indicadores AQT_3.2, PFT_43, PFT_23, PFT_21, SVC_3 y PFT_26.");
-}
+};
 
 /* 12 — circulante */
-{const s=pres.addSlide();
- titulo(s,"Circulante: líneas de crédito y descubiertos","Tipo de nueva producción a empresas · Media 2026 · Serie A2Z1, que excluye deuda de tarjeta");
+L.circulante = () => {const s=pres.addSlide();
+ titulo(s,"Circulante: líneas de crédito y descubiertos","Tipo del saldo vivo a empresas · Media 2026 · Serie A2Z1, que excluye deuda de tarjeta");
  s.addChart(pres.ChartType.bar, [{name:"Tipo circulante", labels:P, values:D.circulante}],
    {x:M, y:1.85, w:7.3, h:4.0, barDir:"col", chartColors:[PRIM], showTitle:false,
     showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:12, dataLabelColor:TXT,
@@ -712,21 +716,21 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
     valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:6});
  s.addShape(pres.ShapeType.roundRect,{x:8.2, y:1.85, w:4.53, h:1.9, fill:{color:MAG3},
    rectRadius:0.06, line:{color:MAG}});
- s.addText("Hueco: no hay volumen por país",{x:8.42, y:2.0, w:4.1, h:0.32, fontFace:HF,
+ s.addText("Hueco: volumen solo en España",{x:8.42, y:2.0, w:4.1, h:0.32, fontFace:HF,
    fontSize:13, bold:true, color:DARK, isTextBox:true, margin:0});
- s.addText("El BCE publica el tipo de circulante por país, pero el volumen de nueva producción solo existe para el agregado de zona euro. No se puede calcular el peso del circulante en la cartera de cada país con fuentes oficiales.",
-   {x:8.42, y:2.4, w:4.1, h:1.25, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
+ s.addText("El BCE publica el tipo de los siete países, pero el volumen solo del agregado de zona euro. El único dato nacional hallado es el del Banco de España: 57.933 M€ de saldo medio en 2026, con un tipo del 3,58 % idéntico al del BCE. Para los otros seis, el peso del circulante en la cartera no es calculable con fuente oficial.",
+   {x:8.42, y:2.4, w:4.1, h:1.28, fontFace:BF, fontSize:9.5, color:TXT, isTextBox:true, margin:0});
  s.addShape(pres.ShapeType.roundRect,{x:8.2, y:3.95, w:4.53, h:1.9, fill:{color:LIGHT},
    rectRadius:0.06, line:{color:G3}});
  s.addText("Dos perímetros distintos",{x:8.42, y:4.1, w:4.1, h:0.32, fontFace:HF,
    fontSize:13, bold:true, color:PRIM, isTextBox:true, margin:0});
  s.addText("A2Z1 son revolving y descubiertos. A2Z añade deuda de tarjeta. La diferencia va de 0 a 4 pb, mayor en Francia y zona euro. Se usa A2Z1, que es el perímetro de circulante de empresa.",
    {x:8.42, y:4.5, w:4.1, h:1.25, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
- fuente(s,"Fuente: BCE, dataset MIR, serie A2Z1 (revolving y descubiertos a sociedades no financieras). El dato de julio de 2026 es provisional en España, Alemania, Francia, Italia y zona euro.");
-}
+ fuente(s,"Fuente: BCE, dataset MIR, serie A2Z1 (revolving y descubiertos a sociedades no financieras). En revolving y descubiertos el MIR mide el tipo del saldo vivo, no de nueva producción: no existe el concepto de nueva operación. El dato de julio de 2026 es provisional en España, Alemania, Francia, Italia y zona euro. Volumen de España: Banco de España, Boletín Estadístico, cuadro 19.13, serie 1.");
+};
 
 /* 13 — hipotecas */
-{const s=pres.addSlide();
+L.hipotecas = () => {const s=pres.addSlide();
  titulo(s,"Hipoteca PYME: no existe estadística oficial","El bloque se cubre con exposición a inmueble comercial, que es el proxy disponible");
  s.addShape(pres.ShapeType.roundRect,{x:M, y:1.8, w:W-2*M, h:1.25, fill:{color:MAG3},
    rectRadius:0.06, line:{color:MAG}});
@@ -747,10 +751,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
     valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
     valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:8});
  fuente(s,"Fuente: EBA Risk Dashboard Q1 2026, desglose «of which CRE». Alemania destaca con el peor NPL de inmueble comercial de los seis (6,81 %), muy por encima de su NPL total (1,61 %).");
-}
+};
 
 /* 14 — factoring */
-{const s=pres.addSlide();
+L.factoring = () => {const s=pres.addSlide();
  titulo(s,"Factoring y confirming: volumen sí, precio no","Volumen cedido 2025 y penetración sobre PIB · El precio no es obtenible con fuentes públicas");
  s.addChart(pres.ChartType.bar, [{name:"Penetración sobre PIB", labels:P, values:D.factoring.pib}],
    {x:M, y:1.85, w:6.9, h:3.6, barDir:"col", chartColors:[PRIM], showTitle:false,
@@ -773,10 +777,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("Volumen cedido 2025 (M€):  " + P.map((p,i)=>`${p} ${Math.round(D.factoring.volumen[i]/1000)}k`).join("  ·  "),
    {x:M, y:5.6, w:W-2*M, h:0.4, fontFace:BF, fontSize:11.5, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuentes: EUF (datos anuales 2025), AEF para el desglose español, Assifact para el italiano. El turnover es importe cedido en el año, no saldo vivo: no comparable con cartera de crédito.");
-}
+};
 
 /* 14b — comparables */
-{const s=pres.addSlide();
+L.comparables = () => {const s=pres.addSlide();
  titulo(s,"Comparables banco a banco","Cuentas de resultados 2026 · De nueve bancos analizados, solo dos publican segmento de empresas con desglose de comisiones");
  const C=D.comparables;
  const g=n=>{const c=C.find(x=>x.banco===n); return c?c.m:{};};
@@ -802,10 +806,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("La NIIF 8 obliga a reportar por los segmentos que usa la dirección, y casi ninguno usa «PYME». El segmento de Commerzbank mezcla gran empresa, PYME, sector público e institucionales. En ABN AMRO la PYME neerlandesa ni siquiera está en Corporate Banking, sino en Personal & Business Banking. El peso de comisiones del 25 % al 35 % sirve como orden de magnitud de la banca de empresas, no como medida del negocio PYME.",
    {x:M+0.25, y:5.72, w:11.8, h:0.8, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuentes: comunicado de resultados Q2 2026 de Commerzbank; informe intermedio Q2 2026 de ABN AMRO; resultados 1H26 de Intesa Sanpaolo; Actividad y Resultados 1S26 de CaixaBank; resultados 1H26 de BPER. Cifras de segmento donde existe, de grupo en el resto.");
-}
+};
 
 /* 15 — supuestos */
-{const s=pres.addSlide();
+L.supuestos = () => {const s=pres.addSlide();
  titulo(s,"Supuestos del modelo","Cada uno declarado, con su origen y su efecto · Dos de los iniciales han dejado de ser supuestos");
  const L=[["Supuesto","Valor","Origen","Efecto si cambia"],
   ["% de comisiones","87 pb","Observada en España (TAE − TEDR, tramo ≤1 M€). Aplicada a los otros cinco países","ALTO. Mueve el ROE entre 3 y 12 puntos"],
@@ -813,19 +817,22 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
   ["Coste del riesgo","PD × LGD por país","YA NO ES SUPUESTO. Parámetros IRB de la clase «Corporates – Of Which: SME», mediana de entidades (COREP C 9.02)","—"],
   ["Densidad de RWA","35 % a 61 % por país","YA NO ES SUPUESTO. RWA sobre exposición de la cartera PYME (EBA Transparency Exercise)","—"],
   ["Tipo impositivo","15,0 % a 30,1 %","YA NO ES SUPUESTO. Tipo aplicable a bancos: España 30 % por el art. 29 LIS, Irlanda 15 % por el mínimo de Pilar Dos, resto combinado 2026","—"],
-  ["Eficiencia","EBA por país","Observada, pero de grupo consolidado y no de segmento PYME","MEDIO. Penaliza a países con banca universal compleja"]];
+  ["Eficiencia","EBA por país","Observada, pero de grupo consolidado y no de segmento PYME","MEDIO. Penaliza a países con banca universal compleja"],
+  ["Disposición del circulante",`${D.circ.u_base} %`,"SUPUESTO. Ni el BCE ni el EBA ni el Banco de España publican límite y dispuesto de las líneas de crédito","MEDIO. Solo pesa si la comisión de disponibilidad se aparta de la neutral"],
+  ["Comisión de disponibilidad",`${n1(D.circ.f_base,2)} %`,"SUPUESTO. Ninguna estadística publica comisiones de líneas de crédito, ni siquiera el cuadro 19.6 del Banco de España","ALTO en el circulante. Mueve su ROE entre el 7 % y el 11 %"],
+  ["Conversión del disponible",`CCF ${D.circ.ccf} %`,"YA NO ES SUPUESTO. CRR3, compromiso cancelable incondicionalmente. El no cancelable va al 40 %","MEDIO. Al 40 % el ROE del circulante cae entre 1,3 y 3,1 puntos"]];
  const rows=L.map((r,ri)=>r.map((c,ci)=>{
    if(ri===0) return {text:c, options:Object.assign({},hdr,{align:"left", fontSize:11})};
    const o=cel(null,{align:"left", fontSize:10, color:TXT});
    if(ci===0) o.bold=true;
    if(ci===3 && c.startsWith("ALTO")) o.color=DARK, o.bold=true, o.fill={color:MAG3};
    return {text:c, options:o};}));
- s.addTable(rows, Object.assign(tOpt(),{y:1.78, colW:[2.7,1.75,4.5,3.17], rowH:0.62}));
+ s.addTable(rows, Object.assign(tOpt(),{y:1.72, colW:[2.7,1.75,4.5,3.17], rowH:0.50}));
  fuente(s,"El modelo completo y reproducible está en scripts/modelo_roe.py del repositorio. Cada fila del CSV de salida declara si el valor es observado o supuesto.");
-}
+};
 
 /* 19b — conclusiones y recomendaciones */
-{const s=pres.addSlide();
+L.conclusiones = () => {const s=pres.addSlide();
  titulo(s,"Conclusiones y recomendaciones","Lo que sostienen los datos y lo que se deriva para una decisión de entrada");
  const C=[
   ["1","El capital manda sobre el precio",
@@ -851,10 +858,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
      color:G1, isTextBox:true, margin:0});
    y+=0.845;});
  fuente(s,"Las conclusiones 1 a 5 se apoyan en datos observados por país; la 6 señala el supuesto que las condiciona. Las correlaciones de la conclusión 5 son sobre siete países: indicativas, no causales. El escenario de entrante no incorpora coste de entrada, escala mínima ni curva de aprendizaje de riesgo.");
-}
+};
 
 /* 19c — recomendaciones accionables */
-{const s=pres.addSlide();
+L.recomendaciones = () => {const s=pres.addSlide();
  titulo(s,"Recomendaciones","Qué haría falta para convertir este análisis en una decisión");
  const R=[
   ["Priorizar","Países Bajos y Alemania","37,0 % y 35,0 % de ROE simulado. Incumbentes ineficientes, riesgo bajo y capital barato. Son los dos mercados donde el modelo eficiente rinde más."],
@@ -879,10 +886,10 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
      color:G1, valign:"middle", isTextBox:true, margin:0});
    y+=0.555;});
  fuente(s,"ROE simulado del entrante con coste de los recursos 0,80 %, eficiencia 40 % y CET1 12,9 %, sobre el precio, riesgo, capital y fiscalidad de cada mercado. No incorpora coste de entrada ni escala mínima. Las tres recomendaciones de riesgo se apoyan en la descomposición PD/LGD de los parámetros IRB del EBA, en los índices institucionales de Doing Business 2020 y en el precio por tramo del dataset MIR del BCE.");
-}
+};
 
 /* 16 — lo que no se puede afirmar */
-{const s=pres.addSlide(); s.background={color:DARK};
+L.limites = () => {const s=pres.addSlide(); s.background={color:DARK};
  s.addText("Lo que estos datos no permiten afirmar", {x:M, y:0.55, w:W-2*M, h:0.6,
    fontFace:HF, fontSize:30, bold:true, color:"FFFFFF", isTextBox:true, margin:0});
  s.addText("Cuatro límites que conviene tener delante antes de usar cualquier cifra de este deck",
@@ -902,11 +909,11 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
    s.addText(l[1], {x:M+0.65, y:y+0.36, w:11.5, h:0.72, fontFace:BF, fontSize:11.5,
      color:G3, isTextBox:true, margin:0});
    y+=1.22;});
-}
+};
 
 /* 17 — fuentes */
-{const s=pres.addSlide();
- titulo(s,"Fuentes","Once fuentes, 38.451 observaciones, cada fila trazable a su serie de origen");
+L.fuentes = () => {const s=pres.addSlide();
+ titulo(s,"Fuentes","Once fuentes, 38.689 observaciones, cada fila trazable a su serie de origen");
  const L=[["Bloque","Fuente","Cobertura","Último dato"],
   ["Precio y volumen","BCE, ECB Data Portal, dataset MIR","7 países, mensual","2026-07"],
   ["Tipos oficiales","BCE, dataset FM (facilidad de depósito, MRO, Euríbor)","Zona euro, diario","2026-09"],
@@ -926,6 +933,124 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addTable(rows, Object.assign(tOpt(),{y:1.74, colW:[2.85,4.65,2.8,1.82], rowH:0.39}));
  s.addText("Todos los datos, los extractores y el registro de huecos y decisiones metodológicas están en el repositorio del proyecto, en notas.md.",
    {x:M, y:6.35, w:W-2*M, h:0.4, fontFace:BF, fontSize:11.5, color:TXT, isTextBox:true, margin:0});
-}
+};
 
-pres.writeFile({fileName:"rentabilidad_pyme.pptx"}).then(f=>console.log("escrito:",f));
+/* 12b — precio: prestamo frente a circulante */
+L.circulante_precio = () => {const s=pres.addSlide();
+ titulo(s,"Préstamo frente a circulante: el precio","Media 2026 · En revolving el MIR mide el tipo del saldo vivo, no de nueva producción · El circulante no tiene tramo de importe, así que la única comparación de perímetro homólogo es contra el total de empresas");
+ const C=D.circ;
+ s.addChart(pres.ChartType.bar, [
+   {name:"Préstamo PYME (≤1 M€)", labels:P, values:D.tramos["Hasta 1 M EUR"]},
+   {name:"Préstamo, total empresas", labels:P, values:C.prestamo_total},
+   {name:"Circulante (todas las empresas)", labels:P, values:C.tipo}],
+   {x:M, y:1.92, w:8.05, h:3.55, barDir:"col", chartColors:[PRIM,ORA3,BLUE],
+    showTitle:false, showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:8,
+    dataLabelColor:TXT, showLegend:true, legendPos:"b", legendFontSize:9.5,
+    catAxisLabelColor:TXT, catAxisLabelFontSize:10, valAxisLabelColor:MUT,
+    valAxisLabelFormatCode:'0.0"%"', valGridLine:{color:"E3E9EB", size:1},
+    catGridLine:{style:"none"}, valAxisMaxVal:6.0});
+ s.addText("Diferencia del circulante frente al préstamo del mismo perímetro, en puntos básicos",
+   {x:M, y:5.52, w:8.05, h:0.22, fontFace:BF, fontSize:8, color:MUT, italic:true,
+    align:"center", isTextBox:true, margin:0});
+ {const L2=[["", "vs préstamo total", "vs préstamo PYME"]].concat(
+    P.map((p,i)=>[p, sg(C.dif_tot[i]), sg(C.dif_pyme[i])]));
+  const rows=L2.map((r,ri)=>r.map((c,ci)=>{
+    if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:8})};
+    const o=cel(null,{align: ci===0?"left":"center", fontSize:8.5, bold: ci===0});
+    if(ci>0){ const v= ci===1?C.dif_tot[ri-1]:C.dif_pyme[ri-1];
+      o.bold=true; o.fill={color: v>0?ORA3:(v<-50?MAG3:LIGHT)}; }
+    return {text:c, options:o};}));
+  s.addTable(rows, {x:8.82, y:1.92, w:3.91, colW:[1.35,1.33,1.23], rowH:0.30,
+    fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});}
+ s.addShape(pres.ShapeType.roundRect,{x:8.82, y:4.40, w:3.91, h:1.24, fill:{color:MAG3},
+   rectRadius:0.05, line:{color:MAG}});
+ s.addText("Cuidado con el perímetro",{x:8.98, y:4.48, w:3.59, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("La serie A2Z1 del BCE solo existe en categoría total: mezcla PYME y gran empresa. Comparar el circulante contra el tramo ≤1 M€ exagera la diferencia allí donde ese tramo pesa poco. En Países Bajos solo es el 7,6 % de la nueva producción, y ahí el salto es de −204 pb contra PYME pero de −100 pb contra el total.",
+   {x:8.98, y:4.74, w:3.59, h:0.84, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:8.82, y:5.74, w:3.91, h:0.88, fill:{color:ORA3},
+   rectRadius:0.05, line:{color:ORA2}});
+ s.addText("No hay una regla",{x:8.98, y:5.82, w:3.59, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("A perímetro homólogo, el circulante es más caro que el préstamo en cuatro países y más barato en tres. Alemania cobra +138 pb por la línea; Países Bajos, −100.",
+   {x:8.98, y:6.08, w:3.59, h:0.48, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Fuente: BCE, dataset MIR. Circulante: serie A2Z1 (revolving y descubiertos a sociedades no financieras), sin tramo de importe, media simple de 2026-01 a 2026-07. Préstamo: medias ponderadas por volumen del mismo periodo. En revolving el MIR mide el tipo del saldo vivo, no de nueva producción: no existe el concepto de nueva operación. Validación cruzada: el Banco de España publica el mismo dato para España (cuadro 19.5, serie 1) y da 3,58 %, idéntico al del BCE.");
+};
+
+/* 12c — ROE del circulante */
+L.circulante_roe = () => {const s=pres.addSlide();
+ titulo(s,"ROE del circulante: se cobra por dos sitios, se consume capital por dos","Por euro dispuesto · Disposición 60 % y comisión de disponibilidad 0,30 % son SUPUESTOS, no datos · CCF del 10 % del CRR3");
+ const C=D.circ;
+ s.addChart(pres.ChartType.bar, [
+   {name:"ROE del circulante", labels:P, values:C.roe},
+   {name:"ROE del préstamo PYME", labels:P, values:D.pl.roe.map(v=>Math.round(v*10)/10)}],
+   {x:M, y:1.92, w:7.35, h:3.05, barDir:"col", chartColors:[BLUE,PRIM],
+    showTitle:false, showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:8.5,
+    dataLabelColor:TXT, showLegend:true, legendPos:"b", legendFontSize:9.5,
+    catAxisLabelColor:TXT, catAxisLabelFontSize:9.5, valAxisLabelColor:MUT,
+    valAxisLabelFormatCode:'0"%"', valGridLine:{color:"E3E9EB", size:1},
+    catGridLine:{style:"none"}, valAxisMaxVal:22});
+ s.addText("Los dos no son comparables tal cual: el modelo del préstamo aplica 0,87 % de comisiones sobre el saldo y el del circulante no aplica ninguna sobre el dispuesto. Con la misma carga, el circulante da "
+   + P.map((p,i)=>`${p} ${n1(C.roe_cuna[i])}`).join(" · ") + " %.",
+   {x:M, y:5.02, w:7.35, h:0.52, fontFace:BF, fontSize:8, color:G1, isTextBox:true, margin:0});
+
+ /* rejilla de sensibilidad */
+ s.addText("Sensibilidad a los dos supuestos",{x:M, y:5.62, w:7.35, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:PRIM, isTextBox:true, margin:0});
+ {const g=C.grid, fs=Object.keys(g);
+  const cab=[{text:"comisión \\ disposición", options:Object.assign({},hdr,{align:"left", fontSize:7.5})}]
+    .concat(C.u_grid.map(u=>({text:u+" %", options:Object.assign({},hdr,{fontSize:7.5})})));
+  const rows=[cab].concat(fs.map(f=>[{text:n1(parseFloat(f),2)+" %",
+      options:cel(null,{align:"left", fontSize:8, bold:true})}]
+    .concat(g[f].map(v=>{
+      const o=cel(null,{fontSize:8, bold:true});
+      o.fill={color: v>=10?ORA2:(v>=8.5?ORA3:LIGHT)};
+      return {text:n1(v)+" %", options:o};}))));
+  s.addTable(rows, {x:M, y:5.90, w:7.35, colW:[2.10].concat(new Array(6).fill(0.875)),
+    rowH:0.21, fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});}
+
+ /* columna derecha */
+ const CX=8.15, CW=W-M-CX;
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:1.92, w:CW, h:1.52, fill:{color:LIGHT},
+   rectRadius:0.05, line:{color:G3}});
+ s.addText("Cómo se cobra y cómo consume",{x:CX+0.16, y:2.00, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("Ingreso = tipo sobre el DISPUESTO + comisión sobre el DISPONIBLE.\nExposición = dispuesto + CCF × disponible.\nSolo se fondea lo dispuesto; el riesgo y el capital van sobre la exposición.",
+   {x:CX+0.16, y:2.26, w:CW-0.32, h:1.10, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:3.54, w:CW, h:1.46, fill:{color:ORA3},
+   rectRadius:0.05, line:{color:ORA2}});
+ s.addText("La comisión neutral es el CCF por el margen",{x:CX+0.16, y:3.62, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("Imponiendo que el ROE no dependa de la disposición sale f = CCF × (tipo − coste de los recursos). Por debajo de esa comisión, una línea poco dispuesta destruye ROE; por encima, lo crea. Va de "
+   + n1(Math.min(...C.f_neutral),2) + " % en Países Bajos a " + n1(Math.max(...C.f_neutral),2) + " % en Irlanda.",
+   {x:CX+0.16, y:3.88, w:CW-0.32, h:1.04, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:5.10, w:CW, h:1.52, fill:{color:MAG3},
+   rectRadius:0.05, line:{color:MAG}});
+ s.addText("Dos huecos duros y un cambio regulatorio",{x:CX+0.16, y:5.18, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("Ni la comisión de disponibilidad ni la tasa de disposición las publica ninguna estadística: ni el BCE, ni el EBA, ni el Boletín del Banco de España, que sí da TAE de préstamo por tramo pero no de líneas de crédito. Y el CRR3, en vigor desde 2025, subió del 0 % al 10 % el factor de conversión de los compromisos cancelables: el disponible consume capital por primera vez. Con compromiso no cancelable (40 %) el ROE cae entre 1,3 y 3,1 puntos.",
+   {x:CX+0.16, y:5.44, w:CW-0.32, h:1.10, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Cálculo propio. Tipo del circulante del MIR (A2Z1); coste de los recursos, coste del riesgo (PD × LGD de la clase IRB de PYME), densidad de RWA, CET1, eficiencia y tipo impositivo, los mismos que usa el modelo del préstamo. La disposición y la comisión de disponibilidad son supuestos declarados: la rejilla muestra el efecto de moverlos. El coste del riesgo se aplica sobre la exposición, no solo sobre el dispuesto, que es como lo trata la NIIF 9 en compromisos.");
+};
+
+/* --- orden final de la presentacion --- */
+const ORDEN = [
+  "portada", "objetivo",
+  "precio", "comisiones_es", "cuenta", "roe", "sensibilidad", "entrante",
+  "recursos", "riesgo", "infraestructura", "dos_ejes", "apetito",
+  "capital", "eficiencia",
+  "circulante", "circulante_precio", "circulante_roe",
+  "comparables", "conclusiones", "recomendaciones",
+  "anexos", "datos", "fuentes", "fiabilidad", "limites", "supuestos",
+  "info_relevante", "npl", "spread_pd_lgd", "palanca", "hipotecas", "factoring",
+];
+const SEPARADORES = {anexos:"Anexos", datos:"Datos", info_relevante:"Información relevante"};
+Object.entries(SEPARADORES).forEach(([k,t])=>{ L[k] = () => titulo(pres.addSlide(), t); });
+
+ORDEN.forEach(k=>{ if(!L[k]) throw new Error("lamina desconocida: "+k); L[k](); });
+const sobran = Object.keys(L).filter(k=>!ORDEN.includes(k));
+if(sobran.length) throw new Error("laminas sin colocar: "+sobran.join(", "));
+
+pres.writeFile({fileName:"rentabilidad_pyme.pptx"}).then(f=>console.log("escrito:",f,"|",ORDEN.length,"laminas"));
