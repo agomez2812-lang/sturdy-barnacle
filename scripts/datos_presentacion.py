@@ -276,6 +276,13 @@ def main():
         "roe_sin_escalar": sb(
             ban, "ROE modelizado del prestamo PYME sin escalar el riesgo", 1),
         "margen": sb(ban, "Margen bruto del prestamo PYME"),
+        "ingreso": sb(ban, "Ingreso total del prestamo PYME"),
+        # comunes a los cinco: ningun banco publica estas magnitudes por
+        # segmento, asi que se toman las de Espana del modelo de paises
+        "precio": pl["precio"][0],
+        "comisiones": pl["comisiones"][0],
+        "fondos": pl["fondos"][0],
+        "tipo": 30.0,
         "periodo": "2025-06",
     }
     # palancas: solo estan para los cuatro que no son el mejor

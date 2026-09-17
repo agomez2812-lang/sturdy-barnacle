@@ -1858,8 +1858,12 @@ Santander       +5,1      +2,5     +1,0
    Générale y BNP Paribas. Queda como pendiente de aportación manual, como
    los otros tres.
 
-**Salidas:** lámina «ROE PYME de la banca española, banco a banco» tras la
-de comparables; `scripts/eba_te_bancos_es.py`,
+**Salidas:** dos láminas tras la de comparables, «ROE PYME de la banca
+española, banco a banco» y «Cuenta de resultados del préstamo PYME, banco a
+banco» —esta última con el mismo formato que la de países, a petición del
+usuario, con una columna «Ámbito» que marca fila a fila si la magnitud es
+común a los cinco o propia de cada banco: de once filas, seis son comunes
+por construcción y solo cinco discriminan—; `scripts/eba_te_bancos_es.py`,
 `scripts/modelo_roe_bancos_es.py`,
 `comparables_bancos/eba_te_bancos_es.csv`,
 `comparables_bancos/modelo_roe_bancos_es.csv`; bloque `bancos` en

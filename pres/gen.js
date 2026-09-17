@@ -865,6 +865,42 @@ L.bancos_es = () => {const s=pres.addSlide();
  fuente(s,"Cálculo propio. Cartera PYME, densidad de RWA y mora: EBA, EU-wide Transparency Exercise, partidas 2520503 a 2520533 con contraparte de Country = 28 (España), junio de 2025, que es el dato armonizado más reciente. CET1 y eficiencia: mismo ejercicio, nivel de GRUPO consolidado, que en Santander y BBVA está dominado por el negocio internacional; igualar su eficiencia a la del mejor solo movería su ROE 1,0 y 0,2 puntos, así que no altera el orden. Coste del riesgo: PD × LGD de PYME de España (0,59 %) escalado por la mora relativa de cada banco, que es un supuesto; sin escalar, el orden sería " + N.map((b,i)=>b+" "+n1(B.roe_sin_escalar[i])).join(" · ") + " %. Tipo impositivo del 30 % (art. 29 LIS) para los cinco.");
 };
 
+/* 14d — cuenta de resultados PYME banco a banco */
+L.bancos_es_pl = () => {const s=pres.addSlide();
+ const B=D.bancos, N=B.nombres;
+ titulo(s,"Cuenta de resultados del préstamo PYME, banco a banco","En % del saldo medio · Tramo ≤1 M€ · Junio 2025 · Solo las cinco filas marcadas «del banco» cambian de una columna a otra");
+ const rep=v=>N.map(()=>v);      // magnitud comun a los cinco
+ const F=[
+  ["Precio (tipo MIR de España)","Común", rep(n1(B.precio,2)), 0],
+  ["+ Comisiones","Común", rep(n1(B.comisiones,2)), 1],
+  ["= Ingreso total","Común", B.ingreso.map(v=>n1(v,2)), 2],
+  ["− Coste de los recursos","Común", rep(n1(B.fondos,2)), 0],
+  ["= Margen bruto","Común", B.margen.map(v=>n1(v,2)), 2],
+  ["− Coste del riesgo","Del banco", B.cor.map(v=>n1(v,2)), 3],
+  ["− Gastos","Del banco", B.gastos.map(v=>n1(v,2)), 3],
+  ["= Resultado antes de imp.","Del banco", B.bai.map(v=>n1(v,2)), 2],
+  ["Capital asignado (RWA × CET1)","Del banco", B.capital.map(v=>n1(v,2)), 3],
+  ["Tipo impositivo","Común", rep(n1(B.tipo,1)+" %"), 0],
+  ["ROE","Del banco", B.roe.map(v=>n1(v)+" %"), 4]];
+ const L2=[["Concepto","Ámbito"].concat(N)].concat(F.map(f=>[f[0],f[1]].concat(f[2])));
+ const rows=L2.map((r,ri)=>r.map((c,ci)=>{
+   if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:10})};
+   const tipo=F[ri-1][3], propio=F[ri-1][1]==="Del banco";
+   const o=cel(null,{align: ci===0?"left":"center", fontSize:10.5});
+   if(ci===1){ o.fontSize=8.5; o.bold=true;
+     o.fill={color: propio?BLUE3:LIGHT}; o.color= propio?DARK:G1; return {text:c, options:o}; }
+   if(tipo===1) o.fill={color:ORA3}, o.color=DARK;          // supuesto
+   if(tipo===2) o.bold=true, o.fill={color:LIGHT}, o.color=PRIM;   // subtotal
+   if(tipo===4) o.bold=true, o.fill={color:PRIM}, o.color="FFFFFF";
+   if(tipo===0 && ci>1) o.color=G1;                          // comun, sin peso
+   return {text:c, options:o};}));
+ s.addTable(rows, Object.assign(tOpt(),{y:1.74, colW:[2.86,1.05].concat(Array(5).fill(1.644)), rowH:0.345}));
+ [["Común a los cinco",LIGHT],["Del banco",BLUE3],["Supuesto",ORA3]].forEach((l,i)=>chip(s,M+i*1.62,6.06,l[0],l[1]));
+ s.addText("Ningún banco publica precio ni comisiones de PYME, así que las cinco primeras filas y el impuesto son idénticos por construcción. Lo que separa a un banco de otro es solo riesgo, gastos y capital.",
+   {x:M+5.1, y:6.00, w:7.1, h:0.48, fontFace:BF, fontSize:9, color:MUT, isTextBox:true, margin:0});
+ fuente(s,"Precio, comisiones y coste de los recursos: los de España del modelo de países, comunes a los cinco. Coste del riesgo: PD × LGD de PYME de España escalado por la mora PYME española de cada banco (supuesto). Gastos: eficiencia del banco sobre el margen. Capital: densidad de RWA de su cartera PYME española por su ratio CET1, ambos del EU-wide Transparency Exercise del EBA con contraparte de Country = 28, junio de 2025. Eficiencia y CET1 son de grupo consolidado. Impuesto del 30 % (art. 29 LIS) para los cinco.");
+};
+
 /* 15 — supuestos */
 L.supuestos = () => {const s=pres.addSlide();
  titulo(s,"Supuestos del modelo","Cada uno declarado, con su origen y su efecto · Dos de los iniciales han dejado de ser supuestos");
@@ -1109,7 +1145,7 @@ const ORDEN = [
   "recursos", "riesgo", "infraestructura", "dos_ejes", "apetito",
   "capital", "eficiencia",
   "circulante", "circulante_precio", "circulante_roe",
-  "comparables", "bancos_es", "conclusiones", "recomendaciones",
+  "comparables", "bancos_es", "bancos_es_pl", "conclusiones", "recomendaciones",
   "anexos", "datos", "fuentes", "fiabilidad", "limites", "supuestos",
   "info_relevante", "npl", "spread_pd_lgd", "palanca", "hipotecas", "factoring",
 ];
