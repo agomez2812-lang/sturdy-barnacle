@@ -19,6 +19,7 @@ const OK=BLUE, MED=ORA2, BAD=MAG, ACC=PRIM, TXT=DARK, MUT=G1;
    como sustituta de sistema cuando no esta disponible. */
 const HF="Verdana", BF="Verdana";
 const P = D.paises;
+const n1=(v,d=1)=>v.toFixed(d).replace(".",",");   // numero en formato es-ES
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";            // 13.33 x 7.5
@@ -214,14 +215,14 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText([
   {text:"Países Bajos y Alemania encabezan", options:{bold:true, breakLine:true}},
   {text:"por coste del riesgo bajo (0,35 % y 0,40 %) y la menor densidad de RWA (37 % y 35 %), que reduce el capital a inmovilizar.\n\n", options:{breakLine:true}},
-  {text:"España queda en 12,5 %", options:{bold:true, breakLine:true}},
+  {text:`España queda en ${n1(D.pl.roe[0])} %`, options:{bold:true, breakLine:true}},
   {text:"con el precio más bajo, una densidad de RWA del 59,5 % y el 30 % de tipo que la banca paga en España.\n\n", options:{breakLine:true}},
   {text:"Irlanda queda cuarta", options:{bold:true, breakLine:true}},
   {text:"pese a la mayor densidad de RWA de los siete (70 %), gracias al 15 % de Pilar Dos frente al 26-30 % del resto.\n\n", options:{breakLine:true}},
   {text:"Francia queda última", options:{bold:true, breakLine:true}},
-  {text:"con un 5,0 %: precio bajo, recursos caros y la peor eficiencia (65,6 %).", options:{}}],
+  {text:`con un ${n1(D.pl.roe[2])} %: precio bajo, recursos caros y la peor eficiencia (65,6 %).`, options:{}}],
   {x:8.5, y:2.32, w:4.05, h:3.52, fontFace:BF, fontSize:9, color:TXT, isTextBox:true, margin:0});
- fuente(s,"ROE modelizado, no observado. Depende del supuesto de comisiones: ver lámina siguiente. Tipo de sociedades aplicable a bancos: ES 30,0 (art. 29 LIS, entidades de crédito) · DE 30,1 · FR 25,8 · IT 27,8 · PT 29,5 · NL 25,8 · IE 15,0 (mínimo de Pilar Dos). En Francia, la contribución excepcional del 36,1 % para grupos de más de 1.500 M€ de cifra de negocio dejaría su ROE en 4,3 %.");
+ fuente(s,"ROE modelizado, no observado. Depende del supuesto de comisiones: ver lámina siguiente. Tipo de sociedades aplicable a bancos: ES 30,0 (art. 29 LIS, entidades de crédito) · DE 30,1 · FR 25,8 · IT 27,8 · PT 29,5 · NL 25,8 · IE 15,0 (mínimo de Pilar Dos). En Francia, la contribución excepcional del 36,1 % para grupos de más de 1.500 M€ de cifra de negocio dejaría su ROE en 4,7 %.");
 }
 
 /* 8 — sensibilidad */
@@ -281,14 +282,14 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  s.addText("Ranking del entrante:\nP. Bajos > Alemania > Irlanda > Francia > Italia > Portugal > España",
    {x:8.42, y:5.26, w:4.15, h:0.55, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
  s.addText([{text:"El orden de atractivo cambia por completo. ", options:{bold:true}},
-   {text:"Francia pasa del último puesto (5,0 %) al cuarto (21,8 %) porque su banca local es la más ineficiente de las siete y la más cara en recursos: ahí es donde más vale entrar eficiente. España es justo lo contrario, solo gana 1,2 puntos, porque su banca ya es eficiente y sus recursos ya son baratos —el entrante incluso pagaría más— y sigue arrastrando una densidad de RWA del 59,5 % y el 30 % de impuesto.", options:{}}],
+   {text:`Francia pasa del último puesto (${n1(D.pl.roe[2])} %) al cuarto (${n1(D.ent.roe[2])} %) porque su banca local es la más ineficiente de las siete y la más cara en recursos: ahí es donde más vale entrar eficiente. España es justo lo contrario, solo gana 1,2 puntos, porque su banca ya es eficiente y sus recursos ya son baratos —el entrante incluso pagaría más— y sigue arrastrando una densidad de RWA del 59,5 % y el 30 % de impuesto.`, options:{}}],
    {x:M, y:5.95, w:W-2*M, h:0.72, fontFace:BF, fontSize:10, color:DARK, isTextBox:true, margin:0});
  fuente(s,"Escenario, no observación. Se mantienen del mercado local el precio (MIR), la cuña de comisiones supuesta, el coste del riesgo (PD × LGD), la densidad de RWA (Transparency Exercise) y el tipo impositivo de banca. Se sustituyen coste de los recursos, eficiencia y CET1 por los del entrante. No incorpora coste de entrada, escala mínima ni curva de aprendizaje de riesgo.");
 }
 
 /* 9 — coste de recursos */
 {const s=pres.addSlide();
- titulo(s,"Coste de los recursos de empresa","Tipos del MIR ponderados por la mezcla real de saldos del BSI · Media 2026 · Es el coste de fondos que usa el modelo");
+ titulo(s,"Coste de los recursos de empresa","Depósitos de sociedades no financieras, ponderados por la mezcla real de saldos · Media 2026 · No es el coste de financiación del sistema: ver la franja inferior");
  s.addChart(pres.ChartType.bar, [
    {name:"Coste ponderado de los recursos", labels:P, values:D.rec.coste},
    {name:"Margen sobre la facilidad del BCE", labels:P, values:D.rec.margen}],
@@ -299,8 +300,8 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
     valAxisLabelColor:MUT, valAxisLabelFormatCode:'0.0"%"',
     valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:2.4});
  const L=[["","Vista","Plazo","% vista","Ponderado"]].concat(P.map((p,i)=>
-   [p, D.rec.vista[i].toFixed(2), D.rec.plazo[i].toFixed(2),
-    D.rec.peso_vista[i].toFixed(0)+" %", D.rec.coste[i].toFixed(2)]));
+   [p, n1(D.rec.vista[i],2), n1(D.rec.plazo[i],2),
+    D.rec.peso_vista[i].toFixed(0)+" %", n1(D.rec.coste[i],2)]));
  const rows=L.map((r,ri)=>r.map((c,ci)=>{
    if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:9.5})};
    const o=cel(null,{align: ci===0?"left":"center", fontSize:10, bold: ci===0});
@@ -308,13 +309,33 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
    return {text:c, options:o};}));
  s.addTable(rows, {x:8.15, y:1.85, w:4.58, colW:[1.28,0.8,0.8,0.86,0.84], rowH:0.365,
    fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});
- s.addShape(pres.ShapeType.roundRect,{x:8.15, y:4.9, w:4.58, h:0.85, fill:{color:ORA3},
+ s.addShape(pres.ShapeType.roundRect,{x:8.15, y:4.84, w:4.58, h:0.70, fill:{color:ORA3},
    rectRadius:0.06, line:{color:ORA2}});
- s.addText("La mezcla decide, no el tipo: Italia paga un 0,56 % a la vista y España un 0,44 %, pero Italia tiene un 89 % en vista y acaba igual de barata.",
-   {x:8.35, y:5.0, w:4.2, h:0.68, fontFace:BF, fontSize:10, color:TXT, isTextBox:true, margin:0});
- s.addText("Irlanda capta los recursos más baratos de los siete, un 0,41 %, y Francia los más caros, un 1,34 %: tres veces más. Es el segundo factor que más separa el ROE, por detrás del capital.",
-   {x:M, y:5.9, w:W-2*M, h:0.6, fontFace:BF, fontSize:12, color:TXT, isTextBox:true, margin:0});
- fuente(s,"Fuentes: BCE, dataset MIR (tipos de depósito de sociedades no financieras, nueva producción) y dataset BSI (saldos L21 vista y L22 plazo, sector 2240) para la ponderación. Facilidad de depósito del BCE al 2,09 %.");
+ {const iMin=D.rec.coste.indexOf(Math.min(...D.rec.coste)),
+        iMax=D.rec.coste.indexOf(Math.max(...D.rec.coste));
+  s.addText(`La mezcla decide, no el tipo: Italia paga un ${D.rec.vista[3].toFixed(2).replace(".",",")} % a la vista y España un ${D.rec.vista[0].toFixed(2).replace(".",",")} %, pero Italia tiene un ${D.rec.peso_vista[3].toFixed(0)} % en vista y acaba igual de barata. ${P[iMin]} capta los recursos más baratos, ${D.rec.coste[iMin].toFixed(2).replace(".",",")} %, y ${P[iMax]} los más caros, ${D.rec.coste[iMax].toFixed(2).replace(".",",")} %.`,
+   {x:8.32, y:4.92, w:4.26, h:0.56, fontFace:BF, fontSize:9, color:TXT, isTextBox:true, margin:0});}
+
+ /* franja inferior: esto NO es el coste de fondos del sistema */
+ const S=D.sistema;
+ const CL=[["", "Depósitos de empresa · lo que usa el modelo",
+               "Depósitos del sistema · empresas y hogares",
+               "Diferencia, pb"]];
+ const filas=[P].concat([S.empresas.map(v=>v.toFixed(2).replace(".",",")+" %"),
+                         S.sistema.map(v=>v.toFixed(2).replace(".",",")+" %"),
+                         S.dif_pb.map(v=>v>0?"+"+v:(v<0?"−"+Math.abs(v):"0"))]);
+ const band=filas.map((fila,ri)=>[{text: ri===0?"":CL[0][ri],
+     options: ri===0 ? Object.assign({},hdr,{align:"left", fontSize:8.5})
+                     : cel(null,{align:"left", fontSize:8.5, bold:ri<3,
+                                 fill:{color: ri===3?LIGHT:"FFFFFF"}})}]
+   .concat(fila.map((c,ci)=>{
+     if(ri===0) return {text:c, options:Object.assign({},hdr,{fontSize:8.5})};
+     const o=cel(null,{fontSize:9, bold: ri<3, fill:{color: ri===3?LIGHT:"FFFFFF"}});
+     if(ri===3){ const v=S.dif_pb[ci]; o.fill={color: v>0?ORA3:(v<0?BLUE3:LIGHT)}; }
+     return {text:c, options:o};})));
+ s.addTable(band, {x:M, y:5.64, w:W-2*M, colW:[4.13].concat(new Array(7).fill(1.143)),
+   rowH:0.24, fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});
+ fuente(s,"Fuentes: BCE, dataset MIR (tipos de depósito, nueva producción, serie de vencimiento total) y dataset BSI (saldos, para la ponderación). El coste que usa el modelo es el de los depósitos de SOCIEDADES NO FINANCIERAS (sector 2240), no el coste de financiación del sistema: los depósitos de empresa son solo entre el 22 % y el 34 % del depósito minorista de cada país, y el depósito del sistema tampoco incluye deuda emitida, repos, financiación del banco central ni capital. Facilidad de depósito del BCE al 2,09 %.");
 }
 
 /* 10 — coste del riesgo */
@@ -576,9 +597,9 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
 
  s.addShape(pres.ShapeType.roundRect,{x:M, y:5.58, w:7.25, h:1.04, fill:{color:ORA3},
    rectRadius:0.05, line:{color:ORA2}});
- s.addText("Va al revés: ρ = −0,88 contra la PD",{x:M+0.16, y:5.66, w:6.95, h:0.24,
+ s.addText(`Va al revés: ρ = −${Math.abs(D.apetito.corr.mnr_pd).toFixed(2).replace(".",",")} contra la PD`,{x:M+0.16, y:5.66, w:6.95, h:0.24,
    fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
- s.addText("Irlanda tiene la mejor PD (1,08 %) y el mayor margen neto de riesgo (5,43 %); Francia, la segunda peor PD (2,15 %) y el menor (2,62 %). La excepción es Italia: peor PD de las siete y aun así el cuarto mejor margen, porque es la que más cobra el gradiente por tamaño. Los siete no están sobre una misma frontera de riesgo y retorno: prestar peor no suele venir pagado.",
+ s.addText(`Irlanda tiene la mejor PD (1,08 %) y el mayor margen neto de riesgo (${n1(A.mnr[6],2)} %); Francia, la segunda peor PD (2,15 %) y el menor (${n1(A.mnr[2],2)} %). La excepción es Italia: peor PD de las siete y aun así el cuarto mejor margen, porque es la que más cobra el gradiente por tamaño. Los siete no están sobre una misma frontera de riesgo y retorno: prestar peor no suele venir pagado.`,
    {x:M+0.16, y:5.92, w:6.95, h:0.66, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
 
  /* --- columna derecha: el gradiente dentro de cada mercado --- */
@@ -606,7 +627,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
    rectRadius:0.05, line:{color:BLUE}});
  s.addText("España es la única que no lo cobra",{x:CX+0.16, y:4.56, w:CW-0.32, h:0.24,
    fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
- s.addText("−4 pb: el préstamo pequeño sale marginalmente más barato que el de más de 1 M€. Italia cobra +143 y Países Bajos +120. Y el gradiente acompaña a la rentabilidad: ρ = +0,86 con el ROE.",
+ s.addText(`−4 pb: el préstamo pequeño sale marginalmente más barato que el de más de 1 M€. Italia cobra +143 y Países Bajos +120. Y el gradiente acompaña a la rentabilidad: ρ = +${D.apetito.corr.gradtot_roe.toFixed(2).replace(".",",")} con el ROE.`,
    {x:CX+0.16, y:4.80, w:CW-0.32, h:0.62, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
 
  s.addShape(pres.ShapeType.roundRect,{x:CX, y:5.58, w:CW, h:1.04, fill:{color:LIGHT},
@@ -788,7 +809,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  titulo(s,"Supuestos del modelo","Cada uno declarado, con su origen y su efecto · Dos de los iniciales han dejado de ser supuestos");
  const L=[["Supuesto","Valor","Origen","Efecto si cambia"],
   ["% de comisiones","87 pb","Observada en España (TAE − TEDR, tramo ≤1 M€). Aplicada a los otros cinco países","ALTO. Mueve el ROE entre 3 y 12 puntos"],
-  ["Coste de los recursos","0,41 % a 1,34 % por país","Observado. Tipos del MIR ponderados por saldos del BSI. Supone financiar el crédito PYME con depósito de empresa","ALTO. Con fondeo en mercado al 2,23 % los ROE caerían entre 6 y 12 puntos"],
+  ["Coste de los recursos",`${n1(Math.min(...D.pl.fondos),2)} % a ${n1(Math.max(...D.pl.fondos),2)} % por país`,"Observado. Tipos del MIR ponderados por saldos del BSI. Supone financiar el crédito PYME con depósito de empresa","ALTO. Con fondeo en mercado al 2,23 % los ROE caerían entre 6 y 12 puntos"],
   ["Coste del riesgo","PD × LGD por país","YA NO ES SUPUESTO. Parámetros IRB de la clase «Corporates – Of Which: SME», mediana de entidades (COREP C 9.02)","—"],
   ["Densidad de RWA","35 % a 61 % por país","YA NO ES SUPUESTO. RWA sobre exposición de la cartera PYME (EBA Transparency Exercise)","—"],
   ["Tipo impositivo","15,0 % a 30,1 %","YA NO ES SUPUESTO. Tipo aplicable a bancos: España 30 % por el art. 29 LIS, Irlanda 15 % por el mínimo de Pilar Dos, resto combinado 2026","—"],
@@ -808,15 +829,15 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
  titulo(s,"Conclusiones y recomendaciones","Lo que sostienen los datos y lo que se deriva para una decisión de entrada");
  const C=[
   ["1","El capital manda sobre el precio",
-   "La densidad de RWA va del 35 % en Alemania al 70 % en Irlanda. Esa horquilla separa más el ROE que el precio, que solo va del 3,41 % al 5,37 %. Irlanda lo demuestra: tiene el precio más alto de las siete y la mejor PD, y aun así queda sexta entre los bancos locales."],
+   "La densidad de RWA va del 35 % en Alemania al 70 % en Irlanda. Esa horquilla separa más el ROE que el precio, que solo va del 3,41 % al 5,37 %. Irlanda lo demuestra: tiene el precio más alto de las siete y la mejor PD, y aun así queda cuarta entre los bancos locales."],
   ["2","El atractivo para un entrante no coincide con la rentabilidad del local",
-   "Francia es el peor mercado para su banca (5,0 %) y el cuarto mejor para un entrante eficiente (21,8 %). Lo que se compra al entrar no es el margen del mercado, es la distancia respecto al incumbente."],
+   `Francia es el peor mercado para su banca (${n1(D.pl.roe[2])} %) y el cuarto mejor para un entrante eficiente (${n1(D.ent.roe[2])} %). Lo que se compra al entrar no es el margen del mercado, es la distancia respecto al incumbente.`],
   ["3","España es el mercado donde menos vale entrar eficiente",
-   "Solo gana 1,2 puntos de ROE. Su banca ya es la segunda más eficiente (42,1 %), sus recursos ya son baratos (0,75 %, por debajo del 0,80 % del entrante) y arrastra una densidad de RWA del 59,5 % y el 30 % de impuesto del art. 29 LIS."],
+   "Solo gana 1,2 puntos de ROE. Su banca ya es la segunda más eficiente (42,1 %), sus recursos ya son baratos (0,76 %, por debajo del 0,80 % del entrante) y arrastra una densidad de RWA del 59,5 % y el 30 % de impuesto del art. 29 LIS."],
   ["4","Países Bajos y Alemania son los objetivos naturales",
    "37,0 % y 35,0 % de ROE para el entrante. Combinan el menor coste del riesgo (0,35 % y 0,40 %) con la menor densidad de RWA (37 % y 35 %) e incumbentes con eficiencia mediocre (53,5 % y 55,2 %)."],
   ["5","El coste del riesgo se controla seleccionando, no recuperando",
-   "Igualar la PD a la mejor de las siete elimina el 75 % de la dispersión del coste del riesgo entre países; igualar la LGD solo el 22 %. Y el eje que mejor predice la PD no es la información disponible (ρ = −0,23) sino el entorno de recobro (ρ = −0,79): donde ejecutar es lento y caro, el impago se enquista. Y no se compensa cobrando: entre mercados el margen neto de riesgo cae con la PD (ρ = −0,88)."],
+   "Igualar la PD a la mejor de las siete elimina el 75 % de la dispersión del coste del riesgo entre países; igualar la LGD solo el 22 %. Y el eje que mejor predice la PD no es la información disponible (ρ = −0,23) sino el entorno de recobro (ρ = −0,79): donde ejecutar es lento y caro, el impago se enquista. Y no se compensa cobrando: entre mercados el margen neto de riesgo cae con la PD (ρ = −0,76)."],
   ["6","La comisión es el único supuesto material que queda",
    "Solo España publica un tipo con comisiones para empresas, y allí vale 87 pb sobre el tramo ≤1 M€. Aplicarla a los demás es una hipótesis. Antes de decidir, conviene validarla en el mercado objetivo: mueve el ROE entre 3 y 8 puntos."]];
  let y=1.66;
@@ -844,7 +865,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
   ["Cerrar","Precio del factoring y del confirming","No es obtenible con fuentes públicas gratuitas. Si el producto entra en el plan, hay que ir a registros de pago o a datos de mercado."],
   ["Riesgo: invertir en","Selección, no en recobro","La PD explica el 75 % de la diferencia de coste del riesgo entre países; la LGD solo el 22 %. El presupuesto va a datos de admisión —bureau privado, cuentas depositadas, alta frecuencia— antes que a recuperaciones."],
   ["Riesgo: descontar","La ejecución del mercado, no solo su información","Italia tiene la segunda mejor información de las siete y la peor PD: ejecutar le cuesta el 22 % de la masa y 1,8 años. En Francia, además, micro y pequeñas pueden declarar sus cuentas confidenciales: sin adhesión a I-FIBEN se entra a ciegas."],
-  ["Riesgo: cobrar","El gradiente por tamaño","España es la única de las siete donde el préstamo pequeño no sale más caro que el de más de 1 M€: −4 pb, frente a +143 de Italia y +120 de Países Bajos. Y el gradiente acompaña al ROE (ρ = +0,86)."]];
+  ["Riesgo: cobrar","El gradiente por tamaño","España es la única de las siete donde el préstamo pequeño no sale más caro que el de más de 1 M€: −4 pb, frente a +143 de Italia y +120 de Países Bajos. Y el gradiente acompaña al ROE (ρ = +0,82)."]];
  let y=1.66;
  R.forEach((r,i)=>{
    const rie = i>=6;                       // las tres ultimas son de riesgo

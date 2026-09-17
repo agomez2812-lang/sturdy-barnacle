@@ -1461,6 +1461,98 @@ El tramo intermedio es además el que hace visible el gradiente por tamaño
 que sostiene la lámina 17: el escalón ≤0,25 M€ frente a 0,25–1 M€ va de
 +5 pb en España a +109 pb en Italia.
 
+### 2.50 El coste de los recursos no es el del sistema, y un error de método
+
+Pregunta del usuario: el coste de los recursos de la lámina de liquidez,
+¿se puede comparar con el coste de los recursos del sistema bancario, o es
+el mismo número?
+
+**No es el mismo.** El modelo usa el coste de los depósitos de **sociedades
+no financieras** (BSI sector 2240), que es el pasivo que aporta el propio
+cliente PYME. El coste de los recursos del sistema es otra cosa.
+`scripts/coste_recursos_sistema.py` calcula las tres piezas que sí son
+comparables con dato público, con el mismo método para todas:
+
+| País | Empresa | Hogares | Sistema | Dif. pb | % empresa |
+|---|---|---|---|---|---|
+| España | 0,76 | 0,40 | 0,49 | **+27** | 25,4 |
+| Alemania | 1,09 | 0,88 | 0,93 | +17 | 22,2 |
+| Francia | 1,21 | 1,18 | 1,19 | +2 | 31,3 |
+| Italia | 0,74 | 0,60 | 0,64 | +10 | 25,1 |
+| Portugal | 0,74 | 0,83 | 0,80 | −7 | 27,1 |
+| P. Bajos | 1,04 | 1,24 | 1,18 | **−14** | 30,3 |
+| Irlanda | 0,37 | 0,36 | 0,36 | +1 | 33,5 |
+
+Tres conclusiones:
+
+1. **El signo cambia según el país.** En España el depósito de empresa es
+   27 pb **más caro** que el depósito minorista total; en Países Bajos es
+   14 pb **más barato**. No hay una regla general.
+2. **El depósito de empresa es solo entre el 22 % y el 34 %** del depósito
+   minorista. Usarlo como coste de fondos del negocio PYME es coherente con
+   el modelo —el negocio se financia con el pasivo que trae su cliente—
+   pero no es trasladable al banco entero.
+3. **Ni siquiera «sistema» es el coste de financiación del sistema.** No
+   incluye deuda emitida (senior, cédulas), repos, financiación del banco
+   central, depósitos interbancarios ni capital. Los depósitos son la mayor
+   parte del pasivo de estos siete sistemas, pero no todo.
+
+Nota sobre hogares: solo el sector 2250 tiene el instrumento L23
+(disponible con preaviso), que en Alemania y Países Bajos pesa mucho. Las
+empresas no tienen esa figura en la estadística del BCE, así que su coste
+se compone solo de vista (L21) y plazo (L22).
+
+**Error de método encontrado al hacer la comparación.** El tipo de depósito
+a plazo se calculaba como **media simple de todas las variantes de
+vencimiento** que publica el MIR (hasta 1 año, más de 1, más de 2, hasta
+2...). Esas variantes **se solapan entre sí**, exactamente el mismo problema
+que ya estaba documentado en §2.7 para los tramos de importe del activo.
+Promediarlas sobrepondera los plazos largos. Diferencia contra la serie de
+vencimiento total (`MATURITY = A`), que es la correcta:
+
+```
+FR +31 pb · DE +22 · IT +22 · IE +21 · NL +13 · ES -6 · PT -6
+```
+
+Corregido en `scripts/coste_recursos.py` y en el bloque de depósito de
+`scripts/modelo_roe.py`, que leía del mismo volcado en bruto.
+
+**Impacto en el modelo.** El coste de los recursos y el ROE se mueven poco
+y ninguna conclusión cambia:
+
+| País | Fondos antes | Fondos ahora | ROE antes | ROE ahora |
+|---|---|---|---|---|
+| España | 0,75 | 0,76 | 12,50 | 12,44 |
+| Alemania | 1,16 | 1,09 | 16,88 | 17,21 |
+| Francia | 1,34 | 1,21 | 4,97 | 5,44 |
+| Italia | 0,76 | 0,74 | 15,18 | 15,31 |
+| Portugal | 0,71 | 0,74 | 13,98 | 13,88 |
+| P. Bajos | 1,06 | 1,04 | 20,20 | 20,32 |
+| Irlanda | 0,41 | 0,37 | 13,82 | 13,93 |
+
+El único cambio de orden es entre el cuarto y el quinto puesto: **Irlanda
+pasa por delante de Portugal** por 5 pb de ROE, que es ruido. Las
+correlaciones de §2.48 se mueven también: el margen neto de riesgo contra
+la PD pasa de ρ = −0,88 a **−0,76**, y el gradiente contra el ROE de +0,86
+a **+0,82**. El sentido de ambas se mantiene.
+
+**Corrección de arrastre detectada al revisar.** La conclusión 1 decía que
+Irlanda «queda sexta entre los bancos locales». Era falso ya antes de este
+cambio: con los datos anteriores era quinta, y ahora es cuarta. Corregido.
+
+**Deuda técnica saldada: `pres/datos.json` deja de mantenerse a mano.**
+Los bloques que derivan de los CSV (`pl`, `sens`, `ent`, `rec`, `sistema`,
+`apetito`, `marco`) los reconstruye ahora `scripts/datos_presentacion.py`.
+Era la causa del error de §2.39 y de que tres láminas llevasen cifras
+obsoletas escritas en el propio texto. Las cifras de esos textos pasan
+también a leerse de `D` mediante plantillas. El bloque muerto `dep`, que
+estaba a cero y no se usaba, se elimina.
+
+**Salidas:** `scripts/coste_recursos_sistema.py`,
+`liquidez/coste_recursos_sistema.csv`, `scripts/datos_presentacion.py`,
+franja comparativa al pie de la lámina 10 y su título y pie reescritos para
+decir explícitamente qué mide y qué no.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

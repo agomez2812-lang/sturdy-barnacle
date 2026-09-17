@@ -330,11 +330,15 @@ def main():
 
     # --- negocio de deposito: lo que el banco gana por la liquidez de las
     # empresas frente a lo que puede obtener en el BCE ---
-    dep = collections.defaultdict(lambda: collections.defaultdict(list))
-    for x in lee("liquidez/liquidez_ecb_mir.csv"):
-        if x["unidad"] == "pct_anual" and x["periodo_referencia"].startswith(ANIO):
-            k = "vista" if "vista" in x["metrica"] else "plazo"
-            dep[x["pais"]][k].append(float(x["valor"]))
+    # Se leen de coste_recursos_pyme.csv, no del volcado en bruto del MIR:
+    # alli el tipo a plazo ya es la serie de vencimiento total, sin el
+    # solape de variantes de vencimiento (ver notas.md 2.50).
+    dep = collections.defaultdict(dict)
+    for x in lee("liquidez/coste_recursos_pyme.csv"):
+        if x["metrica"] == "Tipo de deposito a la vista":
+            dep[x["pais"]]["vista"] = float(x["valor"])
+        elif x["metrica"] == "Tipo de deposito a plazo":
+            dep[x["pais"]]["plazo"] = float(x["valor"])
     print("\nNEGOCIO DE DEPOSITO: margen sobre la facilidad del BCE (%.2f%%)\n"
           % DFR_BCE)
     print("%-14s %10s %10s %12s" % ("", "vista", "plazo", "margen vista"))
@@ -342,15 +346,15 @@ def main():
         v = dep.get(p2, {})
         if not v.get("vista"):
             continue
-        mv = statistics.mean(v["vista"])
-        mp = statistics.mean(v["plazo"]) if v.get("plazo") else float("nan")
+        mv = v["vista"]
+        mp = v.get("plazo", float("nan"))
         margen = DFR_BCE - mv
         print("%-14s %10.2f %10.2f %11.2f%%" % (p2[:13], mv, mp, margen))
         for metrica, valor, nota in [
             ("Tipo pagado por deposito a la vista", mv,
              "OBSERVADO. MIR, media 2026"),
             ("Tipo pagado por deposito a plazo", mp,
-             "OBSERVADO. MIR, media 2026"),
+             "OBSERVADO. MIR, media 2026, serie de vencimiento total"),
             ("Margen sobre la facilidad de deposito del BCE", margen,
              "facilidad del BCE %.2f%% menos tipo de vista pagado" % DFR_BCE),
         ]:

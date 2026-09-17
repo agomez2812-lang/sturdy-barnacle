@@ -8,9 +8,16 @@ recursos que aporta la propia PYME.
 Aqui se calcula el coste ponderado de los depositos de sociedades no
 financieras, combinando:
   - los TIPOS del dataset MIR (deposito a la vista y a plazo, nueva
-    produccion), que ya estaban recogidos, y
+    produccion), y
   - los SALDOS del dataset BSI (L21 vista y L22 plazo, sector 2240), que se
     descargan aqui, para ponderar la mezcla de cada pais.
+
+El tipo a plazo se toma de la serie de VENCIMIENTO TOTAL (MATURITY = A).
+Antes se usaba la media simple de todas las variantes de vencimiento que
+publica el MIR, pero esas variantes se solapan entre si (hasta 1 anio, mas
+de 1, mas de 2, hasta 2...), igual que ocurre con los tramos de importe del
+lado del activo (ver notas.md 2.7). Promediarlas sobrepondera los tramos
+largos: la diferencia llegaba a 31 pb en Francia.
 
 La mezcla cambia mucho entre paises (del 60 % de vista en Francia al 89 % en
 Italia) y por eso el coste ponderado no es trasladable de uno a otro.
@@ -66,17 +73,38 @@ def saldo(pais, item, reintentos=4):
     return None
 
 
-def main():
-    # tipos ya recogidos por el harvester del MIR
-    tipos = collections.defaultdict(lambda: collections.defaultdict(list))
-    ruta = os.path.join(ROOT, "liquidez", "liquidez_ecb_mir.csv")
-    if not os.path.exists(ruta):
-        sys.exit("falta %s; ejecuta antes ecb_mir_harvest.py" % ruta)
-    for x in csv.DictReader(open(ruta, encoding="utf-8")):
-        if x["unidad"] == "pct_anual" and x["periodo_referencia"].startswith(ANIO):
-            k = "vista" if "vista" in x["metrica"] else "plazo"
-            tipos[x["pais"]][k].append(float(x["valor"]))
+MIR = "https://data-api.ecb.europa.eu/service/data/MIR"
 
+
+def tipo(pais, item, reintentos=4):
+    """Tipo medio del anio, serie de vencimiento total (sin solape)."""
+    url = "%s/M.%s.B.%s.A.R.A.2240.EUR.N?startPeriod=%s-01&format=csvdata" % (
+        MIR, pais, item, ANIO)
+    espera = 2
+    for i in range(reintentos + 1):
+        try:
+            req = urllib.request.Request(
+                url, headers={"User-Agent": "pyme-research/1.0"})
+            with urllib.request.urlopen(req, timeout=120) as r:
+                txt = r.read().decode("utf-8")
+            vals = [float(x["OBS_VALUE"])
+                    for x in csv.DictReader(io.StringIO(txt))
+                    if x.get("OBS_VALUE")]
+            return statistics.mean(vals) if vals else None
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                return None
+            if i < reintentos:
+                time.sleep(espera); espera *= 2; continue
+            raise
+        except (urllib.error.URLError, TimeoutError):
+            if i < reintentos:
+                time.sleep(espera); espera *= 2; continue
+            raise
+    return None
+
+
+def main():
     destino = os.path.join(ROOT, "liquidez", "coste_recursos_pyme.csv")
     if os.path.exists(destino):
         os.remove(destino)
@@ -86,10 +114,9 @@ def main():
     print("\n%-14s %8s %8s %9s %11s %10s" % (
         "", "t.vista", "t.plazo", "% vista", "coste pond.", "margen BCE"))
     for cod, pais in PAISES.items():
-        t = tipos.get(pais, {})
-        if not t.get("vista") or not t.get("plazo"):
+        tv, tp = tipo(cod, "L21"), tipo(cod, "L22")
+        if tv is None or tp is None:
             print("  %-14s sin tipos" % pais); continue
-        tv, tp = statistics.mean(t["vista"]), statistics.mean(t["plazo"])
         sv, sp = saldo(cod, "L21"), saldo(cod, "L22")
         if not sv or not sp:
             print("  %-14s sin saldos" % pais); continue
@@ -104,7 +131,9 @@ def main():
             ("Tipo de deposito a la vista", tv, "pct_anual", "nivel", "media_simple",
              "BCE, dataset MIR", "nueva produccion, media %s" % ANIO),
             ("Tipo de deposito a plazo", tp, "pct_anual", "nivel", "media_simple",
-             "BCE, dataset MIR", "nueva produccion, media %s" % ANIO),
+             "BCE, dataset MIR", "nueva produccion, media %s; serie de "
+             "vencimiento total (MATURITY = A), no la media de las variantes "
+             "de vencimiento, que se solapan" % ANIO),
             ("Saldo de deposito a la vista", sv, "eur_millones", "importe", "dato_unico",
              "BCE, dataset BSI", "serie L21, sector 2240, saldo medio %s" % ANIO),
             ("Saldo de deposito a plazo", sp, "eur_millones", "importe", "dato_unico",
