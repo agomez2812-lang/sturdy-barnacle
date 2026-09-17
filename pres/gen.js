@@ -105,16 +105,17 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
 
 /* 4 — precio por tramo */
 {const s=pres.addSlide();
- titulo(s,"Precio por tramo de importe","Media 2026 ponderada por volumen · Fijación inicial total · Sin comisiones");
+ titulo(s,"Precio por tramo de importe","Los tres tramos que publica el MIR, sin solapamiento · Media 2026 ponderada por volumen · Fijación inicial total · Sin comisiones");
  s.addChart(pres.ChartType.bar, [
-   {name:"Hasta 0,25 M€", labels:P, values:D.tramos["Hasta 0,25 M EUR"]},
-   {name:"Más de 1 M€",   labels:P, values:D.tramos["Mas de 1 M EUR"]}],
-   {x:M, y:1.75, w:7.5, h:4.0, barDir:"col", chartColors:[PRIM,G2],
-    showTitle:false, showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:10,
+   {name:"Hasta 0,25 M€",     labels:P, values:D.tramos["Hasta 0,25 M EUR"]},
+   {name:"0,25 a 1 M€",       labels:P, values:D.tramos["Mas de 0,25 y hasta 1 M EUR"]},
+   {name:"Más de 1 M€",       labels:P, values:D.tramos["Mas de 1 M EUR"]}],
+   {x:M, y:1.75, w:7.7, h:4.0, barDir:"col", chartColors:[PRIM,ORA2,G2],
+    showTitle:false, showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:8,
     dataLabelColor:TXT, showLegend:true, legendPos:"b", legendFontSize:11,
     catAxisLabelColor:TXT, valAxisLabelColor:MUT, catAxisLabelFontSize:11,
     valAxisLabelFormatCode:'0.0"%"', valGridLine:{color:"E3E9EB", size:1},
-    catGridLine:{style:"none"}, valAxisMaxVal:5.5});
+    catGridLine:{style:"none"}, valAxisMaxVal:6.0});
  s.addShape(pres.ShapeType.roundRect,{x:8.4, y:1.75, w:4.33, h:2.32, fill:{color:LIGHT},
    rectRadius:0.06, line:{color:G3}});
  s.addText("Peso del tramo ≤1 M€ sobre la nueva producción",{x:8.6, y:1.9, w:3.95, h:0.5,
@@ -127,7 +128,7 @@ const tOpt = ()=>({x:M, y:1.7, w:W-2*M, fontFace:BF, border:{pt:0.5,color:G3},
    fontFace:HF, fontSize:13, bold:true, color:ACC, isTextBox:true, margin:0});
  s.addText("En España y Portugal la mitad de la nueva producción es de importe ≤1 M€. En Países Bajos es el 7,6 % y en Irlanda el 16,8 %. Cualquier comparación de rentabilidad debe normalizar por este peso.",
    {x:8.6, y:4.70, w:3.95, h:0.95, fontFace:BF, fontSize:10.5, color:TXT, isTextBox:true, margin:0});
- fuente(s,"Fuente: BCE, ECB Data Portal, dataset MIR. Tipo anual equivalente (AAR/NDER), que excluye comisiones. Media enero-julio 2026 ponderada por volumen mensual.");
+ fuente(s,"Fuente: BCE, ECB Data Portal, dataset MIR. Tipo anual equivalente (AAR/NDER), que excluye comisiones. Media enero-julio 2026 ponderada por volumen mensual, salvo en los dos tramos pequeños de Alemania, donde el Bundesbank no publica volumen y la media es simple. Los tres tramos no se solapan: el «hasta 1 M€» que se usa en el resto del deck es la suma ponderada de los dos primeros.");
 }
 
 /* 5 — Espana: TEDR vs TAE */

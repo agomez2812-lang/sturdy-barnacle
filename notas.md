@@ -1434,6 +1434,33 @@ añadida al pie de la lámina 16; conclusión 5 ampliada; tercera
 recomendación de riesgo («Riesgo: cobrar — el gradiente por tamaño»);
 bloque `apetito` en `pres/datos.json`.
 
+### 2.49 Corrección: faltaba el tramo 0,25–1 M€ en la lámina de precio
+
+Detectado por el usuario. La lámina «Precio por tramo de importe» mostraba
+solo dos series, ≤0,25 M€ y >1 M€, dejando fuera el tramo intermedio
+0,25–1 M€ pese a estar disponible en `D.tramos` y usarse en la lámina de
+comisiones de España. Era una omisión, no una decisión: no había ninguna
+nota que la justificara.
+
+Corregido a las **tres series que publica el MIR sin solapamiento**. El
+«hasta 1 M€» que se usa en el resto del deck es la suma ponderada de los
+dos primeros y por eso no se grafica aquí (ver §2.7 sobre el solapamiento
+de los códigos `AMOUNT_CAT`).
+
+**Dos defectos adicionales encontrados al corregirlo:**
+
+1. **El eje estaba cortando una barra.** `valAxisMaxVal` era 5,5 y el tramo
+   ≤0,25 M€ de Irlanda vale 5,64 %. La barra más alta del gráfico se
+   truncaba. Subido a 6,0.
+2. **El pie decía «ponderada por volumen» sin excepción.** El Bundesbank no
+   publica volumen de los dos tramos pequeños, así que en Alemania esos dos
+   valores son media simple. Ya estaba etiquetado en el CSV y en §2.48,
+   pero no en esta lámina. Añadido al pie.
+
+El tramo intermedio es además el que hace visible el gradiente por tamaño
+que sostiene la lámina 17: el escalón ≤0,25 M€ frente a 0,25–1 M€ va de
++5 pb en España a +109 pb en Italia.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
