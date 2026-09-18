@@ -2017,6 +2017,64 @@ dato interno o comercial de pago. Mientras tanto, la vuelta a la pregunta de
 §2.55 —qué precio necesita cada banco para un ROE dado— sigue siendo la
 única lectura competitiva que no depende de ese hueco.
 
+### 2.57 Los autónomos: la PYME que la estadística guarda en hogares
+
+El usuario preguntó si los precios por entidad del Banco de España, aunque
+sean de personas físicas, podrían corresponder a PYME de autónomos. La
+intuición apuntaba a un hueco real del análisis, aunque no por esa vía.
+
+**Sobre la tabla por entidad: no sirve, y por su contenido, no solo por su
+ámbito.** La publicación por banco de la Circular 5/2012 cubre las
+comisiones de los servicios bancarios más frecuentes y los tipos de
+**descubiertos en cuenta y excedidos en cuenta de crédito**. No son precios
+de préstamo: son tarifas de servicio y tipos de penalización. Aunque su
+ámbito incluyera a empresas, no habría precio de activo que contrastar. La
+consulta además es una aplicación JavaScript sin endpoint de datos
+localizable sin navegador, y el navegador no atraviesa el proxy TLS (§2.55).
+
+**Pero la pregunta de fondo sí tenía razón, y destapó una serie que faltaba.**
+En el SEC 2010 el **empresario individual es sector HOGARES (S.14)**, no
+sociedad no financiera. Todo el crédito a autónomos queda por tanto **fuera
+del dataset MIR de empresas**, que es la espina dorsal del deck. Y el
+Boletín del Banco de España **sí lo aísla**: cuadro 19.4 serie 16 (tipo) y
+cuadro 19.12 serie 16 (volumen). No se estaba usando.
+
+**Precios, media 2026, ponderada por volumen:**
+
+| Serie | TEDR | Volumen mensual |
+|---|---|---|
+| **Autónomo, otros fines** | **4,57 %** | 840 M€ |
+| Autónomo, otros fines hasta 1 año | 3,84 % | sin volumen publicado |
+| Hogares, otros fines (incluye autónomos) | 4,46 % | 1.638 M€ |
+| Sociedad, ≤0,25 M€ | 3,42 % | 15.111 M€ |
+| Sociedad, 0,25–1 M€ | 3,37 % | 4.635 M€ |
+| Sociedad, >1 M€ | 3,45 % | 19.320 M€ |
+
+**El autónomo paga 115 pb más que la sociedad del tramo más pequeño.** Y el
+modelo usa el 3,41 % del tramo ≤1 M€: para el segmento micro **infravalora
+el precio**. Todos los tipos son TEDR, sin comisiones, así que la
+comparación es homogénea en ese sentido.
+
+**Cuánto pesa.** 840 M€ al mes frente a 15.111 M€ del tramo ≤0,25 M€: en
+torno al 5 % del conjunto. No mueve el agregado, pero sí la lectura del
+segmento micro, y explica parte de por qué el precio español del tramo
+pequeño parece bajo comparado con Alemania o Italia: **en España una parte
+del negocio micro está contabilizada en hogares y no se ve en la serie de
+empresas.** Queda como hipótesis: no se ha comprobado si los otros seis
+países tienen la misma composición, porque el MIR del BCE no publica el
+desglose de empresarios individuales.
+
+**Lo que sigue sin existir.** El Boletín no publica TAE de autónomos, así
+que no hay cuña de comisiones propia del segmento. La más cercana es la de
+hogares para otros fines, **59 pb** (TAE 5,05 % contra TEDR 4,46 %), pero es
+de todos los hogares y no solo de empresarios individuales, de modo que no
+se usa en el modelo. Y nada de esto está por entidad.
+
+**Salidas:** `prestamos_personales/bde_autonomos.csv` y la extracción
+correspondiente en `scripts/bde_boletin.py`; lámina «El autónomo paga
+115 pb más que la sociedad pequeña» tras la de comisiones de España; bloque
+`autonomos` en `pres/datos.json`.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

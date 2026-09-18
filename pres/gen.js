@@ -62,7 +62,7 @@ L.portada = () => {const s=pres.addSlide(); s.background={color:DARK};
    {x:M, y:3.45, w:10.5, h:0.5, fontFace:BF, fontSize:18, color:G2, isTextBox:true, margin:0});
  s.addText("Cinco productos · Datos oficiales 2026 · Modelo de ROE con supuestos declarados",
    {x:M, y:4.15, w:10.5, h:0.4, fontFace:BF, fontSize:13, color:ACC, isTextBox:true, margin:0});
- s.addText("38.843 observaciones · 11 fuentes · Septiembre 2026",
+ s.addText("38885 observaciones · 11 fuentes · Septiembre 2026",
    {x:M, y:6.5, w:10.5, h:0.35, fontFace:BF, fontSize:11, color:MUT, isTextBox:true, margin:0});
  s.addNotes("Deck construido sobre datos oficiales del BCE, EBA, OCDE, Banco de España, Banca d'Italia, EUF y cuentas de resultados de bancos. El ROE es modelizado, no observado.");
 };
@@ -174,6 +174,51 @@ L.comisiones_es = () => {const s=pres.addSlide();
  s.addText("La banca española sí cobra más caro a la PYME: 81 pb más en coste total. Lo hace por comisión, no por tipo nominal. El MIR del BCE, que publica solo el tipo sin comisiones, no lo ve.",
    {x:M, y:5.85, w:W-2*M, h:0.7, fontFace:BF, fontSize:12, color:TXT, isTextBox:true, margin:0});
  fuente(s,"Fuente: Banco de España, Boletín Estadístico, cuadros 19.5 (TEDR), 19.6 (TAE) y 19.13 (volúmenes). Cuña = TAE − TEDR, cálculo propio. Media enero-julio 2026.");
+};
+
+/* 5b — el autonomo: PYME que la estadistica pone en hogares */
+L.autonomos = () => {const s=pres.addSlide();
+ const A=D.autonomos;
+ titulo(s,"El autónomo paga 115 pb más que la sociedad pequeña","El empresario individual es sector HOGARES en el SEC 2010, así que queda fuera de todas las series de sociedades no financieras · España · Media 2026");
+ s.addChart(pres.ChartType.bar, [{name:"Tipo de nueva producción",
+   labels:["Autónomo\notros fines","Autónomo\nhasta 1 año","Sociedad\n≤0,25 M€","Sociedad\n0,25-1 M€","Sociedad\n>1 M€"],
+   values:[A.auto, A.auto_1a, A.snf_025, A.snf_0251, A.snf_1m]}],
+   {x:M, y:1.92, w:7.30, h:3.30, barDir:"col", chartColors:[PRIM,ORA2,BLUE,BLUE,BLUE],
+    varyColors:true, showTitle:false, showValue:true, dataLabelPosition:"outEnd",
+    dataLabelFontSize:11, dataLabelColor:TXT, showLegend:false,
+    catAxisLabelColor:TXT, catAxisLabelFontSize:9.5, valAxisLabelColor:MUT,
+    valAxisLabelFormatCode:'0.0"%"', valGridLine:{color:"E3E9EB", size:1},
+    catGridLine:{style:"none"}, valAxisMaxVal:5.0});
+ s.addText("Cuadro 19.4 del Boletín, serie 16 (autónomos) y cuadro 19.5, series 3, 7 y 11 (sociedades). Todos son TEDR, sin comisiones.",
+   {x:M, y:5.24, w:7.30, h:0.28, fontFace:BF, fontSize:7.5, color:MUT, italic:true,
+    align:"center", isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:5.56, w:7.30, h:1.06, fill:{color:ORA3},
+   rectRadius:0.05, line:{color:ORA2}});
+ s.addText("El modelo se queda corto en el micro",{x:M+0.16, y:5.64, w:7.0, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`El precio que usa el modelo es el ${n1(A.snf_hasta1m,2)} % del tramo ≤1 M€ de sociedades. La financiación empresarial al autónomo se cobra al ${n1(A.auto,2)} %: ${A.dif_vs_025} pb por encima del tramo ≤0,25 M€. Para el segmento más pequeño, el modelo infravalora el precio.`,
+   {x:M+0.16, y:5.90, w:7.0, h:0.64, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+
+ const CX=8.10, CW=W-M-CX;
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:1.92, w:CW, h:1.46, fill:{color:BLUE3},
+   rectRadius:0.05, line:{color:BLUE}});
+ s.addText("Por qué no estaba en el análisis",{x:CX+0.16, y:2.00, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("El SEC 2010 clasifica al empresario individual en el sector HOGARES (S.14), no en sociedades no financieras. Todo el crédito a autónomos queda por tanto fuera del dataset MIR de empresas, que es la espina dorsal del deck. La SAFE, en cambio, sí los cuenta como PYME: segmenta por empleados.",
+   {x:CX+0.16, y:2.26, w:CW-0.32, h:1.04, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:3.48, w:CW, h:1.30, fill:{color:LIGHT},
+   rectRadius:0.05, line:{color:G3}});
+ s.addText("Cuánto pesa",{x:CX+0.16, y:3.56, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`${A.vol_auto.toLocaleString("es-ES")} M€ al mes de nueva producción, frente a ${A.vol_snf_025.toLocaleString("es-ES")} M€ del tramo ≤0,25 M€ de sociedades. Es el 5 % del conjunto: no cambia el agregado, pero sí la lectura del segmento micro.`,
+   {x:CX+0.16, y:3.82, w:CW-0.32, h:0.88, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:4.88, w:CW, h:1.74, fill:{color:MAG3},
+   rectRadius:0.05, line:{color:MAG}});
+ s.addText("Lo que sigue sin existir",{x:CX+0.16, y:4.96, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`El Boletín no publica TAE de autónomos. La única cuña cercana es la de hogares para otros fines, ${A.cuna_hogares} pb (TAE ${n1(A.tae_hogares_of,2)} % contra TEDR ${n1(A.hogares_of,2)} %), pero es de TODOS los hogares, no solo de empresarios. Y nada de esto está por entidad: la publicación por banco del Banco de España se apoya en la Circular 5/2012, que cubre comisiones de servicios y descubiertos de personas físicas, no precios de préstamo.`,
+   {x:CX+0.16, y:5.22, w:CW-0.32, h:1.32, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Fuente: Banco de España, Boletín Estadístico, capítulo 19. Autónomos: cuadro 19.4 serie 16, media 2026 ponderada por el volumen del cuadro 19.12 serie 16; el desglose hasta 1 año (serie 17) no tiene volumen publicado, así que su media es simple. Sociedades: cuadro 19.5, medias ponderadas por el cuadro 19.13. Todos los tipos son TEDR, es decir sin comisiones, de modo que la comparación entre autónomo y sociedad es homogénea en ese sentido.");
 };
 
 /* 6 — cuenta de resultados modelizada */
@@ -1010,7 +1055,7 @@ L.limites = () => {const s=pres.addSlide(); s.background={color:DARK};
 
 /* 17 — fuentes */
 L.fuentes = () => {const s=pres.addSlide();
- titulo(s,"Fuentes","Once fuentes, 38.843 observaciones, cada fila trazable a su serie de origen");
+ titulo(s,"Fuentes","Once fuentes, 38885 observaciones, cada fila trazable a su serie de origen");
  const L=[["Bloque","Fuente","Cobertura","Último dato"],
   ["Precio y volumen","BCE, ECB Data Portal, dataset MIR","7 países, mensual","2026-07"],
   ["Tipos oficiales","BCE, dataset FM (facilidad de depósito, MRO, Euríbor)","Zona euro, diario","2026-09"],
@@ -1144,7 +1189,7 @@ L.circulante_roe = () => {const s=pres.addSlide();
 /* --- orden final de la presentacion --- */
 const ORDEN = [
   "portada", "objetivo",
-  "precio", "comisiones_es", "cuenta", "roe", "sensibilidad", "entrante",
+  "precio", "comisiones_es", "autonomos", "cuenta", "roe", "sensibilidad", "entrante",
   "recursos", "riesgo", "infraestructura", "dos_ejes", "apetito",
   "capital", "eficiencia",
   "circulante", "circulante_precio", "circulante_roe",

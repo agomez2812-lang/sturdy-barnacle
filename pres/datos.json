@@ -1331,5 +1331,20 @@
    0.2,
    1.0
   ]
+ },
+ "autonomos": {
+  "auto": 4.57,
+  "auto_1a": 3.84,
+  "hogares_of": 4.46,
+  "tae_hogares_of": 5.05,
+  "vol_auto": 840,
+  "vol_hog": 1638,
+  "snf_025": 3.42,
+  "snf_0251": 3.37,
+  "snf_1m": 3.46,
+  "snf_hasta1m": 3.41,
+  "dif_vs_025": 115,
+  "cuna_hogares": 59,
+  "vol_snf_025": 15111
  }
 }

@@ -86,6 +86,7 @@ def main():
     ap.add_argument("--anio", default="2026")
     a = ap.parse_args()
     t5, t6, v13 = carga("1905"), carga("1906"), carga("1913")
+    t4, v12 = carga("1904"), carga("1912")   # hogares y autonomos
     hoy = __import__("time").strftime("%Y-%m-%d")
     n = 0
 
@@ -185,6 +186,70 @@ def main():
                 ponderacion=pond, notas=nota)); n2 += 1
     fh2.close()
     print("%d filas -> %s" % (n2, path2))
+
+    # --- autonomos: el unico precio de financiacion empresarial que la
+    # estadistica coloca en el sector HOGARES -------------------------------
+    # En el SEC 2010 el empresario individual es sector S.14, hogares, no
+    # sociedad no financiera. Todo el credito a autonomos queda por tanto
+    # fuera de las series de SNF que usa el modelo. El Boletin si lo aisla:
+    # cuadro 19.4 serie 16 (tipo) y cuadro 19.12 serie 16 (volumen).
+    path3 = os.path.join(ROOT, "prestamos_personales", "bde_autonomos.csv")
+    if os.path.exists(path3):
+        os.remove(path3)
+    fh3, w3 = schema.writer(path3)
+    n3 = 0
+    AUT = [
+        ("BE_19_4.16", t4, "TEDR de credito a otros fines | Empresarios "
+         "individuales", "pct_anual", "nivel", "media_ponderada_volumen",
+         "cuadro 19.4, serie 16. Financiacion de fines empresariales a "
+         "autonomos; el SEC 2010 los clasifica en HOGARES, no en sociedades "
+         "no financieras, asi que no estan en las series de SNF del modelo"),
+        ("BE_19_4.17", t4, "TEDR de credito a otros fines hasta 1 ano | "
+         "Empresarios individuales", "pct_anual", "nivel", "media_simple",
+         "cuadro 19.4, serie 17. El boletin no publica volumen de este "
+         "desglose, asi que la media del anio es simple"),
+        ("BE_19_4.12", t4, "TEDR de credito a otros fines | Hogares",
+         "pct_anual", "nivel", "media_ponderada_volumen",
+         "cuadro 19.4, serie 12. Incluye a los empresarios individuales y "
+         "ademas otros fines no empresariales"),
+        ("BE_19_6.3", t6, "TAE de credito a otros fines | Hogares",
+         "pct_anual", "nivel", "media_simple",
+         "cuadro 19.6, serie 3. Es de TODOS los hogares para otros fines, "
+         "no solo de empresarios individuales: la cuna que se deriva de "
+         "ella no es especifica de autonomos"),
+    ]
+    VOL = {"BE_19_4.16": ("BE_19_12.16", "Volumen de credito a otros fines | "
+                          "Empresarios individuales"),
+           "BE_19_4.12": ("BE_19_12.12", "Volumen de credito a otros fines | "
+                          "Hogares")}
+    for alias, tabla, metrica, unidad, td, pond, nota in AUT:
+        for per, val in sorted(tabla.get(alias, {}).items()):
+            if not per.startswith(a.anio):
+                continue
+            w3.writerow(schema.row(
+                pais="Espana", producto="credito_autonomos", metrica=metrica,
+                valor="%.4f" % val, unidad=unidad, periodo_referencia=per,
+                fuente="Banco de Espana, Boletin Estadistico, capitulo 19",
+                url=URL, fecha_publicacion=time.strftime("%Y-%m-%d"),
+                criterio_segmentacion="sector_institucional",
+                tipo_de_dato=td, ponderacion=pond, notas=nota)); n3 += 1
+        if alias in VOL:
+            va, vm = VOL[alias]
+            for per, val in sorted(v12.get(va, {}).items()):
+                if not per.startswith(a.anio):
+                    continue
+                w3.writerow(schema.row(
+                    pais="Espana", producto="credito_autonomos", metrica=vm,
+                    valor="%.0f" % val, unidad="eur_millones",
+                    periodo_referencia=per,
+                    fuente="Banco de Espana, Boletin Estadistico, capitulo 19",
+                    url=URL, fecha_publicacion=time.strftime("%Y-%m-%d"),
+                    criterio_segmentacion="sector_institucional",
+                    tipo_de_dato="volumen", ponderacion="dato_unico",
+                    notas="cuadro 19.12, serie %s" % va.split(".")[-1]))
+                n3 += 1
+    fh3.close()
+    print("%d filas -> %s" % (n3, path3))
     return 0
 
 
