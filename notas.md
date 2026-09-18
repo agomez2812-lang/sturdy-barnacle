@@ -2336,6 +2336,76 @@ definición completa se incorpora a `scripts/safe_harvest.py` y a la columna
 `notas` de las 6.162 filas de `transversal/safe_fg.csv`, para que ningún uso
 posterior del fichero repita el error.
 
+### 2.62 Rediseño: sistema visual sobre las láminas aportadas por el usuario
+
+El usuario aportó una captura de un deck con el sistema visual que quiere.
+Se reconstruye el generador para reproducirlo. La estructura y los datos no
+cambian: cambia la capa de presentación.
+
+**Paleta.** El naranja (#f56600, Pantone 165 C), el negro (#2b2b2b), los
+grises y el azul salen del manual de marca que hay en el repositorio. **El
+amarillo NO está en ese manual**: se ha muestreado de la propia imagen que
+aportó el usuario, donde aparece como acento de bloques y destacados. Los
+valores dominantes del muestreo son #FDD602 y #FFDF34, de donde salen
+`YEL #FFD200`, `YEL2 #FFE066` y `YEL3 #FFF4C2`. Queda documentado como
+muestreo y no como dato de manual, porque el manual que tengo es el de la
+Fundación Innovación Bankinter y no el de la entidad.
+
+**Cambios de sistema:**
+
+- Toda lámina nace en `nueva()`, que pone fondo blanco roto (#FAFBFC), la
+  marca arriba a la derecha y el número abajo a la izquierda. Antes cada
+  lámina llamaba directamente a `pres.addSlide()` y no había ni marca ni
+  numeración.
+- **El título deja de ser naranja y pasa a negro corporativo**, como en las
+  láminas aportadas. El naranja se reserva para datos, numeración y
+  separadores.
+- **Los 22 destacados pasan de naranja claro a amarillo**, con una barra
+  naranja de 0,07" a la izquierda. Las celdas de tabla que codifican
+  intensidad siguen en naranja: ahí el color significa algo y cambiarlo
+  habría roto la lectura.
+- **Separadores numerados**: panel naranja a dos tercios con el número en
+  blanco al 45 % de transparencia, título grande y composición geométrica a
+  la derecha. Sustituyen a los separadores de solo título.
+- **Portada** rehecha: fondo negro, franja naranja a la derecha con bloques
+  amarillo y naranja, filete amarillo bajo el título.
+- **Dos láminas de cierre**: «Juntos hacemos crecer lo que importa» sobre
+  naranja y una de agradecimiento con la marca.
+
+**Lo que no se ha podido reproducir, y por qué.**
+
+1. **Las fotografías.** El deck aportado usa fotografía de archivo en
+   portada, separadores y cierre. No hay banco de imágenes con licencia en
+   el proyecto y no se han descargado imágenes de terceros, porque su uso
+   exigiría una licencia que no consta. En su lugar se compone una
+   **geometría de bloques** naranja, amarillo y blanco translúcido, que es
+   también un recurso del deck original (se ve en sus láminas 30 a 32). La
+   función `bloques()` deja el hueco delimitado para sustituirlo por una
+   imagen si se aporta.
+2. **El logotipo.** No hay fichero de marca en el repositorio, así que se
+   compone tipográficamente: «bankinter» en negro y el punto en naranja, en
+   la tipografía del deck. Es una aproximación, no el logotipo oficial.
+3. **La tipografía.** Se mantiene Verdana, que es la sustituta de sistema
+   que fija el propio manual cuando Bankinter Sans no está disponible.
+
+**Numeración: error detectado y corregido.** Al principio el contador se
+incrementaba dos veces en portada, separadores y cierre —una en `nueva()` y
+otra en la propia función—, de modo que las láminas de contenido salían
+desfasadas. Corregido para que `nueva()` sea el único sitio donde se cuenta.
+Comprobado que el número impreso coincide con la posición real en las 49
+láminas.
+
+**La presentación pasa de 46 a 49 láminas**: tres separadores nuevos
+(cierre, datos e información relevante pasan a numerados) y dos de cierre,
+menos uno por la fusión de separadores previos.
+
+**Control de calidad ampliado.** El verificador de paleta se actualiza con
+los amarillos muestreados y el blanco roto; si no, marcaba como error de
+marca los colores nuevos. Sigue sin haber QA visual: LibreOffice no arranca
+en este entorno (§2.31), así que el rediseño está comprobado
+programáticamente —desbordamiento, solape, lienzo, paleta y numeración—
+pero **no visualmente**. Conviene una primera pasada de ojo.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
