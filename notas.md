@@ -2075,6 +2075,118 @@ correspondiente en `scripts/bde_boletin.py`; lámina «El autónomo paga
 115 pb más que la sociedad pequeña» tras la de comisiones de España; bloque
 `autonomos` en `pres/datos.json`.
 
+### 2.58 Reestructuración en dos bloques y bloque España
+
+Estructura acordada con el usuario: **Bloque 1, el mercado europeo**, tal
+como estaba; **Bloque 2, España**, con parte descriptiva y parte
+competitiva; y anexos. Cada bloque abre con un separador con subtítulo.
+`pres/gen.js` ya era un diccionario de láminas más un array `ORDEN`
+(§2.52), así que reordenar fue cambiar la lista. Se añade `RETIRADAS` para
+poder jubilar una lámina sin que salte el control de integridad.
+
+La lámina del autónomo (§2.57) pasa al bloque España, como pidió el usuario.
+La lámina europea de factoring se retira: su contenido lo absorbe la nueva
+lámina española, que además lleva el reparto factoring/confirming.
+
+Orden del bloque España: primero la pyme (demanda y capacidad de pago),
+luego el precio (comisiones y autónomos), luego los productos (circulante y
+factoring), y solo al final los bancos (mercado, riesgo, ROE y cuenta de
+resultados).
+
+**Seis láminas nuevas, con dos fuentes que no estaban en el encargo.**
+
+**1. Qué pide la pyme española y qué le duele.** CESGAR, XV Informe, datos
+de 2025. Descarga libre. En 2025 el **51,2 %** de las pymes tuvo necesidad
+de financiación; el **70,9 %** acudió al banco, bajando desde el 76,5 % de
+2024; el **92,8 %** obtuvo y aceptó la financiación, y solo al **3,2 %** no
+se le concedió. El destino es lo más relevante para este deck: el **73,0 %**
+lo quiere para **circulante**, frente al 64,6 % de 2024. Y entre las que ven
+obstáculos, el primero es **el precio (21,6 %)**, muy por delante de la
+falta de comprensión del negocio por la entidad (10,5 %). Lectura: el
+crédito se concede, el problema no es el acceso sino a cuánto. Extractor en
+`scripts/cesgar_demanda.py`; las cifras se transcriben a mano porque el PDF
+está maquetado, y cada fila cita su gráfico. Son porcentajes de encuesta y
+así se etiquetan, con la unidad `pct_neto_encuesta`, para que no se mezclen
+con niveles de tipo (regla del encargo).
+
+**2. Cuánto puede pagar una pyme: el techo del precio.** Banco de España,
+**Central de Balances Integrada**, conjunto `cal_ucb_cbl002`, ratios por
+tamaño según la Recomendación 2003/361/CE. Ejercicio 2024:
+
+| Ratio | Pequeñas | Medianas | Grandes |
+|---|---|---|---|
+| R.1 Rentabilidad del activo neto | 5,4 % | 10,4 % | 6,8 % |
+| R.2 Tipo efectivo pagado por su deuda | 3,3 % | 4,4 % | 4,2 % |
+| **R.4 Colchón (R.1 − R.2)** | **+2,1 pp** | +6,1 pp | +2,6 pp |
+| R.3 Rentabilidad de recursos propios | 6,0 % | 12,7 % | 8,5 % |
+| R.5 Margen de explotación | 9,9 % | 9,7 % | 10,2 % |
+
+Dos cosas. **(i) El techo de precio.** La empresa pequeña gana un 5,4 % con
+su activo y paga un 3,3 % por su deuda: **2,1 puntos de colchón**. Si el
+precio sube por encima, endeudarse deja de crear valor para el cliente y la
+demanda se corta sola. La mediana tiene 6,1 puntos, casi el triple.
+**(ii) Validación independiente del precio.** El 3,3 % que paga la pequeña
+está muy cerca del 3,41 % del tramo ≤1 M€ del MIR que usa el modelo. No son
+la misma magnitud —el MIR es nueva producción, R.2 es coste medio del saldo
+vivo— pero que dos fuentes independientes den lo mismo es la mejor
+validación que tiene el deck. Extractor en `scripts/cb_pymes.py`.
+
+**Anomalía anotada:** la empresa pequeña paga **menos** que la mediana
+(3,3 % frente a 4,4 %), al revés de lo que diría el riesgo. La Central de
+Balances no lo explica. Hipótesis razonables: más peso de deuda antigua a
+tipo fijo y más financiación ICO o avalada. Se deja como observación, no
+como conclusión. El colchón de la pequeña ha pasado de −0,2 puntos en 2015 a
++2,1 en 2024.
+
+**3. El circulante en España.** Junta lo que ya había —tipo 3,58 %, saldo
+57.933 M€, validación cruzada BCE contra Boletín— con el dato de CESGAR de
+que es el destino del 73 % de la demanda. Es el producto más pedido y el
+peor medido: no existe ni comisión de disponibilidad ni tasa de disposición,
+y el tipo del BCE no tiene tramo de importe.
+
+**4. Factoring y confirming en España.** España mueve 269.885 M€, el 16,5 %
+del PIB, segundo de los siete por intensidad. Pero **el 52,6 % español es
+confirming frente al 1,9 % italiano**, así que los totales europeos no son
+comparables. Y CESGAR lo sitúa por debajo del leasing y de las líneas ICO en
+penetración entre pymes: el volumen lo mueven las grandes empresas y sus
+cadenas de proveedores.
+
+**5. El mercado y la cuota.** 142.348 M€ de cartera PYME española entre los
+cinco. **CaixaBank tiene el 34,2 %**, más que Santander y BBVA juntos en
+este segmento, pese a ser menor que ambos por balance total: el negocio PYME
+español no se reparte como el balance. Se advierte que el perímetro son
+estos cinco bancos, no el mercado español completo.
+
+**6. Mora y cobertura, trimestre a trimestre.** Cuatro trimestres, de
+sep-2024 a jun-2025. Tres lecturas: **Sabadell** baja su mora de 7,32 % a
+5,91 % y sube cobertura, la mejora más clara; **Santander** baja cobertura
+de 43,2 % a 36,5 % manteniendo la peor mora; y **Bankinter** salta a 74,1 %
+de cobertura desde una banda de 51,9–56,1 %. Este último punto importa
+porque el modelo de §2.55 usa ese trimestre: la LGD de Bankinter sale alta,
+y con la media de los cuatro su ROE saldría algo mejor, no peor. Se dice en
+la propia lámina. Extracción con `--serie` en
+`scripts/eba_te_bancos_es.py`.
+
+**Informes de consultoras: revisado, con resultado escaso.** Se rastrearon
+McKinsey, Deloitte, KPMG, PwC y Oliver Wyman. Lo que publican en abierto
+sobre banca europea es agregado y de segmento mayorista o de banca privada
+(el Global Banking Annual Review de McKinsey, el CEO Outlook de KPMG), sin
+dato de PYME por país ni por banco que aporte algo a este modelo. El
+Observatorio de Digitalización Financiera FUNCAS-KPMG es temático de
+digitalización. El Informe PYME 2025 del Consejo General de Economistas
+devuelve 403 a la descarga automática. **No se ha buscado material de pago
+en foros ni repositorios no oficiales**: ni por la licencia ni porque una
+copia suelta no es citable, y el deck vive de que cada cifra sea trazable.
+Conclusión: para este encargo **CESGAR y la Central de Balances valen más
+que cualquier informe de consultora**, porque son dato primario y español.
+
+**Salidas:** `scripts/cesgar_demanda.py`, `scripts/cb_pymes.py`, la opción
+`--serie` de `scripts/eba_te_bancos_es.py`;
+`transversal/cesgar_demanda.csv`, `transversal/cb_pymes.csv`,
+`comparables_bancos/eba_te_bancos_es_serie.csv`; bloques `cesgar`, `cb` y
+`bancos_serie` en `pres/datos.json`; dos fuentes nuevas en la lámina de
+fuentes, que pasa de once a trece.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

@@ -73,22 +73,29 @@ OTH_ITEMS = {"2520102": "cet1_importe", "2520316": "ingresos",
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--periodo", default="202506")
+    ap.add_argument("--serie", action="store_true",
+                    help="emite ademas la serie trimestral de mora y "
+                         "cobertura, no solo el ultimo periodo")
     a = ap.parse_args()
     for f in (CRE, OTH):
         if not os.path.exists(f):
             sys.exit("falta %s; descargalo primero (ver fuentes.md)" % f)
 
     cre = collections.defaultdict(lambda: collections.defaultdict(float))
+    serie = collections.defaultdict(lambda: collections.defaultdict(float))
     with open(CRE, encoding="utf-8", errors="replace") as fh:
         for d in csv.DictReader(fh):
-            if (d["LEI_Code"] not in BANCOS or d["Period"] != a.periodo
-                    or d["Country"] != ES or d["Item"] not in CRE_ITEMS):
+            if (d["LEI_Code"] not in BANCOS or d["Country"] != ES
+                    or d["Item"] not in CRE_ITEMS):
                 continue
             try:
-                cre[BANCOS[d["LEI_Code"]]][CRE_ITEMS[d["Item"]]] += \
-                    float(d["Amount"])
+                v = float(d["Amount"])
             except (TypeError, ValueError):
                 continue
+            banco = BANCOS[d["LEI_Code"]]
+            serie[(banco, d["Period"])][CRE_ITEMS[d["Item"]]] += v
+            if d["Period"] == a.periodo:
+                cre[banco][CRE_ITEMS[d["Item"]]] += v
 
     oth = collections.defaultdict(lambda: collections.defaultdict(float))
     with open(OTH, encoding="utf-8", errors="replace") as fh:
@@ -187,6 +194,56 @@ def main():
     fh.close()
     print()
     print("%d filas -> %s" % (n, OUT))
+
+    if a.serie:
+        # Serie trimestral de mora y cobertura de la cartera PYME espanola.
+        # El nivel de un trimestre dice poco; la tendencia dice bastante mas.
+        out2 = os.path.join(ROOT, "comparables_bancos",
+                            "eba_te_bancos_es_serie.csv")
+        if os.path.exists(out2):
+            os.remove(out2)
+        fh2, w2 = schema.writer(out2)
+        n2 = 0
+        periodos = sorted({p for _, p in serie})
+        print()
+        print("SERIE TRIMESTRAL: mora PYME en Espana (%) y cobertura (%)\n")
+        print("%-11s %s" % ("banco", "".join("%17s" % p for p in periodos)))
+        for banco in sorted(BANCOS.values()):
+            celdas = []
+            for p in periodos:
+                c = serie.get((banco, p), {})
+                if not c.get("exp_original"):
+                    celdas.append("%17s" % "n/d")
+                    continue
+                mora = 100 * c["exp_default"] / c["exp_original"]
+                cob = (100 * c["provisiones"] / c["exp_default"]
+                       if c.get("exp_default") else float("nan"))
+                celdas.append("%17s" % ("%.2f / %.1f" % (mora, cob)))
+                per = "%s-%s" % (p[:4], p[4:])
+                base = dict(pais="Espana", producto="banco_pyme",
+                            periodo_referencia=per,
+                            fuente="EBA, EU-wide Transparency Exercise",
+                            url=URL, fecha_publicacion=HOY,
+                            criterio_segmentacion="entidad",
+                            tipo_de_dato="ratio", ponderacion="dato_unico")
+                for metrica, valor, nota in (
+                        ("Mora de la cartera PYME en Espana", mora,
+                         "exposicion original en default sobre exposicion "
+                         "original, contraparte espanola; ratio de STOCK"),
+                        ("Cobertura de la cartera PYME en Espana", cob,
+                         "provisiones sobre exposicion en default; incluye "
+                         "provisiones de fases 1 y 2")):
+                    if valor != valor:
+                        continue
+                    w2.writerow(schema.row(
+                        metrica="%s | %s" % (metrica, banco),
+                        valor="%.4f" % valor, unidad="pct_cartera",
+                        notas=nota, **base))
+                    n2 += 1
+            print("%-11s %s" % (banco, "".join(celdas)))
+        fh2.close()
+        print()
+        print("%d filas -> %s" % (n2, out2))
     return 0
 
 

@@ -1067,12 +1067,14 @@ L.fuentes = () => {const s=pres.addSlide();
   ["Spread PYME","OCDE, Financing SMEs and Entrepreneurs","5 países, sin Alemania","2022"],
   ["Factoring","EUF, AEF y Assifact","7 países, anual","2025"],
   ["Marco institucional","Banco Mundial, Doing Business 2020 (descontinuado)","7 países","2019-05"],
+  ["Demanda de la PYME","CESGAR, XV Informe de financiación de la pyme","España, anual","2025"],
+  ["Capacidad de pago","Banco de España, Central de Balances Integrada","España, por tamaño","2024"],
   ["Comparables","Cuentas de resultados de 5 bancos","5 bancos de 9","2026-H1"]];
  const rows=L.map((r,ri)=>r.map((c,ci)=>{
    if(ri===0) return {text:c, options:Object.assign({},hdr,{align:"left", fontSize:11})};
    return {text:c, options:cel(null,{align:"left", fontSize:10.5, bold: ci===0,
      fill:{color: ri%2 ? "FFFFFF" : LIGHT}})};}));
- s.addTable(rows, Object.assign(tOpt(),{y:1.74, colW:[2.85,4.65,2.8,1.82], rowH:0.39}));
+ s.addTable(rows, Object.assign(tOpt(),{y:1.74, colW:[2.85,4.65,2.8,1.82], rowH:0.33}));
  s.addText("Todos los datos, los extractores y el registro de huecos y decisiones metodológicas están en el repositorio del proyecto, en notas.md.",
    {x:M, y:6.35, w:W-2*M, h:0.4, fontFace:BF, fontSize:11.5, color:TXT, isTextBox:true, margin:0});
 };
@@ -1186,22 +1188,297 @@ L.circulante_roe = () => {const s=pres.addSlide();
  fuente(s,"Cálculo propio. Tipo del circulante del MIR (A2Z1, total de sociedades no financieras); coste del riesgo = PD × LGD de la clase IRB «Empresas, total» y densidad de RWA de la clase de exposición «Corporates» del Transparency Exercise, ambos del mismo perímetro que el precio; coste de los recursos, CET1, eficiencia y tipo impositivo, los mismos que usa el modelo del préstamo. La disposición y la comisión de disponibilidad son supuestos declarados: la rejilla muestra el efecto de moverlos. El coste del riesgo se aplica sobre la exposición, no solo sobre el dispuesto, que es como lo trata la NIIF 9 en compromisos.");
 };
 
+/* ES — demanda: que pide la pyme espanola */
+L.es_demanda = () => {const s=pres.addSlide();
+ const C=D.cesgar;
+ titulo(s,"Qué pide la pyme española y qué le duele","Encuesta CESGAR a pymes · Resultados de 2025 · Porcentajes de EMPRESAS, no niveles de tipo ni volúmenes");
+ s.addChart(pres.ChartType.bar, [{name:"% de pymes con necesidades", labels:C.destino.map(d=>d[0]), values:C.destino.map(d=>d[1])}],
+   {x:M, y:1.98, w:6.05, h:2.30, barDir:"bar", chartColors:[PRIM], showTitle:false,
+    showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:10, dataLabelColor:TXT,
+    showLegend:false, catAxisLabelColor:TXT, catAxisLabelFontSize:10,
+    valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:80});
+ s.addText("Destino de la financiación",{x:M, y:1.72, w:6.05, h:0.24, fontFace:HF,
+   fontSize:11.5, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addText("Obstáculos encontrados",{x:6.85, y:1.72, w:6.08, h:0.24, fontFace:HF,
+   fontSize:11.5, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addChart(pres.ChartType.bar, [{name:"% de pymes", labels:C.obstaculos.map(d=>d[0]), values:C.obstaculos.map(d=>d[1])}],
+   {x:6.85, y:1.98, w:6.08, h:2.30, barDir:"bar", chartColors:[BLUE], showTitle:false,
+    showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:10, dataLabelColor:TXT,
+    showLegend:false, catAxisLabelColor:TXT, catAxisLabelFontSize:9,
+    valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:55});
+
+ const kpi=[["Tuvo necesidad de financiar", n1(C.necesidad,1)+" %","de las pymes españolas en 2025"],
+            ["Acudió al banco", n1(C.bancarizacion[2],1)+" %","bajando desde "+n1(C.bancarizacion[1],1)+" % en 2024"],
+            ["Obtuvo y aceptó", n1(C.concedida,1)+" %","máximo de los últimos tres años"],
+            ["No se le concedió", n1(C.denegada,1)+" %","más un "+n1(C.rechazada,1)+" % que rechazó las condiciones"]];
+ let x=M;
+ kpi.forEach(k=>{
+   s.addShape(pres.ShapeType.roundRect,{x:x, y:4.50, w:2.95, h:1.02, fill:{color:LIGHT},
+     rectRadius:0.05, line:{color:G3}});
+   s.addText(k[1],{x:x+0.14, y:4.56, w:2.67, h:0.36, fontFace:HF, fontSize:19, bold:true,
+     color:PRIM, isTextBox:true, margin:0});
+   s.addText(k[0],{x:x+0.14, y:4.94, w:2.67, h:0.20, fontFace:HF, fontSize:9.5, bold:true,
+     color:DARK, isTextBox:true, margin:0});
+   s.addText(k[2],{x:x+0.14, y:5.15, w:2.67, h:0.32, fontFace:BF, fontSize:8,
+     color:G1, isTextBox:true, margin:0});
+   x+=3.11;});
+
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:5.66, w:W-2*M, h:0.96, fill:{color:ORA3},
+   rectRadius:0.05, line:{color:ORA2}});
+ s.addText("El precio es el obstáculo, y el destino es el circulante",{x:M+0.16, y:5.74, w:11.8, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`El ${n1(C.destino[0][1],1)} % de las pymes que necesitan financiación la quiere para circulante, frente al ${n1(C.circ_2024,1)} % de 2024: es el uso que más crece y el producto cuyo precio peor se conoce. Entre las que sí ven obstáculos, el primero es el precio (${n1(C.obstaculos[1][1],1)} %), muy por delante de la falta de comprensión del negocio por la entidad (${n1(C.obstaculos[2][1],1)} %). El crédito se concede: el problema no es el acceso, es a cuánto.`,
+   {x:M+0.16, y:6.00, w:11.8, h:0.56, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Fuente: CESGAR, XV Informe «La financiación de la pyme en España», resultados anuales de 2025, elaborado con Abay Analistas Económicos. Gráficos 9, 10, 13, 17 y 18. Son porcentajes de empresas encuestadas: no deben agregarse ni compararse con los niveles de tipo del MIR ni con volúmenes. Los porcentajes de destino y de uso de productos no suman 100 porque una misma empresa puede señalar varios.");
+};
+
+/* ES — capacidad de pago: Central de Balances */
+L.es_capacidad = () => {const s=pres.addSlide();
+ const C=D.cb;
+ titulo(s,"Cuánto puede pagar una pyme: el techo del precio","Central de Balances del Banco de España · Ejercicio "+C.anio+" · Clasificación por tamaño de la Recomendación 2003/361/CE");
+ s.addChart(pres.ChartType.bar, [
+   {name:"Rentabilidad del activo neto", labels:C.tam, values:C.roa},
+   {name:"Tipo efectivo pagado por su deuda", labels:C.tam, values:C.coste}],
+   {x:M, y:1.98, w:6.95, h:3.10, barDir:"col", chartColors:[PRIM,BLUE],
+    showTitle:false, showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:10,
+    dataLabelColor:TXT, showLegend:true, legendPos:"b", legendFontSize:9.5,
+    catAxisLabelColor:TXT, catAxisLabelFontSize:10.5, valAxisLabelColor:MUT,
+    valAxisLabelFormatCode:'0"%"', valGridLine:{color:"E3E9EB", size:1},
+    catGridLine:{style:"none"}, valAxisMaxVal:12});
+ {const L2=[["","Pequeñas","Medianas","Grandes"],
+   ["Rentabilidad del activo (R.1)"].concat(C.roa.map(v=>n1(v)+" %")),
+   ["Tipo pagado por la deuda (R.2)"].concat(C.coste.map(v=>n1(v)+" %")),
+   ["Colchón, R.1 − R.2 (R.4)"].concat(C.dif.map(v=>"+"+n1(v)+" pp")),
+   ["Rentabilidad de recursos propios (R.3)"].concat(C.roe.map(v=>n1(v)+" %")),
+   ["Margen de explotación (R.5)"].concat(C.margen.map(v=>n1(v)+" %"))];
+  const rows=L2.map((r,ri)=>r.map((c,ci)=>{
+    if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:9.5})};
+    const o=cel(null,{align: ci===0?"left":"center", fontSize:10, bold: ci===0});
+    if(ri===3) o.bold=true, o.fill={color:ORA3}, o.color=DARK;
+    return {text:c, options:o};}));
+  s.addTable(rows, {x:M, y:5.22, w:6.95, colW:[3.05,1.30,1.30,1.30], rowH:0.27,
+    fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});}
+
+ const CX=7.75, CW=W-M-CX;
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:1.98, w:CW, h:1.58, fill:{color:ORA3},
+   rectRadius:0.05, line:{color:ORA2}});
+ s.addText("La pequeña tiene 2,1 puntos de colchón",{x:CX+0.16, y:2.06, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`Gana un ${n1(C.roa[0])} % con su activo y paga un ${n1(C.coste[0])} % por su deuda. Ese margen de ${n1(C.dif[0])} puntos es el techo: si el precio del crédito sube por encima, endeudarse deja de crear valor para el cliente y la demanda se corta sola. La mediana tiene ${n1(C.dif[1])} puntos, casi el triple de recorrido.`,
+   {x:CX+0.16, y:2.32, w:CW-0.32, h:1.16, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:3.66, w:CW, h:1.42, fill:{color:BLUE3},
+   rectRadius:0.05, line:{color:BLUE}});
+ s.addText("Y valida el precio por otra vía",{x:CX+0.16, y:3.74, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`El ${n1(C.coste[0])} % que paga la empresa pequeña es muy cercano al ${n1(D.pl.precio[0],2)} % del tramo ≤1 M€ del MIR que usa el modelo. No son lo mismo —el MIR es nueva producción y esto es el coste medio del saldo vivo— pero que dos fuentes independientes den lo mismo es la mejor validación que tiene el deck.`,
+   {x:CX+0.16, y:4.00, w:CW-0.32, h:1.00, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:5.18, w:CW, h:1.44, fill:{color:LIGHT},
+   rectRadius:0.05, line:{color:G3}});
+ s.addText("Lo que no encaja",{x:CX+0.16, y:5.26, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`La pequeña paga MENOS que la mediana (${n1(C.coste[0])} % frente a ${n1(C.coste[1])} %), al revés de lo que dice el riesgo. La Central de Balances no lo explica; las hipótesis razonables son más peso de deuda antigua a tipo fijo y más financiación ICO o avalada. Queda como observación, no como conclusión.`,
+   {x:CX+0.16, y:5.52, w:CW-0.32, h:1.02, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Fuente: Banco de España, Central de Balances Integrada, conjunto cal_ucb_cbl002, ratios R.1 a R.5 del ejercicio "+C.anio+". Más de un millón de empresas. R.2 es el tipo efectivamente pagado sobre el saldo de recursos ajenos con coste, no el de nueva producción. El colchón de la empresa pequeña ha ido de −0,2 puntos en 2015 a "+n1(C.dif[0])+" en "+C.anio+".");
+};
+
+/* ES — tamano del mercado y cuota */
+L.es_mercado = () => {const s=pres.addSlide();
+ const B=D.bancos, N=B.nombres;
+ const tot=B.exposicion.reduce((a,b)=>a+b,0);
+ const cuota=B.exposicion.map(v=>Math.round(v/tot*1000)/10);
+ titulo(s,"El mercado: 142.000 M€ de cartera PYME entre los cinco","Exposición a PYME con contraparte española · EU-wide Transparency Exercise del EBA · Junio 2025");
+ s.addChart(pres.ChartType.bar, [{name:"Cartera PYME en España", labels:N, values:B.exposicion}],
+   {x:M, y:1.98, w:7.10, h:3.05, barDir:"col", chartColors:[PRIM], showTitle:false,
+    showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:10.5, dataLabelColor:TXT,
+    dataLabelFormatCode:'#,##0', showLegend:false, catAxisLabelColor:TXT,
+    catAxisLabelFontSize:10.5, valAxisLabelColor:MUT, valAxisLabelFormatCode:'#,##0',
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}});
+ s.addText("Millones de euros de valor de exposición",{x:M, y:5.06, w:7.10, h:0.22,
+   fontFace:BF, fontSize:8, color:MUT, italic:true, align:"center", isTextBox:true, margin:0});
+ {const L2=[["Banco","Cartera PYME, M€","Cuota entre los cinco","Densidad de RWA","RWA, M€"]]
+   .concat(N.map((b,i)=>[b, B.exposicion[i].toLocaleString("es-ES"), n1(cuota[i])+" %",
+     n1(B.densidad[i])+" %", Math.round(B.exposicion[i]*B.densidad[i]/100).toLocaleString("es-ES")]));
+  const rows=L2.map((r,ri)=>r.map((c,ci)=>{
+    if(ri===0) return {text:c, options:Object.assign({},hdr,{align: ci===0?"left":"center", fontSize:9})};
+    const o=cel(null,{align: ci===0?"left":"center", fontSize:10, bold: ci===0});
+    if(ci===2){ o.bold=true; o.fill={color: cuota[ri-1]>=30?ORA2:(cuota[ri-1]>=17?ORA3:LIGHT)}; }
+    return {text:c, options:o};}));
+  s.addTable(rows, {x:7.98, y:1.98, w:4.75, colW:[1.15,1.15,1.20,1.05,1.20], rowH:0.42,
+    fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});}
+ s.addShape(pres.ShapeType.roundRect,{x:7.98, y:4.62, w:4.75, h:1.14, fill:{color:ORA3},
+   rectRadius:0.05, line:{color:ORA2}});
+ s.addText("Concentración moderada",{x:8.14, y:4.70, w:4.43, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`CaixaBank tiene el ${n1(cuota[2])} % de la cartera PYME de los cinco, más que Santander y BBVA juntos en este segmento, pese a ser menor que ambos por balance total. El negocio PYME español no se reparte como el balance.`,
+   {x:8.14, y:4.96, w:4.43, h:0.72, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:5.42, w:7.10, h:1.20, fill:{color:BLUE3},
+   rectRadius:0.05, line:{color:BLUE}});
+ s.addText("Es el perímetro que se puede medir, no todo el mercado",{x:M+0.16, y:5.50, w:6.78, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("Son los cinco bancos del ejercicio de transparencia con cartera PYME española relevante. Fuera quedan las entidades no supervisadas directamente, las cooperativas de crédito, los EFC y la financiación no bancaria, que según CESGAR pesa: el crédito de proveedores lo usa el 16 % de las pymes.",
+   {x:M+0.16, y:5.76, w:6.78, h:0.78, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Fuente: EBA, EU-wide Transparency Exercise, partida 2520523 (valor de exposición de PYME) y 2520533 (RWA), con contraparte de Country = 28 (España), junio de 2025. La clase PYME agrega Corporates-SME, Retail-SME y Secured by mortgages-SME. La cuota es sobre el total de estos cinco bancos, no sobre el mercado español de crédito a PYME, que es mayor.");
+};
+
+/* ES — mora y cobertura, serie trimestral */
+L.es_riesgo_serie = () => {const s=pres.addSlide();
+ const S=D.bancos_serie, N=D.bancos.nombres;
+ const col={Bankinter:PRIM, Sabadell:BLUE, CaixaBank:ORA2, BBVA:G2, Santander:MAG};
+ titulo(s,"Mora y cobertura de la cartera PYME española, trimestre a trimestre","El nivel de un trimestre dice poco; la tendencia dice bastante más · EU-wide Transparency Exercise del EBA");
+ s.addChart(pres.ChartType.line, N.map(b=>({name:b, labels:S.periodos, values:S.mora[b]})),
+   {x:M, y:2.00, w:6.05, h:3.15, chartColors:N.map(b=>col[b]), showTitle:false,
+    showValue:false, showLegend:true, legendPos:"b", legendFontSize:9,
+    lineSize:2.5, lineSmooth:false, catAxisLabelColor:TXT, catAxisLabelFontSize:9,
+    valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"},
+    valAxisMinVal:2, valAxisMaxVal:9});
+ s.addText("Mora: exposición en default sobre exposición original",{x:M, y:1.74, w:6.05, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addText("Cobertura: provisiones sobre exposición en default",{x:6.85, y:1.74, w:6.08, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addChart(pres.ChartType.line, N.map(b=>({name:b, labels:S.periodos, values:S.cob[b]})),
+   {x:6.85, y:2.00, w:6.08, h:3.15, chartColors:N.map(b=>col[b]), showTitle:false,
+    showValue:false, showLegend:true, legendPos:"b", legendFontSize:9,
+    lineSize:2.5, lineSmooth:false, catAxisLabelColor:TXT, catAxisLabelFontSize:9,
+    valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"},
+    valAxisMinVal:30, valAxisMaxVal:80});
+ const cajas=[
+  ["Sabadell limpia, y se nota", BLUE3, BLUE,
+   `Su mora PYME baja de ${n1(S.mora.Sabadell[0],2)} % a ${n1(S.mora.Sabadell[3],2)} % en cuatro trimestres, la mejora más clara de los cinco, y además sube cobertura. Es coherente con su densidad de RWA, la más baja del grupo.`],
+  ["Santander provisiona cada vez menos", MAG3, MAG,
+   `Su cobertura cae de ${n1(S.cob.Santander[0],1)} % a ${n1(S.cob.Santander[3],1)} % mientras mantiene la peor mora. Puede ser cartera más garantizada o puede ser infraprovisión: con dato público no se distingue, y conviene mirarlo.`],
+  ["Ojo con el último dato de Bankinter", ORA3, ORA2,
+   `Su cobertura salta a ${n1(S.cob.Bankinter[3],1)} % desde una banda de ${n1(S.cob.Bankinter[1],1)}–${n1(S.cob.Bankinter[0],1)} %. El modelo de las láminas siguientes usa ese trimestre, así que su LGD sale alta; con la media de los cuatro su ROE saldría algo mejor, no peor.`]];
+ let x=M;
+ cajas.forEach(c=>{
+   s.addShape(pres.ShapeType.roundRect,{x:x, y:5.34, w:3.98, h:1.28, fill:{color:c[1]},
+     rectRadius:0.05, line:{color:c[2]}});
+   s.addText(c[0],{x:x+0.14, y:5.42, w:3.70, h:0.24, fontFace:HF, fontSize:10.5,
+     bold:true, color:DARK, isTextBox:true, margin:0});
+   s.addText(c[3],{x:x+0.14, y:5.68, w:3.70, h:0.88, fontFace:BF, fontSize:8,
+     color:DARK, isTextBox:true, margin:0});
+   x+=4.16;});
+ fuente(s,"Fuente: EBA, EU-wide Transparency Exercise, partidas 2520503, 2520513 y 2520553 con contraparte de Country = 28 (España). La mora es un ratio de stock, no una PD de flujo. La cobertura incluye provisiones de las fases 1 y 2, así que sobreestima la cobertura del default en sí; el sesgo es el mismo para los cinco, de modo que sirve para comparar entre bancos y no como nivel absoluto.");
+};
+
+/* ES — circulante en Espana */
+L.es_circulante = () => {const s=pres.addSlide();
+ const C=D.circ, CE=D.cesgar;
+ titulo(s,"El circulante en España: el producto más pedido y el peor medido","Serie A2Z1 del BCE validada contra el Boletín del Banco de España · Media 2026");
+ const kpi=[["3,58 %","Tipo del circulante","BCE y Banco de España dan el mismo dato"],
+            ["57.933 M€","Saldo vivo en España","único volumen por país que existe"],
+            [n1(CE.destino[0][1],1)+" %","De las pymes lo pide","para circulante, frente al "+n1(CE.circ_2024,1)+" % de 2024"],
+            [n1(CE.productos[0][1],0)+" %","Usa línea de crédito","el instrumento más utilizado, junto al préstamo"]];
+ let x=M;
+ kpi.forEach(k=>{
+   s.addShape(pres.ShapeType.roundRect,{x:x, y:1.90, w:2.95, h:1.08, fill:{color:LIGHT},
+     rectRadius:0.05, line:{color:G3}});
+   s.addText(k[0],{x:x+0.14, y:1.96, w:2.67, h:0.40, fontFace:HF, fontSize:20, bold:true,
+     color:PRIM, isTextBox:true, margin:0});
+   s.addText(k[1],{x:x+0.14, y:2.38, w:2.67, h:0.20, fontFace:HF, fontSize:9.5, bold:true,
+     color:DARK, isTextBox:true, margin:0});
+   s.addText(k[2],{x:x+0.14, y:2.59, w:2.67, h:0.34, fontFace:BF, fontSize:8,
+     color:G1, isTextBox:true, margin:0});
+   x+=3.11;});
+ s.addChart(pres.ChartType.bar, [
+   {name:"Préstamo, total empresas", labels:P, values:C.prestamo_total},
+   {name:"Circulante", labels:P, values:C.tipo}],
+   {x:M, y:3.20, w:7.20, h:2.42, barDir:"col", chartColors:[ORA3,PRIM],
+    showTitle:false, showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:8,
+    dataLabelColor:TXT, showLegend:true, legendPos:"b", legendFontSize:9,
+    catAxisLabelColor:TXT, catAxisLabelFontSize:9, valAxisLabelColor:MUT,
+    valAxisLabelFormatCode:'0.0"%"', valGridLine:{color:"E3E9EB", size:1},
+    catGridLine:{style:"none"}, valAxisMaxVal:6});
+ s.addText("España es de los pocos donde el circulante se cobra por encima del préstamo, y solo por 16 pb",
+   {x:M, y:5.64, w:7.20, h:0.22, fontFace:BF, fontSize:8, color:MUT, italic:true,
+    align:"center", isTextBox:true, margin:0});
+ const CX=8.05, CW=W-M-CX;
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:3.20, w:CW, h:1.62, fill:{color:ORA3},
+   rectRadius:0.05, line:{color:ORA2}});
+ s.addText("La demanda va donde el dato no llega",{x:CX+0.16, y:3.28, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`Tres de cada cuatro pymes que necesitan financiación la quieren para circulante, y es el destino que más crece. Pero de este producto no existe ni comisión de disponibilidad ni tasa de disposición en ninguna estadística, y el tipo que publica el BCE no tiene tramo de importe: mezcla la póliza de la pyme con la línea del corporativo.`,
+   {x:CX+0.16, y:3.54, w:CW-0.32, h:1.20, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:4.94, w:CW, h:1.68, fill:{color:BLUE3},
+   rectRadius:0.05, line:{color:BLUE}});
+ s.addText("Validación cruzada del precio",{x:CX+0.16, y:5.02, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("El Boletín del Banco de España publica el mismo dato por vía nacional, cuadro 19.5 serie 1, y da 3,58 %: idéntico al del BCE. Es la única serie del deck que se ha podido contrastar contra una fuente independiente, y cuadra. El volumen, 57.933 M€ de saldo medio, solo lo publica España.",
+   {x:CX+0.16, y:5.28, w:CW-0.32, h:1.26, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Fuentes: BCE, dataset MIR, serie A2Z1 (revolving y descubiertos a sociedades no financieras), media 2026; Banco de España, Boletín Estadístico, cuadros 19.5 y 19.13, serie 1; CESGAR, XV Informe, gráficos 9 y 13. En revolving el MIR mide el tipo del saldo vivo, no de nueva producción. Los porcentajes de CESGAR son de empresas encuestadas y no se agregan con los tipos.");
+};
+
+/* ES — factoring y confirming en Espana */
+L.es_factoring = () => {const s=pres.addSlide();
+ const F=D.factoring, CE=D.cesgar;
+ titulo(s,"Factoring y confirming: España es un caso aparte en Europa","Volumen anual sobre PIB · European Union Federation for Factoring · 2025");
+ s.addChart(pres.ChartType.bar, [{name:"Volumen sobre PIB", labels:P, values:F.pib}],
+   {x:M, y:1.98, w:7.10, h:3.00, barDir:"col", chartColors:[PRIM], showTitle:false,
+    showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:11, dataLabelColor:TXT,
+    showLegend:false, catAxisLabelColor:TXT, catAxisLabelFontSize:10.5,
+    valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}, valAxisMaxVal:24});
+ s.addText("España mueve 269.885 M€ al año, el 16,5 % del PIB: el segundo de los siete por intensidad, detrás de Portugal",
+   {x:M, y:5.02, w:7.10, h:0.22, fontFace:BF, fontSize:8, color:MUT, italic:true,
+    align:"center", isTextBox:true, margin:0});
+ const CX=7.98, CW=W-M-CX;
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:1.98, w:CW, h:1.72, fill:{color:MAG3},
+   rectRadius:0.05, line:{color:MAG}});
+ s.addText("El 52,6 % español es confirming",{x:CX+0.16, y:2.06, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("En Italia es el 1,9 %. España y Portugal son los dos mercados europeos donde el pago confirmado a proveedores domina sobre el factoring clásico. Por eso los totales de la federación europea NO son comparables entre países: se está sumando un producto de financiación de clientes con otro de pago a proveedores.",
+   {x:CX+0.16, y:2.32, w:CW-0.32, h:1.30, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:CX, y:3.82, w:CW, h:1.46, fill:{color:LIGHT},
+   rectRadius:0.05, line:{color:G3}});
+ s.addText("Y la pyme lo usa poco",{x:CX+0.16, y:3.90, w:CW-0.32, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`CESGAR lo sitúa por debajo del leasing (${n1(CE.productos[4][1],0)} %) y de las líneas ICO (${n1(CE.productos[3][1],0)} %) en penetración entre pymes. El volumen agregado es grande porque lo mueven las grandes empresas y sus cadenas de proveedores, no porque la pyme lo contrate.`,
+   {x:CX+0.16, y:4.16, w:CW-0.32, h:1.04, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:5.34, w:W-2*M, h:1.28, fill:{color:ORA3},
+   rectRadius:0.05, line:{color:ORA2}});
+ s.addText("Volumen sí, precio no: es el único bloque del encargo que se cierra sin ningún dato de su objetivo",
+   {x:M+0.16, y:5.42, w:11.8, h:0.24, fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText("Ni el BCE, ni el Banco de España, ni la federación europea, ni las asociaciones nacionales publican un precio del factoring o del confirming. Se buscó en las nueve fuentes del encargo y en las memorias de Santander Factoring y Confirming, BNP Paribas Factor y Eurofactor. El precio de estos productos solo existe en registros de pago o en datos de mercado, y por tanto no entra en el modelo de rentabilidad: cualquier ROE de factoring de este deck sería inventado.",
+   {x:M+0.16, y:5.68, w:11.8, h:0.86, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Fuentes: EU Federation for Factoring and Commercial Finance y asociaciones nacionales (AEF en España, Assifact en Italia); CESGAR, XV Informe, gráfico 9. El reparto entre factoring y confirming procede de las asociaciones nacionales y no está armonizado.");
+};
+
 /* --- orden final de la presentacion --- */
 const ORDEN = [
   "portada", "objetivo",
-  "precio", "comisiones_es", "autonomos", "cuenta", "roe", "sensibilidad", "entrante",
+  /* --- Bloque 1: el mercado europeo --- */
+  "sep_europa",
+  "precio", "cuenta", "roe", "sensibilidad", "entrante",
   "recursos", "riesgo", "infraestructura", "dos_ejes", "apetito",
   "capital", "eficiencia",
   "circulante", "circulante_precio", "circulante_roe",
-  "comparables", "bancos_es", "bancos_es_pl", "conclusiones", "recomendaciones",
+  "comparables",
+  /* --- Bloque 2: Espana, mercado y competidores --- */
+  "sep_espana",
+  "es_demanda", "es_capacidad",            // descriptivo: la pyme
+  "comisiones_es", "autonomos",            // descriptivo: el precio
+  "es_circulante", "es_factoring",         // descriptivo: los productos
+  "es_mercado", "es_riesgo_serie",         // competitivo: los bancos
+  "bancos_es", "bancos_es_pl",
+  /* --- Cierre y anexos --- */
+  "conclusiones", "recomendaciones",
   "anexos", "datos", "fuentes", "fiabilidad", "limites", "supuestos",
-  "info_relevante", "npl", "spread_pd_lgd", "palanca", "hipotecas", "factoring",
+  "info_relevante", "npl", "spread_pd_lgd", "palanca", "hipotecas",
 ];
-const SEPARADORES = {anexos:"Anexos", datos:"Datos", info_relevante:"Información relevante"};
-Object.entries(SEPARADORES).forEach(([k,t])=>{ L[k] = () => titulo(pres.addSlide(), t); });
+/* Laminas retiradas a proposito: su contenido lo absorbio otra. */
+const RETIRADAS = ["factoring"];   // absorbida por es_factoring
+const SEPARADORES = {
+  sep_europa: ["El mercado europeo", "Siete países · Precio, riesgo, capital y rentabilidad del préstamo PYME"],
+  sep_espana: ["España: mercado, productos y competidores", "La demanda, lo que puede pagar, los productos y los cinco grandes bancos"],
+  anexos: ["Anexos", null], datos: ["Datos", null],
+  info_relevante: ["Información relevante", null]};
+Object.entries(SEPARADORES).forEach(([k,t])=>{ L[k] = () => titulo(pres.addSlide(), t[0], t[1]); });
 
 ORDEN.forEach(k=>{ if(!L[k]) throw new Error("lamina desconocida: "+k); L[k](); });
-const sobran = Object.keys(L).filter(k=>!ORDEN.includes(k));
+const sobran = Object.keys(L).filter(k=>!ORDEN.includes(k) && !RETIRADAS.includes(k));
 if(sobran.length) throw new Error("laminas sin colocar: "+sobran.join(", "));
 
 pres.writeFile({fileName:"rentabilidad_pyme.pptx"}).then(f=>console.log("escrito:",f,"|",ORDEN.length,"laminas"));
