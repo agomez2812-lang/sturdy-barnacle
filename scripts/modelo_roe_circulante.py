@@ -304,8 +304,18 @@ def main():
             emite(p, metrica, valor, unidad, td, sup, pond="media_simple")
 
     # --- 3. rejilla de sensibilidad sobre los dos supuestos ---
+    # La rejilla promedia los SIETE paises. Conviene decirlo explicitamente
+    # porque, si no, la fila que sale plana invita a pensar que corresponde a
+    # la comision neutral de un pais concreto, y no es asi: sale plana porque
+    # 0,30 % esta practicamente sobre la MEDIA de las siete neutrales.
+    neutrales = [CCF_UCC * (pr[p]["circulante"] - ent[p]["coste_rec"])
+                 for p in PAISES]
+    neutral_media = statistics.mean(neutrales)
     print()
     print("SENSIBILIDAD DEL ROE DEL CIRCULANTE (media de los siete paises)")
+    print("La fila plana es la que cae sobre la media de las comisiones "
+          "neutrales: %.3f %% (rango %.3f a %.3f)"
+          % (neutral_media, min(neutrales), max(neutrales)))
     print("filas: comision de disponibilidad | columnas: tasa de disposicion")
     print("%-8s" % "" + "".join("%9.0f%%" % (100 * u) for u in U_GRID))
     for f in F_GRID:
@@ -444,6 +454,15 @@ def main():
                   "prestamo PYME (%.1f %%) con disposicion del %.0f %% y CCF "
                   "del %.0f %%" % (base[p]["roe"], obj, 100 * U_BASE,
                                    100 * CCF_UCC), pond="media_simple")
+
+    emite("Zona euro (referencia)",
+          "Comision de disponibilidad neutral media de los siete",
+          neutral_media, "pct_anual", "nivel",
+          "media simple de las siete comisiones neutrales; explica por que "
+          "la fila de 0,30 %% de la rejilla sale plana, ya que la rejilla "
+          "promedia los siete paises y no es de ninguno en particular "
+          "(rango: %.3f %% en Paises Bajos a %.3f %% en Irlanda)"
+          % (min(neutrales), max(neutrales)))
 
     fh.close()
     print()

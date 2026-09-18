@@ -2406,6 +2406,61 @@ en este entorno (§2.31), así que el rediseño está comprobado
 programáticamente —desbordamiento, solape, lienzo, paleta y numeración—
 pero **no visualmente**. Conviene una primera pasada de ojo.
 
+### 2.63 La rejilla del circulante: el cálculo estaba bien, el rótulo no
+
+Al maquetar la presentación, otro asistente señaló una aparente
+inconsistencia en la rejilla de sensibilidad del circulante: el ROE de 9,3 %
+a 60 % de disposición con 0,30 % de comisión coincide con el de Irlanda,
+pero la comisión neutral de Irlanda es 0,455 % y no 0,30 %, luego la fila
+plana parecía estar en el sitio equivocado.
+
+**Verificado: no hay error de cálculo.** La rejilla es la **media simple de
+los siete países**, no la de ninguno en particular. Que 9,3 coincida con
+Irlanda es casualidad de redondeo: Irlanda da 9,31 % y la media 9,34 %.
+
+**Por qué la fila de 0,30 % sale plana.** Porque la media de las siete
+comisiones neutrales es **0,312 %**, y 0,30 cae prácticamente encima:
+
+| País | Tipo circulante | Coste recursos | Neutral |
+|---|---|---|---|
+| P. Bajos | 2,46 % | 1,04 % | **0,143 %** |
+| Francia | 3,39 % | 1,21 % | 0,217 % |
+| España | 3,58 % | 0,76 % | 0,281 % |
+| Italia | 4,11 % | 0,74 % | 0,337 % |
+| Portugal | 4,41 % | 0,74 % | 0,367 % |
+| Alemania | 4,95 % | 1,09 % | 0,385 % |
+| Irlanda | 4,92 % | 0,37 % | **0,455 %** |
+| **Media** | | | **0,312 %** |
+
+**Prueba de que la fórmula es correcta.** Con la comisión neutral de cada
+país, su ROE no se mueve nada entre disposición del 40 % y del 100 %:
+variación de **0,000 pp** en los siete. Con 0,30 % plano para todos, sí se
+mueve, y en la dirección esperada: Países Bajos −1,16 pp (su neutral es
+0,143, muy por debajo), Irlanda +0,47 pp (su neutral es 0,455, por encima).
+Es exactamente lo que predice `f = CCF × (tipo − coste de los recursos)`.
+
+**Lo que sí estaba mal: el rótulo.** La rejilla no decía con suficiente
+claridad que promedia los siete países, y eso invita precisamente a la
+lectura errónea de leerla como si fuera de un país. Corregido:
+
+- el rótulo pasa a «Sensibilidad a los dos supuestos · media de los SIETE
+  países»;
+- se añade bajo la rejilla una línea que explica que la fila de 0,30 % sale
+  plana por caer sobre la media de las neutrales (0,31 %) y que esa media no
+  es la neutral de ningún país, que van del 0,14 % de Países Bajos al 0,46 %
+  de Irlanda;
+- el pie de la lámina lo repite.
+
+`scripts/modelo_roe_circulante.py` imprime ahora la media de las neutrales y
+su rango junto a la rejilla, y emite la media como fila propia del CSV, de
+modo que el dato que explica la planitud queda en el fichero y no solo en la
+lámina. Nuevo campo `f_neutral_media` en el bloque `circ` de
+`pres/datos.json`.
+
+**Lección de método.** El aviso era incorrecto en el diagnóstico pero
+acertado en el olfato: una rejilla cuya fila plana no se explica es una
+rejilla mal rotulada, aunque los números sean exactos.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

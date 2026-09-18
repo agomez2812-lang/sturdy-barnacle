@@ -1274,8 +1274,10 @@ L.circulante_roe = () => {const s=nueva();
    {x:M, y:4.98, w:7.35, h:0.60, fontFace:BF, fontSize:8, color:G1, isTextBox:true, margin:0});
 
  /* rejilla de sensibilidad */
- s.addText("Sensibilidad a los dos supuestos",{x:M, y:5.62, w:7.35, h:0.24,
+ s.addText("Sensibilidad a los dos supuestos · media de los SIETE países",{x:M, y:5.58, w:7.35, h:0.24,
    fontFace:HF, fontSize:11.5, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addText(`La fila de ${n1(C.f_base,2)} % sale plana porque cae casi sobre la media de las siete comisiones neutrales (${n1(C.f_neutral_media,2)} %). No es la neutral de ningún país: van del ${n1(Math.min(...C.f_neutral),2)} % de Países Bajos al ${n1(Math.max(...C.f_neutral),2)} % de Irlanda.`,
+   {x:M, y:5.82, w:7.35, h:0.24, fontFace:BF, fontSize:7.5, color:MUT, italic:true, isTextBox:true, margin:0});
  {const g=C.grid, fs=Object.keys(g);
   const cab=[{text:"comisión \\ disposición", options:Object.assign({},hdr,{align:"left", fontSize:7.5})}]
     .concat(C.u_grid.map(u=>({text:u+" %", options:Object.assign({},hdr,{fontSize:7.5})})));
@@ -1285,8 +1287,8 @@ L.circulante_roe = () => {const s=nueva();
       const o=cel(null,{fontSize:8, bold:true});
       o.fill={color: v>=10?ORA2:(v>=8.5?ORA3:LIGHT)};
       return {text:n1(v)+" %", options:o};}))));
-  s.addTable(rows, {x:M, y:5.90, w:7.35, colW:[2.10].concat(new Array(6).fill(0.875)),
-    rowH:0.21, fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});}
+  s.addTable(rows, {x:M, y:6.08, w:7.35, colW:[2.10].concat(new Array(6).fill(0.875)),
+    rowH:0.185, fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});}
 
  /* columna derecha */
  const CX=8.15, CW=W-M-CX;
@@ -1320,7 +1322,7 @@ L.circulante_roe = () => {const s=nueva();
    fontFace:HF, fontSize:11, bold:true, color:DARK, isTextBox:true, margin:0});
  s.addText("Ni la comisión de disponibilidad ni la disposición las publica nadie. Y el CRR3 subió del 0 % al 10 % el factor de conversión del compromiso cancelable: al 40 % el ROE cae entre 1,1 y 2,5 puntos.",
    {x:CX+0.16, y:6.16, w:CW-0.32, h:0.42, fontFace:BF, fontSize:8, color:DARK, isTextBox:true, margin:0});
- fuente(s,"Cálculo propio. Tipo del circulante del MIR (A2Z1, total de sociedades no financieras); coste del riesgo = PD × LGD de la clase IRB «Empresas, total» y densidad de RWA de la clase de exposición «Corporates» del Transparency Exercise, ambos del mismo perímetro que el precio; coste de los recursos, CET1, eficiencia y tipo impositivo, los mismos que usa el modelo del préstamo. La disposición y la comisión de disponibilidad son supuestos declarados: la rejilla muestra el efecto de moverlos. El coste del riesgo se aplica sobre la exposición, no solo sobre el dispuesto, que es como lo trata la NIIF 9 en compromisos.");
+ fuente(s,"Cálculo propio. Tipo del circulante del MIR (A2Z1, total de sociedades no financieras); coste del riesgo = PD × LGD de la clase IRB «Empresas, total» y densidad de RWA de la clase de exposición «Corporates» del Transparency Exercise, ambos del mismo perímetro que el precio; coste de los recursos, CET1, eficiencia y tipo impositivo, los mismos que usa el modelo del préstamo. La disposición y la comisión de disponibilidad son supuestos declarados: la rejilla muestra el efecto de moverlos, y promedia los siete países, de modo que ninguna de sus filas corresponde a la comisión neutral de un país concreto. El coste del riesgo se aplica sobre la exposición, no solo sobre el dispuesto, que es como lo trata la NIIF 9 en compromisos.");
 };
 
 /* ES — demanda: que pide la pyme espanola */
