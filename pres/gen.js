@@ -974,20 +974,20 @@ L.supuestos = () => {const s=pres.addSlide();
 
 /* 19b — conclusiones y recomendaciones */
 L.conclusiones = () => {const s=pres.addSlide();
- titulo(s,"Conclusiones y recomendaciones","Lo que sostienen los datos y lo que se deriva para una decisión de entrada");
+ titulo(s,"Conclusiones: el mercado europeo","Lo que sostienen los datos de los siete países");
  const C=[
   ["1","El capital manda sobre el precio",
    "La densidad de RWA va del 35 % en Alemania al 70 % en Irlanda. Esa horquilla separa más el ROE que el precio, que solo va del 3,41 % al 5,37 %. Irlanda lo demuestra: tiene el precio más alto de las siete y la mejor PD, y aun así queda cuarta entre los bancos locales."],
   ["2","El atractivo para un entrante no coincide con la rentabilidad del local",
-   `Francia es el peor mercado para su banca (${n1(D.pl.roe[2])} %) y el cuarto mejor para un entrante eficiente (${n1(D.ent.roe[2])} %). Lo que se compra al entrar no es el margen del mercado, es la distancia respecto al incumbente.`],
-  ["3","España es el mercado donde menos vale entrar eficiente",
-   "Solo gana 1,2 puntos de ROE. Su banca ya es la segunda más eficiente (42,1 %), sus recursos ya son baratos (0,76 %, por debajo del 0,80 % del entrante) y arrastra una densidad de RWA del 59,5 % y el 30 % de impuesto del art. 29 LIS."],
-  ["4","Países Bajos y Alemania son los objetivos naturales",
+   `Francia es el peor mercado para su banca (${n1(D.pl.roe[2])} %) y el cuarto mejor para un entrante eficiente (${n1(D.ent.roe[2])} %). Y es además el más grande (${n1(D.eu_desc.cuota[2])} % de la cartera PYME de los siete) y el único con brecha de financiación positiva. Lo que se compra al entrar no es el margen del mercado, es la distancia respecto al incumbente.`],
+  ["3","Países Bajos y Alemania son los objetivos naturales",
    "37,0 % y 35,0 % de ROE para el entrante. Combinan el menor coste del riesgo (0,35 % y 0,40 %) con la menor densidad de RWA (37 % y 35 %) e incumbentes con eficiencia mediocre (53,5 % y 55,2 %)."],
-  ["5","El coste del riesgo se controla seleccionando, no recuperando",
-   "Igualar la PD a la mejor de las siete elimina el 75 % de la dispersión del coste del riesgo entre países; igualar la LGD solo el 22 %. Y el eje que mejor predice la PD no es la información disponible (ρ = −0,23) sino el entorno de recobro (ρ = −0,79): donde ejecutar es lento y caro, el impago se enquista. Y no se compensa cobrando: entre mercados el margen neto de riesgo cae con la PD (ρ = −0,76)."],
+  ["4","El coste del riesgo se controla seleccionando, no recuperando",
+   "Igualar la PD a la mejor de las siete elimina el 75 % de la dispersión del coste del riesgo; igualar la LGD solo el 22 %. Y el eje que mejor predice la PD no es la información (ρ = −0,23) sino el entorno de recobro (ρ = −0,79): donde ejecutar es lento y caro, el impago se enquista."],
+  ["5","Prestar peor no viene pagado",
+   "Entre mercados el margen neto de riesgo cae con la PD (ρ = −0,76): los países que prestan peor son los que menos cobran. Dentro de cada mercado sí se paga, vía tramo de importe, y ahí España es la única de las siete sin gradiente."],
   ["6","La comisión es el único supuesto material que queda",
-   "Solo España publica un tipo con comisiones para empresas, y allí vale 87 pb sobre el tramo ≤1 M€. Aplicarla a los demás es una hipótesis. Antes de decidir, conviene validarla en el mercado objetivo: mueve el ROE entre 3 y 8 puntos."]];
+   "Solo España publica un tipo con comisiones para empresas, y allí vale 87 pb sobre el tramo ≤1 M€. Aplicarla a los demás es una hipótesis. Mueve el ROE entre 3 y 8 puntos."]];
  let y=1.66;
  C.forEach((c,i)=>{
    s.addShape(pres.ShapeType.ellipse,{x:M, y:y+0.04, w:0.36, h:0.36, fill:{color:PRIM}, line:{color:PRIM}});
@@ -998,12 +998,42 @@ L.conclusiones = () => {const s=pres.addSlide();
    s.addText(c[2], {x:M+0.55, y:y+0.30, w:11.6, h:0.50, fontFace:BF, fontSize:9,
      color:G1, isTextBox:true, margin:0});
    y+=0.845;});
- fuente(s,"Las conclusiones 1 a 5 se apoyan en datos observados por país; la 6 señala el supuesto que las condiciona. Las correlaciones de la conclusión 5 son sobre siete países: indicativas, no causales. El escenario de entrante no incorpora coste de entrada, escala mínima ni curva de aprendizaje de riesgo.");
+ fuente(s,"Las conclusiones 1 a 5 se apoyan en datos observados por país; la 6 señala el supuesto que las condiciona. Las correlaciones son sobre siete países: indicativas, no causales. El escenario de entrante no incorpora coste de entrada, escala mínima ni curva de aprendizaje de riesgo.");
+};
+
+/* 19b2 — conclusiones del bloque Espana */
+L.conclusiones_es = () => {const s=pres.addSlide();
+ const B=D.bancos, CB=D.cb, CE=D.cesgar;
+ titulo(s,"Conclusiones: España","Lo que añade el bloque español, que no se ve en el agregado europeo");
+ const C=[
+  ["1","El problema no es el acceso, es el precio",
+   `El ${n1(CE.concedida,1)} % de las pymes que pide financiación la obtiene y la acepta, y solo al ${n1(CE.denegada,1)} % no se le concede. Entre las que sí ven obstáculos, el primero es el precio (${n1(CE.obstaculos[1][1],1)} %). Un entrante que compita por disponibilidad se equivoca de eje.`],
+  ["2","La pyme pequeña tiene 2,1 puntos de colchón, y ese es el techo",
+   `Gana un ${n1(CB.roa[0])} % con su activo y paga un ${n1(CB.coste[0])} % por su deuda. Por encima de esa diferencia, endeudarse deja de crearle valor y la demanda se corta sola. La mediana tiene ${n1(CB.dif[1])} puntos: es otro cliente, no el mismo más grande.`],
+  ["3","La demanda va al circulante, que es el producto peor medido",
+   `El ${n1(CE.destino[0][1],1)} % de las pymes con necesidades lo quiere para circulante, frente al ${n1(CE.circ_2024,1)} % de 2024. De ese producto no existe comisión de disponibilidad ni tasa de disposición en ninguna estadística, y el tipo del BCE ni siquiera tiene tramo de importe.`],
+  ["4","Entre bancos españoles manda el capital, no la eficiencia",
+   `Sabadell tiene la peor eficiencia de los cinco (${n1(B.eficiencia[1])} %) y queda segundo en ROE, por una densidad de RWA del ${n1(B.densidad[1])} %. BBVA tiene la segunda mejor eficiencia (${n1(B.eficiencia[3])} %) y queda cuarto, con una densidad del ${n1(B.densidad[3])} %. Misma conclusión que en Europa, pero aquí sin diferencias de mercado que la expliquen.`],
+  ["5","La capacidad competitiva se mide en precio, no en ROE",
+   `Con su propio riesgo, capital y gastos, Bankinter necesita un ${n1(B.precio_eq[0],2)} % para un ROE del 15 % y BBVA un ${n1(B.precio_eq[3],2)} %. Son ${Math.round((B.precio_eq[3]-B.precio_eq[0])*100)} pb de margen de maniobra en precio, que es lo que de verdad se puede usar para ganar cliente.`],
+  ["6","El autónomo es un segmento aparte que la estadística esconde",
+   `Paga un ${n1(D.autonomos.auto,2)} %, ${D.autonomos.dif_vs_025} pb más que la sociedad del tramo ≤0,25 M€, y el SEC 2010 lo clasifica en hogares, así que no aparece en ninguna serie de empresas. Son 840 M€ al mes de nueva producción.`]];
+ let y=1.66;
+ C.forEach((c,i)=>{
+   s.addShape(pres.ShapeType.ellipse,{x:M, y:y+0.04, w:0.36, h:0.36, fill:{color:BLUE}, line:{color:BLUE}});
+   s.addText(c[0], {x:M, y:y+0.04, w:0.36, h:0.36, fontFace:HF, fontSize:13, bold:true,
+     color:DARK, align:"center", valign:"middle", isTextBox:true, margin:0});
+   s.addText(c[1], {x:M+0.55, y:y, w:11.6, h:0.3, fontFace:HF, fontSize:12.5, bold:true,
+     color:DARK, isTextBox:true, margin:0});
+   s.addText(c[2], {x:M+0.55, y:y+0.30, w:11.6, h:0.50, fontFace:BF, fontSize:9,
+     color:G1, isTextBox:true, margin:0});
+   y+=0.845;});
+ fuente(s,"Las conclusiones 1 y 3 salen de la encuesta CESGAR y son porcentajes de empresas, no niveles. La 2 sale de la Central de Balances del Banco de España, ejercicio 2024. Las 4 y 5 salen del modelo por banco, cuyo precio y comisiones son comunes a los cinco porque ninguno los publica por segmento: comparan estructura de riesgo, capital y coste, no habilidad comercial.");
 };
 
 /* 19c — recomendaciones accionables */
 L.recomendaciones = () => {const s=pres.addSlide();
- titulo(s,"Recomendaciones","Qué haría falta para convertir este análisis en una decisión");
+ titulo(s,"Recomendaciones: entrada en el mercado europeo","Qué haría falta para convertir el bloque europeo en una decisión");
  const R=[
   ["Priorizar","Países Bajos y Alemania","37,0 % y 35,0 % de ROE simulado. Incumbentes ineficientes, riesgo bajo y capital barato. Son los dos mercados donde el modelo eficiente rinde más."],
   ["Estudiar","Francia e Irlanda","21,8 % y 27,0 %. Francia por la distancia respecto a un incumbente muy ineficiente; Irlanda por el 15 % de impuesto, aunque con la mayor densidad de RWA y una cartera PYME pequeña (16.964 M€)."],
@@ -1446,12 +1476,86 @@ L.es_factoring = () => {const s=pres.addSlide();
  fuente(s,"Fuentes: EU Federation for Factoring and Commercial Finance y asociaciones nacionales (AEF en España, Assifact en Italia); CESGAR, XV Informe, gráfico 9. El reparto entre factoring y confirming procede de las asociaciones nacionales y no está armonizado.");
 };
 
+/* EU — descriptiva: tamano del mercado y brecha de financiacion */
+L.eu_mercado = () => {const s=pres.addSlide();
+ const E=D.eu_desc;
+ titulo(s,"El mercado: Francia es la mitad, Irlanda es el 0,8 %","Exposición a PYME de la banca supervisada en cada país y brecha de financiación declarada por las propias empresas");
+ s.addChart(pres.ChartType.bar, [{name:"Cartera PYME", labels:P, values:E.exposicion}],
+   {x:M, y:1.98, w:6.10, h:2.90, barDir:"col", chartColors:[PRIM], showTitle:false,
+    showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:9, dataLabelColor:TXT,
+    dataLabelFormatCode:'#,##0', showLegend:false, catAxisLabelColor:TXT,
+    catAxisLabelFontSize:9.5, valAxisLabelColor:MUT, valAxisLabelFormatCode:'#,##0',
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}});
+ s.addText("Cartera PYME, millones de euros",{x:M, y:1.72, w:6.10, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addText("Brecha de financiación de la PYME, "+E.periodo,{x:6.90, y:1.72, w:6.03, h:0.24,
+   fontFace:HF, fontSize:11, bold:true, color:PRIM, isTextBox:true, margin:0});
+ s.addChart(pres.ChartType.bar, [{name:"Brecha", labels:P, values:E.gap}],
+   {x:6.90, y:1.98, w:6.03, h:2.90, barDir:"col", chartColors:[BLUE], showTitle:false,
+    showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:9.5, dataLabelColor:TXT,
+    showLegend:false, catAxisLabelColor:TXT, catAxisLabelFontSize:9.5,
+    valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
+    valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"},
+    valAxisMinVal:-12, valAxisMaxVal:14});
+ s.addText("Porcentaje NETO de encuesta: empresas que declaran más necesidad menos las que declaran más disponibilidad. Positivo = la necesidad no se cubre.",
+   {x:6.90, y:4.92, w:6.03, h:0.30, fontFace:BF, fontSize:7.5, color:MUT, italic:true,
+    align:"center", isTextBox:true, margin:0});
+ s.addText("Los siete suman 2,14 billones de euros. Francia sola es el "+n1(E.cuota[2])+" %.",
+   {x:M, y:4.92, w:6.10, h:0.24, fontFace:BF, fontSize:8, color:MUT, italic:true,
+    align:"center", isTextBox:true, margin:0});
+
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:5.34, w:6.10, h:1.28, fill:{color:ORA3},
+   rectRadius:0.05, line:{color:ORA2}});
+ s.addText("El tamaño no se reparte como el PIB",{x:M+0.16, y:5.42, w:5.78, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`Francia tiene ${Math.round(E.exposicion[2]/E.exposicion[6])} veces la cartera PYME de Irlanda y tres veces la de España, muy por encima de lo que dice su economía. Conviene tenerlo delante al leer los ROE: un punto de ROE en Irlanda mueve una cartera de ${E.exposicion[6].toLocaleString("es-ES")} M€ y en Francia, de ${E.exposicion[2].toLocaleString("es-ES")} M€.`,
+   {x:M+0.16, y:5.68, w:5.78, h:0.86, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:6.90, y:5.34, w:6.03, h:1.28, fill:{color:BLUE3},
+   rectRadius:0.05, line:{color:BLUE}});
+ s.addText("Y donde más falta hace es donde menos rinde",{x:7.06, y:5.42, w:5.71, h:0.24,
+   fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
+ s.addText(`Francia es el único de los siete con brecha claramente positiva (+${n1(E.gap[2])} %), y en su segmento micro llega a +${n1(E.gap_micro[2])} %. Es el mercado más grande, el peor atendido por declaración de las propias empresas y el de peor ROE para su banca (${n1(D.pl.roe[2])} %). Portugal está en el extremo contrario: ${n1(E.gap[4])} %.`,
+   {x:7.06, y:5.68, w:5.71, h:0.86, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Fuentes: cartera PYME, EBA EU-wide Transparency Exercise, valor de exposición de la clase PYME de la banca supervisada en cada país, junio de 2025; brecha de financiación, BCE, encuesta SAFE, indicador financing gap de la PYME de menos de 250 empleados, media ponderada de "+E.periodo+". Son dos magnitudes distintas y no se agregan: una es un importe y la otra un porcentaje neto de respuestas. La SAFE segmenta por EMPLEADOS y el Transparency Exercise por clase de exposición prudencial; el micro de la SAFE solo está publicado para cuatro de los siete países.");
+};
+
+/* 19c2 — recomendaciones del bloque Espana */
+L.recomendaciones_es = () => {const s=pres.addSlide();
+ const B=D.bancos, CB=D.cb, CE=D.cesgar, A=D.autonomos;
+ titulo(s,"Recomendaciones: España","Qué haría un banco español con este análisis, hoy");
+ const R=[
+  ["Atacar","El circulante, por precio y por comisión",
+   `Es el destino del ${n1(CE.destino[0][1],1)} % de la demanda y el producto del que nadie publica precio de disponibilidad. La comisión neutral —la que hace el ROE indiferente a la disposición— es el CCF por el margen: ${n1(D.circ.f_neutral[0],2)} % en España. Por debajo de eso, cada línea poco dispuesta destruye ROE.`],
+  ["Repreciar","El tramo pequeño y el autónomo",
+   `España es la única de las siete sin gradiente de precio por tamaño (−4 pb frente a +143 de Italia), y el gradiente acompaña al ROE (ρ = +${n1(D.apetito.corr.gradtot_roe,2)}). El autónomo ya paga ${A.dif_vs_025} pb más: la disposición a pagar del micro existe y no se está cobrando en sociedades.`],
+  ["No pasar de","Los 2,1 puntos de colchón de la pyme pequeña",
+   `Es el límite duro que marca la Central de Balances: rentabilidad del activo ${n1(CB.roa[0])} % menos coste de la deuda ${n1(CB.coste[0])} %. Subir precio por encima no encuentra demanda, encuentra sustitución por crédito de proveedores, que ya usa el ${n1(CE.productos[2][1],0)} % de las pymes.`],
+  ["Priorizar","Densidad de RWA sobre eficiencia",
+   `Sabadell gana 4,9 puntos de ROE a BBVA con un resultado antes de impuestos MENOR, solo por capital (${n1(B.densidad[1])} % frente a ${n1(B.densidad[3])} %). Garantía real, aval SGR e ICO mueven más el ROE que un plan de eficiencia.`],
+  ["Medir","La cobertura, no solo la mora",
+   `Santander lleva cuatro trimestres bajando cobertura de PYME (${n1(D.bancos_serie.cob.Santander[0],1)} % a ${n1(D.bancos_serie.cob.Santander[3],1)} %) con la peor mora. Es el indicador que antes avisa, y el único de riesgo que el ejercicio de transparencia da por banco y por trimestre.`],
+  ["Cerrar antes de decidir","El precio de PYME por banco",
+   "No existe en fuente pública: la publicación por entidad del Banco de España se apoya en la Circular 5/2012, limitada a personas físicas. Solo sale con dato interno o comercial. Es el único hueco que impide comparar habilidad comercial y no solo estructura."]];
+ let y=1.68;
+ R.forEach((r,i)=>{
+   s.addShape(pres.ShapeType.roundRect,{x:M, y:y, w:2.45, h:0.62, fill:{color: i<3?BLUE3:LIGHT},
+     rectRadius:0.05, line:{color: i<3?BLUE:G3}});
+   s.addText(r[0], {x:M, y:y, w:2.45, h:0.62, fontFace:HF, fontSize:11, bold:true,
+     color:DARK, align:"center", valign:"middle", isTextBox:true, margin:0});
+   s.addText(r[1], {x:M+2.65, y:y+0.03, w:3.35, h:0.56, fontFace:HF, fontSize:10.5, bold:true,
+     color:DARK, valign:"middle", isTextBox:true, margin:0});
+   s.addText(r[2], {x:M+6.15, y:y+0.03, w:6.0, h:0.56, fontFace:BF, fontSize:8.5,
+     color:G1, valign:"middle", isTextBox:true, margin:0});
+   y+=0.72;});
+ fuente(s,"Las tres primeras recomendaciones se apoyan en la demanda (CESGAR) y en la capacidad de pago (Central de Balances); las tres últimas, en el modelo por banco sobre el EU-wide Transparency Exercise. El modelo compara estructura de riesgo, capital y coste, no habilidad comercial: el precio y las comisiones son comunes a los cinco porque ninguno los publica por segmento.");
+};
+
 /* --- orden final de la presentacion --- */
 const ORDEN = [
   "portada", "objetivo",
   /* --- Bloque 1: el mercado europeo --- */
   "sep_europa",
-  "precio", "cuenta", "roe", "sensibilidad", "entrante",
+  "eu_mercado", "precio", "cuenta", "roe", "sensibilidad", "entrante",
   "recursos", "riesgo", "infraestructura", "dos_ejes", "apetito",
   "capital", "eficiencia",
   "circulante", "circulante_precio", "circulante_roe",
@@ -1464,7 +1568,7 @@ const ORDEN = [
   "es_mercado", "es_riesgo_serie",         // competitivo: los bancos
   "bancos_es", "bancos_es_pl",
   /* --- Cierre y anexos --- */
-  "conclusiones", "recomendaciones",
+  "conclusiones", "conclusiones_es", "recomendaciones", "recomendaciones_es",
   "anexos", "datos", "fuentes", "fiabilidad", "limites", "supuestos",
   "info_relevante", "npl", "spread_pd_lgd", "palanca", "hipotecas",
 ];

@@ -2187,6 +2187,69 @@ que cualquier informe de consultora**, porque son dato primario y español.
 `bancos_serie` en `pres/datos.json`; dos fuentes nuevas en la lámina de
 fuentes, que pasa de once a trece.
 
+### 2.59 Cierre por bloques y lámina descriptiva europea
+
+**Conclusiones y recomendaciones, ahora una de cada por bloque.** Cuatro
+láminas de cierre en lugar de dos. Meter lo español en las europeas habría
+obligado a recortar las dos, y el arco de decisión es distinto: el bloque
+europeo responde a «dónde entrar» y el español a «qué hacer aquí».
+
+Las conclusiones europeas cambian poco: se corrige la 1 —Irlanda queda
+**cuarta** entre los bancos locales, no sexta— y la 2 incorpora que Francia
+es además el mercado más grande y el único con brecha de financiación
+positiva. Se separa en 5 lo de que prestar peor no viene pagado, que antes
+iba pegado a la conclusión de riesgo.
+
+Las seis conclusiones españolas son nuevas: el acceso no es el problema y el
+precio sí (CESGAR), los 2,1 puntos de colchón como techo (Central de
+Balances), la demanda concentrada en circulante, el capital por delante de
+la eficiencia también dentro de un mismo mercado, la capacidad competitiva
+medida en precio (119 pb entre Bankinter y BBVA) y el autónomo como segmento
+escondido en hogares.
+
+Las recomendaciones españolas son seis y todas accionables sin dato nuevo,
+salvo la última, que es precisamente el hueco: el precio de PYME por banco.
+
+**Lámina descriptiva europea: sí hacía falta.** El bloque europeo abría
+directamente con el precio por tramo, sin decir de qué tamaño es cada
+mercado. Eso importa porque la horquilla es enorme y condiciona cómo se lee
+todo lo que viene después:
+
+| País | Cartera PYME, M€ | Cuota | Brecha de financiación 2025-S1 |
+|---|---|---|---|
+| Francia | 961.184 | 44,8 % | **+6,3 %** (micro **+12,4 %**) |
+| Alemania | 316.561 | 14,8 % | +2,3 % |
+| España | 308.378 | 14,4 % | −1,3 % |
+| P. Bajos | 259.108 | 12,1 % | −4,0 % |
+| Italia | 252.021 | 11,8 % | −0,7 % |
+| Portugal | 30.452 | 1,4 % | −9,4 % |
+| Irlanda | 16.964 | 0,8 % | −2,1 % |
+
+**Francia tiene 57 veces la cartera PYME de Irlanda.** Un punto de ROE no
+vale lo mismo en los dos sitios, y hasta ahora el deck los ponía en la misma
+barra sin decirlo.
+
+Y el dato de la SAFE cierra el argumento francés que venía suelto por todo
+el deck: Francia es el mercado **más grande**, el **peor atendido por
+declaración de las propias empresas** (único con brecha claramente positiva,
+y +12,4 % en el micro) y el de **peor ROE para su banca** (5,4 %). Las tres
+cosas a la vez explican por qué sale cuarta para un entrante eficiente
+pese a ser la última para el incumbente.
+
+Fuente de la brecha: BCE, encuesta SAFE, indicador *financing gap* de la
+PYME de menos de 250 empleados, media ponderada de 2025-S1. Es un
+**porcentaje neto de encuesta** y se etiqueta como tal: no se agrega con la
+cartera, que es un importe. La SAFE segmenta por **empleados** y el
+Transparency Exercise por clase de exposición prudencial, de modo que las
+dos mitades de la lámina no comparten criterio de segmentación; se dice en
+el pie. El desglose micro solo está publicado para cuatro de los siete.
+
+**Salidas:** lámina «El mercado: Francia es la mitad, Irlanda es el 0,8 %»
+como apertura del bloque europeo; láminas «Conclusiones: el mercado
+europeo», «Conclusiones: España», «Recomendaciones: entrada en el mercado
+europeo» y «Recomendaciones: España»; bloque `eu_desc` en
+`pres/datos.json`. La presentación queda en 46 láminas.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
