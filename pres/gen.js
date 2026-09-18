@@ -979,7 +979,7 @@ L.conclusiones = () => {const s=pres.addSlide();
   ["1","El capital manda sobre el precio",
    "La densidad de RWA va del 35 % en Alemania al 70 % en Irlanda. Esa horquilla separa más el ROE que el precio, que solo va del 3,41 % al 5,37 %. Irlanda lo demuestra: tiene el precio más alto de las siete y la mejor PD, y aun así queda cuarta entre los bancos locales."],
   ["2","El atractivo para un entrante no coincide con la rentabilidad del local",
-   `Francia es el peor mercado para su banca (${n1(D.pl.roe[2])} %) y el cuarto mejor para un entrante eficiente (${n1(D.ent.roe[2])} %). Y es además el más grande (${n1(D.eu_desc.cuota[2])} % de la cartera PYME de los siete) y el único con brecha de financiación positiva. Lo que se compra al entrar no es el margen del mercado, es la distancia respecto al incumbente.`],
+   `Francia es el peor mercado para su banca (${n1(D.pl.roe[2])} %) y el cuarto mejor para un entrante eficiente (${n1(D.ent.roe[2])} %). Y es además el más grande (${n1(D.eu_desc.cuota[2])} % de la cartera PYME de los siete) y el único donde la brecha de financiación declarada por las empresas se está abriendo. Lo que se compra al entrar no es el margen del mercado, es la distancia respecto al incumbente.`],
   ["3","Países Bajos y Alemania son los objetivos naturales",
    "37,0 % y 35,0 % de ROE para el entrante. Combinan el menor coste del riesgo (0,35 % y 0,40 %) con la menor densidad de RWA (37 % y 35 %) e incumbentes con eficiencia mediocre (53,5 % y 55,2 %)."],
   ["4","El coste del riesgo se controla seleccionando, no recuperando",
@@ -1479,7 +1479,7 @@ L.es_factoring = () => {const s=pres.addSlide();
 /* EU — descriptiva: tamano del mercado y brecha de financiacion */
 L.eu_mercado = () => {const s=pres.addSlide();
  const E=D.eu_desc;
- titulo(s,"El mercado: Francia es la mitad, Irlanda es el 0,8 %","Exposición a PYME de la banca supervisada en cada país y brecha de financiación declarada por las propias empresas");
+ titulo(s,"El mercado: Francia es la mitad, Irlanda es el 0,8 %","Exposición a PYME de la banca supervisada en cada país y VARIACIÓN de la brecha de financiación declarada por las propias empresas");
  s.addChart(pres.ChartType.bar, [{name:"Cartera PYME", labels:P, values:E.exposicion}],
    {x:M, y:1.98, w:6.10, h:2.90, barDir:"col", chartColors:[PRIM], showTitle:false,
     showValue:true, dataLabelPosition:"outEnd", dataLabelFontSize:9, dataLabelColor:TXT,
@@ -1488,7 +1488,7 @@ L.eu_mercado = () => {const s=pres.addSlide();
     valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"}});
  s.addText("Cartera PYME, millones de euros",{x:M, y:1.72, w:6.10, h:0.24,
    fontFace:HF, fontSize:11, bold:true, color:PRIM, isTextBox:true, margin:0});
- s.addText("Brecha de financiación de la PYME, "+E.periodo,{x:6.90, y:1.72, w:6.03, h:0.24,
+ s.addText("Variación de la brecha de financiación, "+E.periodo,{x:6.90, y:1.72, w:6.03, h:0.24,
    fontFace:HF, fontSize:11, bold:true, color:PRIM, isTextBox:true, margin:0});
  s.addChart(pres.ChartType.bar, [{name:"Brecha", labels:P, values:E.gap}],
    {x:6.90, y:1.98, w:6.03, h:2.90, barDir:"col", chartColors:[BLUE], showTitle:false,
@@ -1497,26 +1497,26 @@ L.eu_mercado = () => {const s=pres.addSlide();
     valAxisLabelColor:MUT, valAxisLabelFormatCode:'0"%"',
     valGridLine:{color:"E3E9EB", size:1}, catGridLine:{style:"none"},
     valAxisMinVal:-12, valAxisMaxVal:14});
- s.addText("Porcentaje NETO de encuesta: empresas que declaran más necesidad menos las que declaran más disponibilidad. Positivo = la necesidad no se cubre.",
-   {x:6.90, y:4.92, w:6.03, h:0.30, fontFace:BF, fontSize:7.5, color:MUT, italic:true,
-    align:"center", isTextBox:true, margin:0});
+ s.addText("Indicador de CAMBIO, no de nivel. Por empresa y para cada uno de cinco instrumentos vale +1 si sube la necesidad y baja la disponibilidad, −1 al revés, ±0,5 si solo se mueve un lado y 0 si no cambia nada. Positivo = la brecha se ABRE.",
+   {x:6.90, y:4.90, w:6.03, h:0.42, fontFace:BF, fontSize:7, color:MUT, italic:true,
+    align:"left", isTextBox:true, margin:0});
  s.addText("Los siete suman 2,14 billones de euros. Francia sola es el "+n1(E.cuota[2])+" %.",
    {x:M, y:4.92, w:6.10, h:0.24, fontFace:BF, fontSize:8, color:MUT, italic:true,
     align:"center", isTextBox:true, margin:0});
 
- s.addShape(pres.ShapeType.roundRect,{x:M, y:5.34, w:6.10, h:1.28, fill:{color:ORA3},
+ s.addShape(pres.ShapeType.roundRect,{x:M, y:5.40, w:6.10, h:1.20, fill:{color:ORA3},
    rectRadius:0.05, line:{color:ORA2}});
- s.addText("El tamaño no se reparte como el PIB",{x:M+0.16, y:5.42, w:5.78, h:0.24,
+ s.addText("El tamaño no se reparte como el PIB",{x:M+0.16, y:5.48, w:5.78, h:0.24,
    fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
  s.addText(`Francia tiene ${Math.round(E.exposicion[2]/E.exposicion[6])} veces la cartera PYME de Irlanda y tres veces la de España, muy por encima de lo que dice su economía. Conviene tenerlo delante al leer los ROE: un punto de ROE en Irlanda mueve una cartera de ${E.exposicion[6].toLocaleString("es-ES")} M€ y en Francia, de ${E.exposicion[2].toLocaleString("es-ES")} M€.`,
-   {x:M+0.16, y:5.68, w:5.78, h:0.86, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
- s.addShape(pres.ShapeType.roundRect,{x:6.90, y:5.34, w:6.03, h:1.28, fill:{color:BLUE3},
+   {x:M+0.16, y:5.74, w:5.78, h:0.80, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+ s.addShape(pres.ShapeType.roundRect,{x:6.90, y:5.40, w:6.03, h:1.20, fill:{color:BLUE3},
    rectRadius:0.05, line:{color:BLUE}});
- s.addText("Y donde más falta hace es donde menos rinde",{x:7.06, y:5.42, w:5.71, h:0.24,
+ s.addText("Donde más se abre la brecha es donde menos rinde",{x:7.06, y:5.48, w:5.71, h:0.24,
    fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
- s.addText(`Francia es el único de los siete con brecha claramente positiva (+${n1(E.gap[2])} %), y en su segmento micro llega a +${n1(E.gap_micro[2])} %. Es el mercado más grande, el peor atendido por declaración de las propias empresas y el de peor ROE para su banca (${n1(D.pl.roe[2])} %). Portugal está en el extremo contrario: ${n1(E.gap[4])} %.`,
-   {x:7.06, y:5.68, w:5.71, h:0.86, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
- fuente(s,"Fuentes: cartera PYME, EBA EU-wide Transparency Exercise, valor de exposición de la clase PYME de la banca supervisada en cada país, junio de 2025; brecha de financiación, BCE, encuesta SAFE, indicador financing gap de la PYME de menos de 250 empleados, media ponderada de "+E.periodo+". Son dos magnitudes distintas y no se agregan: una es un importe y la otra un porcentaje neto de respuestas. La SAFE segmenta por EMPLEADOS y el Transparency Exercise por clase de exposición prudencial; el micro de la SAFE solo está publicado para cuatro de los siete países.");
+ s.addText(`Francia es el único de los siete donde la brecha se abre con claridad (+${n1(E.gap[2])}), y en su micro llega a +${n1(E.gap_micro[2])}. Es el mercado más grande, el único donde la necesidad se despega de la disponibilidad y el de peor ROE para su banca (${n1(D.pl.roe[2])} %). En Portugal la brecha se cierra con fuerza (${n1(E.gap[4])}).`,
+   {x:7.06, y:5.74, w:5.71, h:0.80, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
+ fuente(s,"Fuentes: cartera PYME, EBA EU-wide Transparency Exercise, valor de exposición de la clase PYME de la banca supervisada en cada país, junio de 2025; brecha de financiación, BCE, encuesta SAFE, indicador compuesto financing gap de la PYME de menos de 250 empleados, media ponderada de "+E.periodo+". El indicador combina necesidad y disponibilidad de CINCO instrumentos —préstamo bancario, descubierto, crédito comercial, capital y valores de deuda— así que NO es solo crédito bancario, y mide el CAMBIO percibido, no el tamaño de una necesidad insatisfecha: un país con brecha negativa puede seguir teniendo mucha necesidad sin cubrir. Son dos magnitudes que no se agregan: una es un importe y la otra un saldo neto de respuestas. La SAFE segmenta por EMPLEADOS y el Transparency Exercise por clase de exposición prudencial; el micro de la SAFE solo está publicado para cuatro de los siete.", 6.5);
 };
 
 /* 19c2 — recomendaciones del bloque Espana */

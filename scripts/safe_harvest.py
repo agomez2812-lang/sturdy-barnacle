@@ -6,6 +6,15 @@ NO puedan confundirse entre si:
 
   Q8B  tipo cobrado por la linea de credito o descubierto -> NIVEL (%)
   FG   brecha de financiacion                             -> PORCENTAJE NETO
+       Indicador COMPUESTO y de CAMBIO, no de nivel. El BCE lo define asi
+       (guia metodologica de la SAFE, apartado 6.3): combina necesidad y
+       disponibilidad de CINCO instrumentos -prestamo bancario, descubierto
+       bancario, credito comercial, capital y valores de deuda-; por empresa
+       e instrumento vale 1 (-1) si la necesidad sube (baja) y la
+       disponibilidad baja (sube), 0,5 (-0,5) si solo se mueve un lado, y 0
+       si nada cambia; el compuesto es la media ponderada de los cinco y se
+       multiplica por 100. Positivo = la brecha SE ABRE. NO mide el tamano
+       de una necesidad insatisfecha ni es solo credito bancario.
 
 SAFE segmenta por NUMERO DE EMPLEADOS (PYME = <250), a diferencia del MIR,
 que segmenta por importe del prestamo. Las filas lo declaran en

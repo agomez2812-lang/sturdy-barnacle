@@ -2281,6 +2281,61 @@ pureza de paleta sin incidencias.
 entorno y falla también con ficheros ajenos, así que todo el control de
 maquetación es programático (ver §2.31).
 
+### 2.61 Corrección: qué es exactamente la «brecha de financiación» de la SAFE
+
+El usuario preguntó qué se está llamando brecha de financiación. Al ir a la
+definición oficial resultó que **la lámina la describía mal en dos puntos**,
+uno de ellos material.
+
+**Definición literal del BCE** (guía metodológica de la SAFE, apartado 6.3,
+«Financing gap indicator»):
+
+> «It combines both financing needs and the availability of **bank loans,
+> bank overdrafts, trade credit, equity and debt securities** at the
+> enterprise level. For each of the five financing instruments, an indicator
+> of a perceived financing gap change takes the value of 1 (-1) if the need
+> increases/decreases and availability decreases/increases. If enterprises
+> perceive only a one-sided increase/decrease in the financing gap, the
+> variable is assigned a value of 0.5 (-0.5). The composite indicator is the
+> weighted average of the financing gap related to the five instruments. A
+> positive value suggests an increasing financing gap. Values are multiplied
+> by 100 to obtain weighted net balances in percentages.»
+
+Confirmado además contra los metadatos de la propia serie
+`SAFE.H.ES.SME.A.0.0.0.FG.ZZZZ.NT.FL.WA`: `SAFE_ITEM = ZZZZ` (no desglosado
+por instrumento, es decir el compuesto), `SAFE_DENOM = WA` (media ponderada)
+y `UNIT = PURE_NUMB`.
+
+**Error 1, de forma.** El pie decía «empresas que declaran más necesidad
+menos las que declaran más disponibilidad». Eso describe un saldo neto
+entre dos porcentajes de empresas, y no es así: es la **media ponderada de
+una puntuación por empresa e instrumento** que vale ±1, ±0,5 o 0.
+Corregido.
+
+**Error 2, de fondo, y este sí importa.** Se estaba leyendo como un
+indicador de **nivel** —«el mercado peor atendido»— cuando es un indicador
+de **cambio**. El +6,3 de Francia significa que allí la brecha **se abre**
+más que en ningún otro de los siete, no que su necesidad insatisfecha sea la
+mayor en términos absolutos. Y al revés: el −9,4 de Portugal dice que la
+brecha se está cerrando con fuerza, no que no haya necesidad sin cubrir.
+Corregido en el título de la lámina, en el rótulo del gráfico, en la caja de
+Francia y en la conclusión 2 del bloque europeo.
+
+**Tercer matiz, que tampoco estaba dicho.** El indicador **no es solo
+crédito bancario**: incorpora crédito comercial, capital y valores de deuda.
+Para un deck que va de rentabilidad bancaria, eso hay que declararlo, porque
+una brecha que se abre puede estarse abriendo en capital y no en préstamo.
+Añadido al pie.
+
+La dirección del argumento sobre Francia se mantiene —mercado más grande,
+brecha abriéndose y peor ROE para su banca— pero ahora dice lo que el dato
+dice y no más.
+
+**Salidas:** lámina europea descriptiva y conclusión 2 corregidas; la
+definición completa se incorpora a `scripts/safe_harvest.py` y a la columna
+`notas` de las 6.162 filas de `transversal/safe_fg.csv`, para que ningún uso
+posterior del fichero repita el error.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
