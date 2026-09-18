@@ -988,23 +988,24 @@ L.recomendaciones = () => {const s=pres.addSlide();
 L.limites = () => {const s=pres.addSlide(); s.background={color:DARK};
  s.addText("Lo que estos datos no permiten afirmar", {x:M, y:0.55, w:W-2*M, h:0.6,
    fontFace:HF, fontSize:30, bold:true, color:"FFFFFF", isTextBox:true, margin:0});
- s.addText("Cuatro límites que conviene tener delante antes de usar cualquier cifra de este deck",
+ s.addText("Cinco límites que conviene tener delante antes de usar cualquier cifra de este deck",
    {x:M, y:1.18, w:W-2*M, h:0.4, fontFace:BF, fontSize:13, color:G2, isTextBox:true, margin:0});
  const lim=[
   ["Rentabilidad comparable entre países","Riesgo y capital de PYME ya son observados por país. Lo que sigue siendo supuesto es la comisión: solo España e Italia publican un tipo con comisiones para empresas, y con perímetros distintos. El ROE comparado es una hipótesis ordenada, no una medición."],
   ["El negocio PYME de cada banco","De nueve bancos analizados, solo dos publican cuenta de resultados de un segmento de empresas con desglose de comisiones, y ninguno aísla PYME. La NIIF 8 obliga a reportar por los segmentos que usa la dirección, y casi ninguno usa «PYME»."],
   ["El precio del factoring y del confirming","No es obtenible con fuentes públicas gratuitas en ninguno de los siete países. Es el único bloque que se cierra sin ningún dato de su objetivo."],
+  ["El precio de PYME de cada banco","El Banco de España publica tipos y comisiones por entidad, pero su base legal es la Circular 5/2012, acotada a clientes «personas físicas». La circular que sí cubre a empresas, la 1/2010, publica solo agregado del sistema. Lo que hay por entidad no cubre empresas, y lo que cubre empresas no está por entidad."],
   ["La hipoteca a PYME","No existe como estadística oficial europea. Lo que se muestra es exposición a inmueble comercial, que es otra cosa."]];
- let y=1.8;
+ let y=1.74;
  lim.forEach((l,i)=>{
-   s.addShape(pres.ShapeType.ellipse,{x:M, y:y+0.06, w:0.42, h:0.42, fill:{color:ACC}, line:{color:ACC}});
-   s.addText(String(i+1), {x:M, y:y+0.06, w:0.42, h:0.42, fontFace:HF, fontSize:15, bold:true,
+   s.addShape(pres.ShapeType.ellipse,{x:M, y:y+0.04, w:0.38, h:0.38, fill:{color:ACC}, line:{color:ACC}});
+   s.addText(String(i+1), {x:M, y:y+0.04, w:0.38, h:0.38, fontFace:HF, fontSize:13.5, bold:true,
      color:DARK, align:"center", valign:"middle", isTextBox:true, margin:0});
-   s.addText(l[0], {x:M+0.65, y:y, w:11.5, h:0.32, fontFace:HF, fontSize:15, bold:true,
+   s.addText(l[0], {x:M+0.60, y:y, w:11.5, h:0.30, fontFace:HF, fontSize:13.5, bold:true,
      color:"FFFFFF", isTextBox:true, margin:0});
-   s.addText(l[1], {x:M+0.65, y:y+0.36, w:11.5, h:0.72, fontFace:BF, fontSize:11.5,
+   s.addText(l[1], {x:M+0.60, y:y+0.31, w:11.5, h:0.64, fontFace:BF, fontSize:10,
      color:G3, isTextBox:true, margin:0});
-   y+=1.22;});
+   y+=0.99;});
 };
 
 /* 17 — fuentes */

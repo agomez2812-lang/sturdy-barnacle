@@ -1964,6 +1964,59 @@ LGD por banco y el precio de equilibrio; las dos láminas de bancos pasan a
 marcar en azul lo que es de la cartera PYME española y la de cuenta de
 resultados añade la fila del precio necesario.
 
+### 2.56 El precio del activo de PYME por banco: por qué no existe
+
+Segunda pasada sobre la pregunta, esta vez buscando específicamente el
+PRECIO. El resultado deja de ser «no lo he encontrado» y pasa a ser una
+razón normativa concreta.
+
+**El Banco de España sí publica tipos y comisiones POR ENTIDAD.** Existe una
+consulta comparativa entre entidades, con descarga en Excel, alimentada por
+la declaración trimestral que hacen los bancos. Parecía la fuente buena.
+
+**Pero su base legal la deja fuera de PYME.** Esa publicación se apoya en la
+**Circular 5/2012**, cuya norma segunda acota el ámbito a los «servicios
+bancarios dirigidos o prestados en España por las entidades de crédito
+españolas y las sucursales en España de entidades de crédito extranjeras
+[...] a los clientes, o clientes potenciales, **personas físicas**». La
+propia circular prevé además que, cuando el cliente actúa en su actividad
+profesional o empresarial, las partes puedan pactar no aplicar la normativa.
+Es decir: **el dato por entidad existe, pero por norma solo cubre a personas
+físicas**.
+
+**Y la circular que sí cubre a empresas publica solo agregado.** La
+**Circular 1/2010** obliga a declarar los tipos de depósitos y créditos de
+hogares y sociedades no financieras, pero «a efectos estadísticos», y su
+salida son los cuadros **19.3 a 19.17** del Boletín Estadístico, que son del
+**sistema**, no por entidad. Es exactamente la fuente que ya usa el modelo
+para el precio de España.
+
+Las dos piezas no se cruzan: **lo que hay por entidad no cubre empresas, y
+lo que cubre empresas no está por entidad.**
+
+**Resto de vías, todas cerradas:**
+
+| Vía | Resultado |
+|---|---|
+| Transparency Exercise del EBA | Su única partida de ingresos (2520303) es de préstamos totales, sin desglose por sector |
+| Pillar 3 Data Hub del EBA | Rechazado por el proxy de salida; además el Pilar 3 no incluye precios, solo parámetros de riesgo |
+| Webs de los bancos | 403 y 404 (§2.55) |
+| CNMV, portal de datos abiertos | 403 |
+| AnaCredit | Tiene el dato operación a operación, pero **no es público**: acceso restringido a bancos centrales y supervisores |
+
+**Lo que NO vale como sustituto, y por qué.** (i) Los tipos de los
+escaparates comerciales («ejemplo representativo» de un préstamo online) son
+precios de oferta de un producto estandarizado, no la media ponderada de lo
+realmente formalizado, y no representan la cartera. (ii) El rendimiento
+medio de la inversión crediticia de cada banco mezcla hipoteca, consumo y
+empresa en proporciones muy distintas entre entidades: metería sesgo, no
+información.
+
+**Conclusión operativa.** El precio de PYME por banco solo es obtenible con
+dato interno o comercial de pago. Mientras tanto, la vuelta a la pregunta de
+§2.55 —qué precio necesita cada banco para un ROE dado— sigue siendo la
+única lectura competitiva que no depende de ese hueco.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
