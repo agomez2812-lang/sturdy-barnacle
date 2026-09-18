@@ -62,7 +62,7 @@ L.portada = () => {const s=pres.addSlide(); s.background={color:DARK};
    {x:M, y:3.45, w:10.5, h:0.5, fontFace:BF, fontSize:18, color:G2, isTextBox:true, margin:0});
  s.addText("Cinco productos · Datos oficiales 2026 · Modelo de ROE con supuestos declarados",
    {x:M, y:4.15, w:10.5, h:0.4, fontFace:BF, fontSize:13, color:ACC, isTextBox:true, margin:0});
- s.addText("38885 observaciones · 11 fuentes · Septiembre 2026",
+ s.addText("39.508 observaciones · 13 fuentes · Septiembre 2026",
    {x:M, y:6.5, w:10.5, h:0.35, fontFace:BF, fontSize:11, color:MUT, isTextBox:true, margin:0});
  s.addNotes("Deck construido sobre datos oficiales del BCE, EBA, OCDE, Banco de España, Banca d'Italia, EUF y cuentas de resultados de bancos. El ROE es modelizado, no observado.");
 };
@@ -295,7 +295,7 @@ L.sensibilidad = () => {const s=pres.addSlide();
    fontFace:HF, fontSize:14, bold:true, color:ACC, isTextBox:true, margin:0});
  s.addText("El nivel del ROE se mueve mucho: España pasa del 3,5 % al 11,8 % según se asuma cero o 150 pb de comisión. El ordenamiento se mueve menos: Francia es último en todos los escenarios e Italia, Portugal y Países Bajos encabezan en todos. Lo que sí cambia es la posición relativa de España, que sube conforme se asume más comisión — y es el único país donde sabemos que la comisión es alta.",
    {x:M+0.25, y:5.70, w:11.8, h:0.85, fontFace:BF, fontSize:11, color:TXT, isTextBox:true, margin:0});
- fuente(s,"87 pb es la cuña observada en España (TAE − TEDR, tramo ≤1 M€, media 2026, Banco de España). Para los otros cinco países no existe dato equivalente.");
+ fuente(s,"87 pb es la cuña observada en España (TAE − TEDR, tramo ≤1 M€, media 2026, Banco de España). Para los otros seis países no existe dato equivalente.");
 };
 
 /* 8b — simulacion de entrante eficiente */
@@ -688,7 +688,7 @@ L.apetito = () => {const s=pres.addSlide();
  s.addText("La PD de un país también es apetito revelado, no solo información y entorno, y con dato público no se separan. Lo que el precio sí descarta es que el apetito sea lo dominante: si lo fuera, los de PD alta cobrarían más, y cobran menos.",
    {x:CX+0.16, y:5.92, w:CW-0.32, h:0.66, fontFace:BF, fontSize:8.5, color:DARK, isTextBox:true, margin:0});
 
- fuente(s,"Precio por tramo del dataset MIR del BCE, media ponderada por volumen de 2026-01 a 2026-07; Alemania no publica volumen de los tramos pequeños, así que su gradiente mezcla media simple y media ponderada. PD del EBA, COREP C 9.02, 2026-Q1, mediana de entidades. La comisión es un supuesto de 87 pb en los seis países que no la publican. El tramo de más de 1 M€ no es solo gran empresa, pero es el proxy más cercano que publica el MIR. n=7: indicativo, no causal.");
+ fuente(s,"Precio por tramo del dataset MIR del BCE, media ponderada por volumen de 2026-01 a 2026-07; Alemania no publica volumen de los tramos pequeños, así que su gradiente mezcla media simple y media ponderada. PD del EBA, COREP C 9.02, 2026-Q1, mediana de entidades. La comisión es un supuesto de 87 pb en los otros seis países, que no la publican. El tramo de más de 1 M€ no es solo gran empresa, pero es el proxy más cercano que publica el MIR. n=7: indicativo, no causal.");
 };
 
 /* 10c — consumo de capital */
@@ -952,7 +952,7 @@ L.bancos_es_pl = () => {const s=pres.addSlide();
 L.supuestos = () => {const s=pres.addSlide();
  titulo(s,"Supuestos del modelo","Cada uno declarado, con su origen y su efecto · Dos de los iniciales han dejado de ser supuestos");
  const L=[["Supuesto","Valor","Origen","Efecto si cambia"],
-  ["% de comisiones","87 pb","Observada en España (TAE − TEDR, tramo ≤1 M€). Aplicada a los otros cinco países","ALTO. Mueve el ROE entre 3 y 12 puntos"],
+  ["% de comisiones","87 pb","Observada en España (TAE − TEDR, tramo ≤1 M€). Aplicada a los otros seis países","ALTO. Mueve el ROE entre 3 y 12 puntos"],
   ["Coste de los recursos",`${n1(Math.min(...D.pl.fondos),2)} % a ${n1(Math.max(...D.pl.fondos),2)} % por país`,"Observado. Tipos del MIR ponderados por saldos del BSI. Supone financiar el crédito PYME con depósito de empresa","ALTO. Con fondeo en mercado al 2,23 % los ROE caerían entre 6 y 12 puntos"],
   ["Coste del riesgo","PD × LGD por país","YA NO ES SUPUESTO. Parámetros IRB de la clase «Corporates – Of Which: SME», mediana de entidades (COREP C 9.02)","—"],
   ["Densidad de RWA","35 % a 61 % por país","YA NO ES SUPUESTO. RWA sobre exposición de la cartera PYME (EBA Transparency Exercise)","—"],
@@ -1085,7 +1085,7 @@ L.limites = () => {const s=pres.addSlide(); s.background={color:DARK};
 
 /* 17 — fuentes */
 L.fuentes = () => {const s=pres.addSlide();
- titulo(s,"Fuentes","Once fuentes, 38885 observaciones, cada fila trazable a su serie de origen");
+ titulo(s,"Fuentes","Trece fuentes, 39.508 observaciones, cada fila trazable a su serie de origen");
  const L=[["Bloque","Fuente","Cobertura","Último dato"],
   ["Precio y volumen","BCE, ECB Data Portal, dataset MIR","7 países, mensual","2026-07"],
   ["Tipos oficiales","BCE, dataset FM (facilidad de depósito, MRO, Euríbor)","Zona euro, diario","2026-09"],

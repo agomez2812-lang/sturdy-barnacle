@@ -2250,6 +2250,37 @@ europeo», «Conclusiones: España», «Recomendaciones: entrada en el mercado
 europeo» y «Recomendaciones: España»; bloque `eu_desc` en
 `pres/datos.json`. La presentación queda en 46 láminas.
 
+### 2.60 Repaso de consistencia antes de la revisión completa
+
+Barrido automático de todo el texto de las 46 láminas buscando cifras y
+redacciones que hubieran quedado obsoletas tras los cambios de estructura y
+de modelo. Cuatro incidencias reales, todas corregidas:
+
+1. **La portada decía «38885 observaciones · 11 fuentes».** El número había
+   perdido el separador de millares en una sustitución anterior y el recuento
+   de fuentes no se había actualizado al añadir CESGAR y la Central de
+   Balances. Correcto: **39.508 observaciones y 13 fuentes**. Misma
+   corrección en el subtítulo de la lámina de fuentes, que además seguía
+   diciendo «Once fuentes».
+2. **«Para los otros cinco países no existe dato equivalente»** en el pie de
+   la lámina de sensibilidad, de cuando el encargo eran seis países. Son
+   **seis** los otros.
+3. **La misma expresión en la lámina de supuestos**, fila de comisiones.
+4. **«La comisión es un supuesto de 87 pb en los seis países que no la
+   publican»** en la lámina de apetito de riesgo: ambiguo, porque podía
+   leerse como que seis de siete no la publican y España sí, que es lo
+   correcto, o como el recuento antiguo. Reescrito a «en los otros seis
+   países, que no la publican».
+
+Comprobaciones que pasan limpias: 28 gráficos sin ninguna serie vacía ni a
+cero, 22 tablas, ninguna lámina de contenido sin línea de fuente, validador
+OOXML correcto y el control propio de desbordamiento, solape, lienzo y
+pureza de paleta sin incidencias.
+
+**Sigue sin poder hacerse QA visual**: LibreOffice no arranca en este
+entorno y falla también con ficheros ajenos, así que todo el control de
+maquetación es programático (ver §2.31).
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
