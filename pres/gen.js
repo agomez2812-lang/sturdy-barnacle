@@ -143,7 +143,7 @@ L.portada = () => {const s=nueva({limpia:true});
    {x:1.10, y:4.32, w:6.60, h:0.44, fontFace:BF, fontSize:11.5, color:G3, isTextBox:true, margin:0});
  s.addText("Cinco productos · Datos oficiales 2026\nModelo de ROE con supuestos declarados",
    {x:1.10, y:4.85, w:6.60, h:0.72, fontFace:BF, fontSize:11, color:YEL, isTextBox:true, margin:0});
- s.addText("39.508 observaciones · 13 fuentes · Septiembre 2026",
+ s.addText(D.meta.obs_txt+" observaciones · "+D.meta.fuentes+" fuentes · Septiembre 2026",
    {x:1.10, y:6.45, w:6.60, h:0.30, fontFace:BF, fontSize:9.5, color:G2, isTextBox:true, margin:0});
  s.addNotes("Deck construido sobre datos oficiales del BCE, EBA, OCDE, Banco de España, Banca d'Italia, EUF, CESGAR y Central de Balances. El ROE es modelizado, no observado.");
 };
@@ -1190,7 +1190,7 @@ L.limites = () => {const s=nueva(); s.background={color:DARK};
 
 /* 17 — fuentes */
 L.fuentes = () => {const s=nueva();
- titulo(s,"Fuentes","Trece fuentes, 39.508 observaciones, cada fila trazable a su serie de origen");
+ titulo(s,"Fuentes","Trece fuentes, "+D.meta.obs_txt+" observaciones, cada fila trazable a su serie de origen");
  const L=[["Bloque","Fuente","Cobertura","Último dato"],
   ["Precio y volumen","BCE, ECB Data Portal, dataset MIR","7 países, mensual","2026-07"],
   ["Tipos oficiales","BCE, dataset FM (facilidad de depósito, MRO, Euríbor)","Zona euro, diario","2026-09"],

@@ -17,6 +17,7 @@ Uso:
     python3 scripts/datos_presentacion.py
 """
 import csv
+import glob
 import json
 import os
 import re
@@ -233,6 +234,14 @@ def main():
             cir, "ROE del circulante con parametros de riesgo y capital de "
                  "PYME", 1),
         "f_neutral": serie(cir, "Comision de disponibilidad neutral", 3),
+        # Media simple de las siete comisiones neutrales. Es lo que explica
+        # que la fila de 0,30 % de la rejilla salga plana (ver notas.md 2.63):
+        # 0,30 esta practicamente sobre esa media, no sobre la neutral de un
+        # pais concreto.
+        "f_neutral_media": round(float([
+            x["valor"] for x in cir
+            if x["metrica"].startswith("Comision de disponibilidad neutral "
+                                       "media de los siete")][0]), 3),
         "f_equilibrio": serie(
             cir, "Comision de disponibilidad de equilibrio con el prestamo "
                  "PYME", 2),
@@ -316,6 +325,17 @@ def main():
     # no deriva de ningun CSV y no se toca aqui
     D["apetito"], D["marco"], D["circ"] = apetito, marco, circ
     D["bancos"] = bancos
+    # Recuento de observaciones del repositorio. Se calcula aqui y lo lee la
+    # portada, para que no vuelva a quedarse obsoleto a mano (ver notas.md
+    # 2.55): cada vez que un extractor anade filas, el numero se actualiza
+    # solo al regenerar datos.json.
+    obs = 0
+    for f in sorted(glob.glob(os.path.join(ROOT, "*", "*.csv"))):
+        with open(f, newline="", encoding="utf-8") as fh:
+            obs += max(0, sum(1 for _ in fh) - 1)
+    D["meta"] = {"obs": obs,
+                 "obs_txt": "{:,}".format(obs).replace(",", "."),
+                 "fuentes": 13}
     D.pop("dep", None)          # bloque muerto: quedo a cero y no se usa
     json.dump(D, open(DESTINO, "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)

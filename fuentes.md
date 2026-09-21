@@ -81,3 +81,38 @@ anuales depositadas en registro mercantil: comisión de cesión y volumen cedido
 ## Bloque 9 — Banco de España, Boletín Estadístico  [SEMI-MANUAL]
 https://www.bde.es/ — capítulo de tipos de interés y de crédito por finalidad.
 Mayor granularidad que MIR para España.
+
+---
+
+## Añadidos posteriores (láminas sueltas)
+
+### SAFE, resultado de la solicitud de crédito  [API]
+Dataset `SAFE` del ECB Data Portal, preguntas **Q7B** («Financing applied —
+outcome») y **Q7A** («Financing applied»). Clave SDMX de **12 dimensiones**:
+`H.<país>.SME.A.0.0.0.Q7B.<ítem>.<respuesta>.AL.WP`.
+Ítems: `FBLN` préstamo bancario, `FOVD` descubierto o línea, `FTCR` crédito
+comercial, `FOTH` otros. Respuestas: `S1` obtuvo todo, `S2` obtuvo parte,
+`S3` rechazó la oferta por coste, `S4` **fue rechazada**, `S8` pendiente;
+`R2` no solicitó por miedo al rechazo.
+Denominador `WP` (porcentaje ponderado). Extractor: `scripts/safe_rechazo.py`.
+Ojo: el denominador de Q7B son las empresas que **solicitaron**; el de
+Q7A/R2 es el **total** de empresas. No son la misma base.
+
+### EBA Transparency Exercise, dimensión `Portfolio`  [FICHERO]
+Mismo `tr_cre.csv` ya descargado. `Portfolio = 1` método estándar,
+`Portfolio = 2` IRB. Permite separar densidad de RWA de PYME por método.
+Extractor: `scripts/eba_te_pyme_sa_irb.py`.
+
+### EBA Transparency Exercise, cuenta y patrimonio de grupo  [FICHERO]
+`tr_oth.csv`: resultado atribuido (2520336), CET1 (2520102), patrimonio
+total (2521216), intangibles (2520110), RWA (2520138). Sirve para
+reconciliar el ROE PYME modelizado con la rentabilidad de grupo sin
+depender de las presentaciones de resultados, que no son accesibles desde
+este entorno. Extractor: `scripts/reconciliacion_rote.py`.
+
+### EUF, serie histórica desde 2007  [DESCARGA DIRECTA]
+https://euf.eu.com/files/97/Annual-Factoring-data/851/EU-Turnover-per-country-since-200
+Excel enlazado desde la página de datos anuales. Copia en
+`raw/factoring/euf_turnover_por_pais_desde_2007.xlsx`. Es lo que permite
+detectar qué países arrastran el dato del año anterior (nota (3) de la
+tabla anual). Extractor: `scripts/euf_factoring_historico.py`.

@@ -39,6 +39,10 @@ UNITS = {
     # recuperados por el acreedor, NO un tipo de interes.
     "indice", "anios", "pct_recuperacion", "pct_masa_concursal",
     "pct_adultos",
+    # `pct_empresas` = porcentaje de empresas sobre un denominador declarado
+    # (p.ej. "% de las que solicitaron"). NO es un saldo neto de respuestas
+    # ni un nivel de tipo de interes.
+    "pct_empresas",
 }
 
 COUNTRIES = {

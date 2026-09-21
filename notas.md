@@ -2461,6 +2461,261 @@ lámina. Nuevo campo `f_neutral_media` en el bloque `circ` de
 acertado en el olfato: una rejilla cuya fila plana no se explica es una
 rejilla mal rotulada, aunque los números sean exactos.
 
+### 2.64 Prima PYME: dos definiciones, y la que usan los informes no es la convencional
+
+Al reconstruir la serie de prima PYME (diferencial de tipo entre préstamo
+pequeño y grande, MIR) aparecieron **dos definiciones posibles** que no dan
+lo mismo:
+
+| Definición | Tramos | España, últimos 12 m | Alemania, 2023 |
+|---|---|---|---|
+| **Estrecha** (extremos) | ≤ 0,25 M€ vs > 1 M€ | −0,03 pp | +1,40 pp |
+| **Amplia** (corte PYME) | ≤ 1 M€ vs > 1 M€ | −0,05 pp | +1,04 pp |
+
+La **estrecha** es la que reproduce exactamente las cifras que publican los
+informes de sector. La **amplia** es la que se corresponde con el corte de
+1 M€ que el BCE usa convencionalmente para separar «préstamo PYME» de
+«préstamo corporativo». La diferencia entre las dos llega a 0,36 pp en
+Alemania, porque el tramo 0,25–1 M€ es sensiblemente más barato que el de
+≤ 0,25 M€ y al incluirlo el diferencial se estrecha.
+
+Se emiten **las dos**, etiquetadas en `metrica` y en `tramo_importe`
+(`prestamos_personales/prima_pyme.csv`, 830 filas). La lámina muestra la
+estrecha en el gráfico y las dos en la tabla lateral, porque la conclusión
+—la prima española se ha ido a cero— se sostiene con cualquiera de ellas y
+enseñar las dos es lo que impide que la objeción metodológica tumbe el
+mensaje.
+
+**Sobre la ponderación.** Se comprobaron tres formas de promediar el año:
+media simple de los diferenciales mensuales, ponderación por el volumen
+conjunto de los dos tramos, y ponderación de cada pata por su propio
+volumen. Las tres coinciden dentro de ±0,10 pp salvo en Irlanda (hasta
+0,16 pp en 2024). Se usa la **ponderación por volumen conjunto**, porque
+ponderar cada pata por su propio volumen mete un artefacto de composición
+en la *diferencia*: los meses en que la producción de importe grande se
+dispara pesan más en una pata que en la otra.
+
+**Lo que esta prima NO es.** El MIR segmenta por **importe del préstamo**,
+no por tamaño de empresa. Es una prima de tamaño de *operación*. Un
+préstamo de 800.000 € a una empresa grande cuenta como «pequeño». La única
+fuente que segmenta por empleados es la SAFE.
+
+---
+
+### 2.65 Tasa de rechazo de la SAFE: la dimensión de cantidad que faltaba
+
+El deck medía el precio del crédito PYME, no la **cantidad denegada**. La
+SAFE la publica: pregunta **Q7B** («Financing applied — outcome»), ítem
+**FBLN** (préstamo bancario), respuesta **S4** («Applied but was
+rejected»), denominador **WP** (porcentaje ponderado).
+
+Clave SDMX (12 dimensiones, ni una menos):
+`SAFE.H.<país>.SME.A.0.0.0.Q7B.FBLN.S4.AL.WP`
+
+Una clave con menos de 12 componentes devuelve **HTTP 400** con una página
+de error de «security concerns», no un mensaje de clave inválida: fácil de
+confundir con un bloqueo del proxy.
+
+**Resultado, 2025-S2** (% de las que solicitaron): P. Bajos 13,6 · España
+9,7 · Zona euro 9,6 · Irlanda 9,2 · Francia 8,2 · Alemania 5,5 · Portugal
+4,1 · Italia 0,7. Reproduce exactamente las cifras publicadas.
+
+**Unidad nueva en el esquema.** Se añadió `pct_empresas` a `schema.UNITS`.
+No es `pct_neto_encuesta`: aquello es un *saldo neto* de respuestas
+(subidas menos bajadas) y esto es una *proporción* sobre un denominador
+declarado. Mezclarlas sería exactamente el error que el encargo prohíbe. El
+denominador va escrito en `notas` fila a fila, porque **cambia entre
+preguntas**: Q7B se calcula sobre las empresas que *solicitaron*, y Q7A/R2
+(el desánimo, «no solicitó por miedo al rechazo») sobre el *total* de
+empresas.
+
+**Tres avisos que la lámina recoge:**
+
+1. **La tasa de rechazo sola engaña.** Alemania es la que menos rechaza
+   (5,5 %) y la que más raciona por otras vías: 20,4 % obtiene solo una
+   parte y 7,7 % renuncia porque el precio le parece alto. Sumando, un
+   33,6 % no obtiene todo lo que pidió, frente al 18,0 % de España.
+   Rechazar y encarecer son **sustitutos**: la correlación entre la tasa de
+   rechazo media de los tres últimos años y la prima PYME de los siete
+   países es **ρ = −0,49**. Con n = 7 es indicativa, no concluyente, y así
+   se rotula.
+2. **Las filas de la tabla no suman 100 %.** «No obtuvo todo» se calcula
+   como la suma de las tres columnas visibles (parcial + renunció por coste
+   + rechazada), no como 100 − «obtuvo todo» − pendiente, para que la fila
+   cuadre a la vista. Las dos definiciones coinciden salvo por las
+   respuestas «no sabe», que en Portugal valen 3,8 pp y en Francia 0,7 pp.
+   Queda dicho en el pie de la lámina.
+
+3. **Un semestre no es una tendencia.** La serie es muy volátil: Irlanda ha
+   oscilado entre 2,1 % y 20,1 % desde 2022 (desviación típica 6,7 pp) y
+   Francia entre 4,6 % y 17,3 %. Leer un dato suelto como señal estructural
+   es un error. La lámina da también la media de los tres últimos años.
+
+---
+
+### 2.66 Densidad de RWA por método: el capital español no es un problema de riesgo
+
+Abriendo la dimensión `Portfolio` del Transparency Exercise (1 = estándar,
+2 = IRB) sobre las partidas PYME, junio de 2025:
+
+| País | Estándar | IRB | Total | Cartera en IRB | Ahorro del IRB |
+|---|---|---|---|---|---|
+| **España** | 63,0 % | **55,4 %** | 59,5 % | 46,2 % | **7,6 pp** |
+| Alemania | 66,0 % | 30,1 % | 35,3 % | 85,5 % | 35,9 pp |
+| Francia | 67,3 % | 35,3 % | 43,0 % | 76,0 % | 31,9 pp |
+| Italia | 66,3 % | 37,7 % | 46,3 % | 69,7 % | 28,6 pp |
+| Portugal | 72,7 % | 47,5 % | 61,3 % | 45,3 % | 25,2 pp |
+| P. Bajos | 69,9 % | 34,9 % | 37,2 % | 93,5 % | 34,9 pp |
+| Irlanda | 77,3 % | 64,7 % | 70,0 % | 58,2 % | 12,5 pp |
+
+Las densidades **estándar** son casi idénticas entre países (63–73 %), como
+cabe esperar: las pondera el mismo reglamento. Toda la dispersión de la
+densidad agregada viene del IRB.
+
+**El dato que cambia el mensaje**: la densidad IRB española (55,4 %) está
+**por encima** de la densidad *estándar* de Alemania, Francia o Italia
+(30–38 % en IRB). Un banco español con modelo aprobado consume más capital
+por la misma exposición que un banco alemán con modelo aprobado, y casi
+tanto como uno sin modelo.
+
+**Descomposición de la brecha frente a Alemania (24,2 pp):**
+
+- 3,0 pp por tener **menos cartera en IRB** (46,2 % frente a 85,5 %)
+- 11,7 pp por la **calibración** de los modelos
+- 9,5 pp de **interacción** entre ambas
+
+Es decir: el problema no es cuánta cartera está modelizada, es qué devuelve
+el modelo.
+
+**Una afirmación que estaba mal y se corrigió antes de cerrar.** El primer
+borrador de esta lámina decía que la densidad IRB española (55,4 %) está
+«por encima de la densidad ESTÁNDAR de Alemania, Francia o Italia». Es
+falso: las densidades estándar de esos tres países son 66,0 %, 67,3 % y
+66,3 %, todas por encima. Lo cierto, y además más fuerte, es que la
+densidad IRB española está por encima de la densidad **total** de los tres
+(35,3 %, 43,0 % y 46,3 %): el banco español con modelo aprobado consume más
+capital que el banco alemán medio. Queda anotado porque el error consistía
+en comparar contra la columna equivocada de una tabla propia, que es
+justamente lo que el repaso final tiene que cazar. La descomposición es un contrafactual simple (sustituir una
+variable cada vez) y por eso deja un término de interacción grande; se
+publica con los tres componentes a la vista en lugar de repartir la
+interacción, que exigiría elegir un orden arbitrario.
+`transversal/eba_te_pyme_sa_irb.csv`.
+
+---
+
+### 2.67 Reconciliación del ROE PYME con la rentabilidad de grupo
+
+El ROE modelizado del segmento PYME España se compara con la rentabilidad
+de grupo para que nadie lo lea como si fueran la misma magnitud. Todo sale
+del mismo Transparency Exercise (`tr_oth.csv`, 202506): resultado atribuido
+(2520336), CET1 (2520102), patrimonio total (2521216), intangibles
+(2520110), RWA (2520138). Beneficio anualizado con el número de trimestres
+que declara la propia columna `n_quarters`.
+
+| Banco | ROE PYME ES (modelo) | ROE grupo / CET1 | RoTE grupo | Cuña denominador | Brecha | Peso RWA PYME |
+|---|---|---|---|---|---|---|
+| Bankinter | 20,7 % | 19,6 % | 18,2 % | 1,4 pp | +1,1 pp | 17,6 % |
+| Sabadell | 20,2 % | 18,8 % | 15,9 % | 3,0 pp | +1,4 pp | 10,5 % |
+| CaixaBank | 17,7 % | 19,9 % | 17,4 % | 2,5 pp | −2,2 pp | 9,9 % |
+| BBVA | 13,2 % | 21,0 % | 18,4 % | 2,7 pp | −7,8 pp | 4,5 % |
+| Santander | 14,2 % | 16,8 % | 14,6 % | 2,2 pp | −2,6 pp | 3,2 % |
+
+Tres razones por las que las columnas no son comparables sin más:
+**perímetro** (cartera PYME española frente a grupo consolidado: la brecha
+de −7,8 pp de BBVA dice que su grupo rinde más que su PYME española, no
+menos), **denominador** (CET1 frente a patrimonio tangible: solo por eso el
+ratio sube entre 1,4 y 3,0 pp) y **cobertura de la cuenta** (el resultado
+de grupo añade ROF, puesta en equivalencia, saneamientos extraordinarios y
+el gravamen a la banca).
+
+**Hueco declarado.** El `RoTE` de la tabla es **cálculo propio sobre el
+EBA**, no la cifra que titula cada banco. Las páginas de relación con
+inversores (CaixaBank, ING, ABN AMRO, Commerzbank) devuelven 403/503/555
+desde este entorno, y los PDF descargados resultaron ser páginas de error
+de 1–75 KB, no los informes. No se ha puesto ninguna cifra de presentación
+de resultados en el repositorio sin poder verificarla contra su fuente.
+`comparables_bancos/reconciliacion_rote.csv`.
+
+---
+
+### 2.68 Irlanda en factoring: la cifra lleva cinco años congelada
+
+La tabla anual de la EUF marca a Irlanda con la nota **(3)**, cuyo texto
+literal en la propia página es: *«Estimates of the turnover — the previous
+year's turnover implemented»*. Es decir, se arrastra el importe del año
+anterior. El fichero histórico de la EUF («EU Turnover per country since
+2007», guardado en `raw/factoring/`) lo confirma y lo agrava:
+
+| Año | 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 |
+|---|---|---|---|---|---|---|---|---|---|
+| Irlanda (M€) | 26.294 | 26.294 | 28.424 | 28.424 | 28.617 | 28.617 | 28.617 | 28.617 | 28.617 |
+
+**Desde 2017 la EUF ha publicado tres importes distintos para Irlanda**, y
+el actual lleva **cinco años consecutivos** sin moverse. La serie histórica
+etiqueta además al país como *«EUF member till 2018»*: desde 2019 no hay
+asociación nacional que reporte el dato.
+
+Consecuencia: de Irlanda no se puede leer el nivel, ni el crecimiento (es
+0,0 % **por construcción**), ni la cuota europea (1,1 %), ni la penetración
+sobre PIB (4,5 %, la menor de los siete) — porque el numerador está
+congelado y el denominador no. Irlanda sale de cualquier ranking de
+factoring o lleva la marca del arrastre.
+
+Mismo arrastre, con menos años, en **Estonia, Finlandia, Luxemburgo, Malta
+y Suecia** (todas con variación 0,0 % y nota (3)).
+`factoring_confirming/euf_historico.csv`, 133 filas, cada una con el aviso
+de arrastre en `notas` cuando repite el año anterior.
+
+---
+
+### 2.69 Láminas sueltas: fichero aparte y sin numerar
+
+Las cinco láminas de §2.64–§2.68 se generan en
+`pres/gen_adicionales.js` → `pres/rentabilidad_pyme_laminas_adicionales.pptx`,
+**no** dentro del deck principal, porque el usuario decide dónde insertar
+cada una. Por eso **no llevan número de lámina** (se añadió la opción
+`sinNumero` a `nueva()`): el número depende del punto de inserción.
+
+El sistema visual se extrajo a `pres/visual.js` copiando literalmente el
+bloque de `gen.js`. **`gen.js` no se ha tocado**: conserva su propia copia,
+de modo que el deck principal (49 láminas, `md5 a3d6517…` antes y después)
+no depende del fichero nuevo. El coste es que la paleta está duplicada; si
+se cambia, hay que cambiarla en los dos sitios, y así está anotado en la
+cabecera de `visual.js`.
+
+**QA.** `qa_deck.py` pasa sin incidencias sobre los dos ficheros
+(desbordamiento, solape, fuera de lienzo, paleta). **No hay QA visual**:
+LibreOffice sigue roto en este entorno (`Error: source file could not be
+loaded` al convertir a PDF), así que la comprobación de maquetación es
+geométrica, no de aspecto.
+
+### 2.70 La ventana del MIR pasa a 2022-01 y el recuento de la portada deja de escribirse a mano
+
+Para construir la serie de prima PYME hacia atrás hubo que rearmar el
+bloque `prestamos_empresas` del MIR desde **2022-01** (antes arrancaba en
+2025-01). El fichero pasa de ~8.900 a **39.610 filas** y el repositorio de
+39.508 a **71.061 observaciones**.
+
+Se comprobó que la ampliación **no mueve ninguna cifra del deck**: se
+regeneró `pres/datos.json` y el diff frente a la versión anterior es vacío.
+Era lo esperable —el deck promedia 2026 y los meses nuevos son de 2022 a
+2024— pero convenía verificarlo y no suponerlo.
+
+Lo que sí quedaba obsoleto era el **recuento de la portada**, que estaba
+escrito a mano y ya había fallado una vez (§2.55, «38885 observaciones»).
+Ahora `datos_presentacion.py` cuenta las filas de todos los CSV y escribe
+un bloque `meta` en `datos.json`; la portada y la lámina de fuentes leen de
+ahí. El número no puede volver a desincronizarse sin que alguien borre el
+bloque. El recuento de **fuentes sigue en 13**: los datos nuevos
+(SAFE Q7A/Q7B, Portfolio del Transparency Exercise, histórico de la EUF)
+vienen de fuentes que ya estaban contadas.
+
+Como efecto colateral se hizo reproducible `circ.f_neutral_media`, que
+estaba puesto a mano en `datos.json` tras §2.63 y que la regeneración
+borraba: ahora `datos_presentacion.py` lo lee de
+`circulante/modelo_roe_circulante.csv`.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

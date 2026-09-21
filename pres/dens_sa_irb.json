@@ -1,0 +1,75 @@
+{
+ "Espana": {
+  "sa": 63.0,
+  "irb": 55.4,
+  "total": 59.5,
+  "cuota_irb": 46.2,
+  "ahorro": 7.6
+ },
+ "Alemania": {
+  "sa": 66.0,
+  "irb": 30.1,
+  "total": 35.3,
+  "cuota_irb": 85.5,
+  "ahorro": 35.9,
+  "brecha_es": 24.2,
+  "por_mix": 3.0,
+  "por_calibracion": 11.7,
+  "interaccion": 9.5
+ },
+ "Francia": {
+  "sa": 67.3,
+  "irb": 35.3,
+  "total": 43.0,
+  "cuota_irb": 76.0,
+  "ahorro": 31.9,
+  "brecha_es": 16.5,
+  "por_mix": 2.3,
+  "por_calibracion": 9.3,
+  "interaccion": 4.9
+ },
+ "Italia": {
+  "sa": 66.3,
+  "irb": 37.7,
+  "total": 46.3,
+  "cuota_irb": 69.7,
+  "ahorro": 28.6,
+  "brecha_es": 13.2,
+  "por_mix": 1.8,
+  "por_calibracion": 8.2,
+  "interaccion": 3.2
+ },
+ "Portugal": {
+  "sa": 72.7,
+  "irb": 47.5,
+  "total": 61.3,
+  "cuota_irb": 45.3,
+  "ahorro": 25.2,
+  "brecha_es": -1.8,
+  "por_mix": -0.1,
+  "por_calibracion": 3.7,
+  "interaccion": -5.4
+ },
+ "P. Bajos": {
+  "sa": 69.9,
+  "irb": 34.9,
+  "total": 37.2,
+  "cuota_irb": 93.5,
+  "ahorro": 34.9,
+  "brecha_es": 22.3,
+  "por_mix": 3.6,
+  "por_calibracion": 9.5,
+  "interaccion": 9.2
+ },
+ "Irlanda": {
+  "sa": 77.3,
+  "irb": 64.7,
+  "total": 70.0,
+  "cuota_irb": 58.2,
+  "ahorro": 12.5,
+  "brecha_es": -10.5,
+  "por_mix": 0.9,
+  "por_calibracion": -4.3,
+  "interaccion": -7.1
+ }
+}
