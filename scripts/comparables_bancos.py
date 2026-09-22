@@ -62,7 +62,7 @@ DATOS = [
     {
         "pais": "Italia", "banco": "Intesa Sanpaolo", "segmento": "Banca dei Territori",
         "periodo": "2026-H1",
-        "doc": "Intesa Sanpaolo, resultados consolidados a 30 junio 2026, p. 16",
+        "doc": "Intesa Sanpaolo, resultados consolidados a 30 junio 2026, p. 16; prestamos por division, informe semestral a 30 junio 2026, p. 72",
         "url": "https://group.intesasanpaolo.com/en/investor-relations",
         "perimetro": "Retail, clientes exclusive, empresas con necesidades "
                      "complejas (generalmente PYME) y no lucrativas. "
@@ -74,6 +74,13 @@ DATOS = [
             ("Ratio de eficiencia (cost-income)", 46.7, "pct_ingresos", "ratio"),
             ("Provisiones y saneamientos", 528, "eur_millones", "importe"),
             ("Resultado neto", 1727, "eur_millones", "importe"),
+            # Del INFORME SEMESTRAL (30062026_Half-yearly_report.pdf, p. 72
+            # del pdf), no del comunicado: es la tabla de prestamos a la
+            # clientela por division. 219.992 a 31.12.2025, practicamente
+            # plana, asi que el saldo medio del semestre es el mismo.
+            ("Prestamos a clientes", 219940, "eur_millones", "importe"),
+            ("Prestamos a clientes al cierre anterior", 219992,
+             "eur_millones", "importe"),
         ],
     },
     {
@@ -99,8 +106,8 @@ DATOS = [
     {
         "pais": "Italia", "banco": "BPER Banca", "segmento": "Grupo consolidado",
         "periodo": "2026-H1",
-        "doc": "BPER, resultados consolidados a 30 junio 2026, p. 19",
-        "url": "https://group.bper.it/",
+        "doc": "BPER, resultados consolidados a 30 junio 2026, p. 19; prestamos a la clientela, informe intermedio consolidado a 30 junio 2026, p. 34",
+        "url": "https://group.bper.it/en/investor-relations/group-results/financial-statements-reports",
         "perimetro": "El comunicado NO desglosa por division ni segmento. "
                      "Incluye la integracion de Banca Popolare di Sondrio.",
         "filas": [
@@ -110,6 +117,11 @@ DATOS = [
             ("Costes operativos", 1605.3, "eur_millones", "importe"),
             ("Ratio de eficiencia (cost-income)", 41.4, "pct_ingresos", "ratio"),
             ("Saneamientos por riesgo de credito", 177.0, "eur_millones", "importe"),
+            # Del INFORME INTERMEDIO CONSOLIDADO a 30 junio 2026 (p. 34), no
+            # del comunicado. NETOS de provisiones; el bruto es 132.119,6.
+            ("Prestamos netos a clientes", 129693.8, "eur_millones", "importe"),
+            ("Prestamos netos a clientes al cierre anterior", 128738.1,
+             "eur_millones", "importe"),
         ],
     },
 ]

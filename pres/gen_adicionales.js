@@ -7,6 +7,7 @@
    3. Reconciliacion del ROE PYME con el de grupo   -> bloque 2 (bancos ES)
    4. Densidad de RWA: estandar frente a IRB        -> bloque 1 (capital)
    5. Irlanda en factoring: el dato esta congelado  -> anexos (limites)
+   6. Comparables en % de la inversion               -> sustituye a la lamina 16
 
    Todos los numeros salen de pres/adicionales.json, que a su vez lo
    construye scripts/datos_adicionales.py desde los CSV del repositorio.
@@ -14,6 +15,7 @@
 const pptxgen = require("pptxgenjs");
 const {sistema} = require("./visual.js");
 const A = require("./adicionales.json");
+const CR = require("./comparables_ratios.json");
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";
@@ -261,7 +263,60 @@ L.factoring_ie = () => {const s=hoja();
  fuente(s,"EUF, EU Federation for Factoring: tabla anual a 31 de diciembre de 2025 y fichero «EU Turnover per country since 2007». Mismo arrastre, con menos años, en Estonia, Finlandia, Luxemburgo, Malta y Suecia. Serie completa en factoring_confirming/euf_historico.csv.");
 };
 
-const ORDEN = ["prima","rechazo","reconciliacion","densidad","factoring_ie"];
+/* ------------------------------------------------------------------ 6 */
+/* Sustituye a la lamina 16 del deck, que daba las mismas cuentas en
+   importes absolutos y por tanto no se podian comparar ni entre bancos ni
+   con la cuenta del prestamo PYME de la lamina 7. */
+L.comparables_ratios = () => {const s=hoja();
+ titulo(s,"Lo que publican los bancos, en % de la inversión",
+   "Las mismas cuentas de la lámina anterior divididas por la inversión crediticia de su propio perímetro y anualizadas · Commerzbank publica trimestre (×4), el resto semestre (×2)");
+ const cab=["Banco","País","Perímetro publicado","Inversión\nM€","Ingresos","M. intereses",
+            "Comisiones","Costes","Coste riesgo","BAI"];
+ const nd=(v,d)=>v==null?"n/d":(n1(v,d===undefined?2:d)+(d===0?" pb":" %"));
+ const tb=[cab.map((c,i)=>({text:c, options:Object.assign({},hdr,
+    {fontSize:8.5, align:i<3?"left":"center", fill:{color: c==="Comisiones"?DARK:PRIM}})}))];
+ CR.forEach(r=>{
+   const seg=r.es_segmento;
+   tb.push([
+    {text:r.banco, options:cel(null,{align:"left", fontSize:9.5, bold:true})},
+    {text:r.pais==="Espana"?"España":r.pais,
+       options:cel(null,{align:"left", fontSize:9.5, color:MUT})},
+    {text:r.segmento, options:cel(null,{align:"left", fontSize:9,
+       color: seg?ACC:MUT, italic:!seg})},
+    {text:Math.round(r.inversion).toLocaleString("es-ES"),
+       options:cel(null,{fontSize:9.5, color:MUT})},
+    {text:nd(r.ingresos), options:cel(null,{fontSize:9.5})},
+    {text:nd(r.mi),       options:cel(null,{fontSize:9.5})},
+    {text:nd(r.comisiones), options:cel(null,{fontSize:10, bold:true, color:DARK,
+       fill:{color: r.comisiones==null?"FFFFFF":(seg?YEL:YEL3)}})},
+    {text:nd(r.costes),   options:cel(null,{fontSize:9.5})},
+    {text:nd(r.cor,0),    options:cel(null,{fontSize:9.5})},
+    {text:nd(r.resultado),options:cel(null,{fontSize:9.5})}]);});
+ s.addTable(tb,{x:M, y:1.82, w:W-2*M,
+   colW:[1.55,1.00,2.05,1.25,1.05,1.05,1.15,1.00,0.92,0.95], rowH:0.34,
+   fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});
+ [["perímetro = segmento de empresas publicado",YEL],
+  ["perímetro = grupo, no segmento",YEL3]].forEach((l,i)=>{
+   s.addShape(pres.ShapeType.rect,{x:M+i*4.55, y:4.02, w:0.16, h:0.16,
+     fill:{color:l[1]}, line:{color:G3}});
+   s.addText(l[0],{x:M+0.24+i*4.55, y:3.96, w:4.2, h:0.26, fontFace:BF,
+     fontSize:8.5, color:MUT, isTextBox:true, margin:0});});
+
+ const sup=0.87;
+ const segs=CR.filter(r=>r.es_segmento && r.comisiones!=null);
+ nota(s,M,4.36,5.82,1.92,"El supuesto de 87 pb no infla el modelo",
+   "La cuenta de la lámina 7 supone "+n1(sup,2)+" % de comisiones sobre el saldo medio. Los dos únicos segmentos de empresas publicados ganan MÁS: "+
+   segs.map(r=>r.banco+" "+n1(r.comisiones,2)+" %").join(" y ")+
+   ". El supuesto está en el extremo bajo de lo que una franquicia de banca de empresas cobra por euro prestado, así que no está regalando ROE al modelo.");
+ nota(s,M+6.15,4.36,5.82,1.92,"«Ingresos / inversión» NO es un margen de préstamo",
+   "El numerador es el ingreso de TODO el segmento -margen de depósitos y transaccional incluidos- y el denominador solo los préstamos. Banca dei Territori lo enseña en caricatura: "+
+   n1(CR[2].ingresos,2)+" % sobre préstamos, porque lleva dentro gestión de activos y seguros. Por eso BPER, que es grupo, dobla en comisiones ("+
+   n1(CR[4].comisiones,2)+" %) a los segmentos de empresas.", ORA3);
+ fuente(s,"Comunicado Q2 2026 de Commerzbank; informe intermedio Q2 2026 de ABN AMRO; resultados 1S26 de Intesa Sanpaolo e informe semestral a 30-jun-2026 (p. 72) para los préstamos de Banca dei Territori; Actividad y Resultados 1S26 de CaixaBank; resultados 1S26 de BPER e informe intermedio consolidado a 30-jun-2026 (p. 34) para los préstamos. Denominador: cartera media en Commerzbank; media de los dos cierres en Intesa y BPER; saldo final en ABN AMRO y CaixaBank. CaixaBank lo publica BRUTO y el resto NETO: con su mora del 1,78 %, el neto subiría sus ratios uno o dos puntos básicos. Datos en comparables_bancos/comparables_ratios.csv.", 7);
+};
+
+const ORDEN = ["prima","rechazo","reconciliacion","densidad","factoring_ie",
+               "comparables_ratios"];
 ORDEN.forEach(k=>{ if(!L[k]) throw new Error("lamina desconocida: "+k); L[k](); });
 const sobran = Object.keys(L).filter(k=>!ORDEN.includes(k));
 if(sobran.length) throw new Error("laminas sin colocar: "+sobran.join(", "));

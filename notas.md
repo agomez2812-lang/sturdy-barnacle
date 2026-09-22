@@ -2716,6 +2716,73 @@ estaba puesto a mano en `datos.json` tras §2.63 y que la regeneración
 borraba: ahora `datos_presentacion.py` lo lee de
 `circulante/modelo_roe_circulante.csv`.
 
+### 2.71 Los comparables banco a banco, en % de la inversión
+
+La lámina de comparables daba las cuentas en **importes absolutos**, que no
+se pueden comparar ni entre bancos (tamaños muy distintos) ni con la cuenta
+del préstamo PYME de la lámina 7, que está en % del saldo medio. Se
+reexpresa todo sobre la **inversión crediticia del mismo perímetro**,
+anualizando según el periodo que publica cada banco (Commerzbank da
+trimestre, ×4; el resto semestre, ×2).
+
+| Banco | Perímetro | Inversión M€ | Ingresos | M. int. | **Comisiones** | Costes | CoR | BAI |
+|---|---|---|---|---|---|---|---|---|
+| Commerzbank | Corporate Clients | 123.000 | 4,01 % | 2,15 % | **1,22 %** | n/d | n/d | n/d |
+| ABN AMRO | Corporate Banking | 86.900 | 3,90 % | 2,52 % | **0,99 %** | 1,93 % | 15 pb | 1,82 % |
+| Intesa Sanpaolo | Banca dei Territori | 219.966 | 5,64 % | n/d | n/d | 2,63 % | 48 pb | 2,53 % |
+| CaixaBank | Grupo | 406.233 | 4,11 % | 2,65 % | 1,02 % | 1,63 % | 24 pb | 2,24 % |
+| BPER Banca | Grupo | 129.216 | 6,00 % | 3,42 % | 2,09 % | 2,48 % | 27 pb | 3,24 % |
+
+**Dos denominadores que faltaban, ahora obtenidos de la fuente primaria.**
+El comunicado de resultados de Intesa y el de BPER no traen la inversión,
+pero sus informes sí:
+
+- Intesa, **Banca dei Territori: 219.940 M€** a 30-jun-2026 (219.992 a
+  31-dic-2025, prácticamente plano). *Half-yearly report* a 30-jun-2026,
+  tabla de préstamos a la clientela por división, p. 72 del PDF.
+- BPER, **préstamos netos a la clientela: 129.693,8 M€** a 30-jun-2026
+  (128.738,1 a 31-dic-2025). *Consolidated Interim Financial Report* a
+  30-jun-2026, p. 34. El bruto es 132.119,6 M€.
+
+Ambos descargan sin problema desde este entorno; el bloqueo que quedó
+anotado en §2.26 afectaba a otras páginas de esos grupos, no a estas.
+
+**Lo que aporta la reexpresión.** La fila de comisiones sobre inversión es
+la única directamente comparable con el supuesto del modelo, que son
+**87 pb**. Los dos únicos segmentos de empresas publicados dan **99 pb**
+(ABN AMRO) y **122 pb** (Commerzbank): el supuesto está en el extremo bajo
+del rango, de modo que **no está regalando ROE al modelo**. Ésa era la
+duda que la lámina en importes no podía despejar.
+
+**Lo que NO aporta, y hay que decirlo en la lámina.** «Ingresos /
+inversión» no es un margen de préstamo: el numerador es el ingreso de todo
+el segmento —margen de depósitos y transaccional incluidos— y el
+denominador solo los préstamos. Banca dei Territori lo enseña en
+caricatura con un 5,64 %, porque es una división minorista con gestión de
+activos y seguros dentro. Por lo mismo, BPER, que es grupo y no segmento,
+dobla en comisiones (2,09 %) a los segmentos de empresas: son comisiones de
+fondos y seguros repartidas sobre una cartera de crédito. La lámina marca
+con color distinto las filas de segmento y las de grupo, y no las ordena
+entre sí.
+
+**Bases del denominador, no homogéneas.** Commerzbank publica cartera
+**media** del periodo, que es la base correcta; Intesa y BPER permiten
+media de los dos cierres; ABN AMRO y CaixaBank solo dan **saldo final**.
+CaixaBank además lo da **bruto** y los demás **neto**: con su mora del
+1,78 % y la cobertura habitual, el neto sería del orden de un 1,3 % menor,
+lo que subiría sus ratios uno o dos puntos básicos. No se ajusta, se
+declara en el pie.
+
+**Un hueco que se mantiene.** De Commerzbank no salen costes ni coste del
+riesgo, porque no publica ratio de eficiencia del segmento y su «resultado
+operativo» no permite separar gastos de dotaciones: en su formato esa
+partida va después del *risk result*, mientras que en ABN AMRO e Intesa va
+antes (verificado: ingresos − resultado operativo coincide con el ratio de
+eficiencia publicado en los dos). Restar sin más daría un dato falso, así
+que quedan en `n/d`.
+`comparables_bancos/comparables_ratios.csv`, extractor
+`scripts/comparables_ratios.py`.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

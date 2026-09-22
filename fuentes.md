@@ -116,3 +116,15 @@ Excel enlazado desde la página de datos anuales. Copia en
 `raw/factoring/euf_turnover_por_pais_desde_2007.xlsx`. Es lo que permite
 detectar qué países arrastran el dato del año anterior (nota (3) de la
 tabla anual). Extractor: `scripts/euf_factoring_historico.py`.
+
+### Intesa Sanpaolo y BPER, informes financieros  [DESCARGA DIRECTA]
+El comunicado de resultados de ninguno de los dos trae la inversión
+crediticia, que hace falta como denominador. Los informes sí, y descargan
+sin bloqueo:
+- Intesa, *Half-yearly report* a 30-jun-2026 → préstamos por división
+  (Banca dei Territori), p. 72 del PDF.
+  `https://group.intesasanpaolo.com/en/investor-relations` → bilanci-relazioni-en/2026/
+- BPER, *Consolidated Interim Financial Report* a 30-jun-2026 → préstamos
+  netos a la clientela, p. 34.
+  `https://group.bper.it/en/investor-relations/group-results/financial-statements-reports`
+Copias en `raw/bancos/` (no versionadas: `raw/` está en .gitignore).
