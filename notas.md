@@ -2838,6 +2838,73 @@ punto, que ninguna se sale del área y que no se solapan entre sí.
 `transversal/mapa_info_margen.csv`, extractor
 `scripts/mapa_info_margen.py`.
 
+### 2.73 El «21,6 %» parecía un tipo de interés, y además tenía mal el denominador
+
+El usuario preguntó por qué en la lámina de conclusiones de España decíamos
+que el obstáculo principal es «el precio (21,6 %)», porque **parecía una
+tarifa de tarjeta de crédito**. Tenía razón: la frase tenía **dos errores**
+y aparecía en **dos láminas** (conclusiones de España y demanda española).
+
+**Error 1: no es un nivel, es un porcentaje de empresas.** El 21,6 % es la
+proporción de pymes que **señala el precio como obstáculo** en la encuesta
+CESGAR, no un tipo de interés. El dato estaba bien etiquetado en el CSV
+—`unidad = pct_neto_encuesta`, y la nota de cada fila dice literalmente
+«ENCUESTA: porcentaje de empresas, no un nivel de tipo ni un volumen»— pero
+la lámina lo escribía como «el precio (21,6 %)», que se lee como un precio.
+Es exactamente la confusión que el encargo prohíbe.
+
+**Error 2: el denominador estaba mal.** La lámina decía «entre las que sí
+ven obstáculos, el primero es el precio (21,6 %)». Falso: las cinco
+categorías de esa pregunta se miden sobre el **total de encuestadas**, y la
+prueba es que la categoría «ninguno» (49,2 %) está en la misma escala.
+Sobre las pymes que sí señalan algún obstáculo, el precio sería el
+**42,5 %** (21,6 / 50,8), casi el doble de lo que decía la lámina.
+
+Corregido en las dos láminas. El texto ahora dice el reparto completo
+—«el 49,2 % no señala ninguno y el 21,6 % señala el precio»— y añade en la
+propia frase que ese 21,6 % es porcentaje de empresas y no un tipo. El pie
+declara las dos bases y da la cifra de 42,5 % para quien quiera la otra
+lectura.
+
+**Lección de método.** Etiquetar bien el CSV no basta si la lámina redacta
+el número como si fuera otra cosa. El barrido de §2.55 buscaba cifras
+obsoletas; hace falta también un barrido de cifras **bien calculadas y mal
+redactadas**, que es un error más difícil de ver porque el dato cuadra
+contra su fuente.
+
+---
+
+### 2.74 De «Conclusiones: España» a «Observaciones: España»
+
+A petición del usuario, la lámina pasa a ser de **observaciones**: hechos
+medidos, sin la inferencia. Se quitaron las frases que derivaban una
+decisión y que pertenecen a la lámina de recomendaciones:
+
+- «Un entrante que compita por disponibilidad se equivoca de eje.»
+- «Por encima de esa diferencia, endeudarse deja de crearle valor y la
+  demanda se corta sola.»
+- «…es lo que de verdad se puede usar para ganar cliente.»
+- «El autónomo es un segmento aparte que la estadística **esconde**»
+  → «…está **fuera** de las series de empresas» (describe, no acusa).
+
+Los titulares también se reescriben en modo descriptivo: «El problema no es
+el acceso, es el precio» → «El crédito se concede; lo que las pymes señalan
+es el precio»; «La capacidad competitiva se mide en precio, no en ROE» →
+«Entre el primero y el último hay 119 pb de precio de equilibrio».
+
+Ningún número cambia: cambia lo que se afirma a partir de ellos. La
+observación 2 gana además el contraste con la mediana (ROA 10,4 % frente a
+5,4 %) y la nota de que la diferencia lleva en 2,1 puntos desde 2023, que
+son hechos y estaban implícitos.
+
+La lámina está en los dos sitios: `gen.js` (deck principal, sustituye a la
+50) y `gen_adicionales.js` (lámina suelta, para insertar en la versión
+formateada del usuario). El bloque se **copia literalmente** de uno a otro,
+como la paleta: si se toca uno, hay que tocar el otro.
+
+**Pendiente de decidir.** La lámina europea equivalente sigue llamándose
+«Conclusiones». O se convierten las dos o el deck queda incoherente.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

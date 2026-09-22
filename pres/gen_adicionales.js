@@ -9,6 +9,7 @@
    5. Irlanda en factoring: el dato esta congelado  -> anexos (limites)
    6. Comparables en % de la inversion               -> sustituye a la lamina 16
    7. Se paga el riesgo? Dos nubes                   -> bloque 1, tras la 18
+   8. Observaciones: Espana                          -> sustituye a la lamina 50
 
    Todos los numeros salen de pres/adicionales.json, que a su vez lo
    construye scripts/datos_adicionales.py desde los CSV del repositorio.
@@ -20,6 +21,7 @@ const A = require("./adicionales.json");
 const men = (v,d)=>v.toFixed(d).replace(".",",").replace("-","−");
 const CR = require("./comparables_ratios.json");
 const MP = require("./mapa_info_margen.json");
+const D  = require("./datos.json");
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";
@@ -392,8 +394,46 @@ L.riesgo_nubes = () => {const s=hoja();
 };
 
 
+/* ------------------------------------------------------------------ 8 */
+/* Sustituye a la lamina 50, "Conclusiones: Espana". Dos cambios:
+   - Son OBSERVACIONES: se quitan las frases que derivaban una decision
+     ("un entrante que compita por disponibilidad se equivoca de eje",
+     "la demanda se corta sola"...). Eso va en recomendaciones.
+   - Se corrige el 21,6 %: no es un precio, es el porcentaje de
+     empresas que senala el precio como obstaculo, y la base es el
+     TOTAL de encuestadas, no las que ven obstaculos (ver notas.md).
+   Copia literal del bloque de gen.js: si se toca uno, tocar el otro. */
+L.observaciones_es = () => {const s=hoja();
+ const B=D.bancos, CB=D.cb, CE=D.cesgar;
+ titulo(s,"Observaciones: España","Lo que se observa en el bloque español y no se ve en el agregado europeo · Hechos medidos; lo que se deriva de ellos va en la lámina de recomendaciones");
+ const C=[
+  ["1","El crédito se concede; lo que las pymes señalan es el precio",
+   `El ${n1(CE.concedida,1)} % de las pymes que pide financiación la obtiene y la acepta, y solo al ${n1(CE.denegada,1)} % no se le concede. Preguntadas por obstáculos, el ${n1(CE.obstaculos[0][1],1)} % no señala ninguno y el ${n1(CE.obstaculos[1][1],1)} % señala el precio, que es el más citado. Ese ${n1(CE.obstaculos[1][1],1)} % es el porcentaje de empresas que lo menciona sobre el total encuestado, NO un tipo de interés.`],
+  ["2","La pyme pequeña tiene 2,1 puntos entre lo que gana y lo que paga",
+   `Gana un ${n1(CB.roa[0])} % con su activo y paga un ${n1(CB.coste[0])} % por su deuda: ${n1(CB.dif[0])} puntos de diferencia. La mediana tiene ${n1(CB.dif[1])} puntos, casi el triple, con un ROA del ${n1(CB.roa[1])} %. En la serie de la Central de Balances esa diferencia lleva en ${n1(CB.dif[0])} puntos desde 2023.`],
+  ["3","El destino declarado es el circulante, el producto con menos estadística",
+   `El ${n1(CE.destino[0][1],1)} % de las pymes con necesidades lo quiere para circulante, frente al ${n1(CE.circ_2024,1)} % de 2024. De ese producto no existe comisión de disponibilidad ni tasa de disposición en ninguna estadística, y el tipo del BCE ni siquiera tiene tramo de importe.`],
+  ["4","Entre los cinco bancos españoles el orden lo marca el capital, no la eficiencia",
+   `Sabadell tiene la peor eficiencia de los cinco (${n1(B.eficiencia[1])} %) y queda segundo en ROE, con una densidad de RWA del ${n1(B.densidad[1])} %. BBVA tiene la segunda mejor eficiencia (${n1(B.eficiencia[3])} %) y queda cuarto, con una densidad del ${n1(B.densidad[3])} %. Es el mismo patrón del agregado europeo, y aquí los cinco operan en el mismo mercado.`],
+  ["5","Entre el primero y el último hay 119 pb de precio de equilibrio",
+   `Con su propio riesgo, capital y gastos, Bankinter necesita un ${n1(B.precio_eq[0],2)} % para un ROE del 15 % y BBVA un ${n1(B.precio_eq[3],2)} %: ${Math.round((B.precio_eq[3]-B.precio_eq[0])*100)} pb de diferencia. El precio y las comisiones del modelo son comunes a los cinco, así que la distancia es de estructura, no de política comercial.`],
+  ["6","El autónomo paga 115 pb más y está fuera de las series de empresas",
+   `Paga un ${n1(D.autonomos.auto,2)} %, ${D.autonomos.dif_vs_025} pb más que la sociedad del tramo ≤0,25 M€. El SEC 2010 lo clasifica en hogares, así que no aparece en ninguna serie de sociedades no financieras. Son 840 M€ al mes de nueva producción.`]];
+ let y=1.66;
+ C.forEach((c,i)=>{
+   s.addShape(pres.ShapeType.ellipse,{x:M, y:y+0.04, w:0.36, h:0.36, fill:{color:BLUE}, line:{color:BLUE}});
+   s.addText(c[0], {x:M, y:y+0.04, w:0.36, h:0.36, fontFace:HF, fontSize:13, bold:true,
+     color:DARK, align:"center", valign:"middle", isTextBox:true, margin:0});
+   s.addText(c[1], {x:M+0.55, y:y, w:11.6, h:0.3, fontFace:HF, fontSize:12.5, bold:true,
+     color:DARK, isTextBox:true, margin:0});
+   s.addText(c[2], {x:M+0.55, y:y+0.30, w:11.6, h:0.50, fontFace:BF, fontSize:9,
+     color:G1, isTextBox:true, margin:0});
+   y+=0.845;});
+ fuente(s,"Las observaciones 1 y 3 salen de la encuesta CESGAR: son PORCENTAJES DE EMPRESAS sobre el total encuestado, no niveles de tipo de interés ni saldos netos de respuesta. En la pregunta de obstáculos las categorías se miden sobre esa misma base, la de «ninguno» incluida; sobre las pymes que sí señalan alguno, el precio sería el 42,5 %. La 2 sale de la Central de Balances Integrada del Banco de España, ejercicio 2024, ratios por tamaño según la Recomendación 2003/361/CE. Las 4 y 5 salen del modelo por banco, cuyo precio y comisiones son comunes a los cinco porque ninguno los publica por segmento: comparan estructura de riesgo, capital y coste, no habilidad comercial.");
+};
+
 const ORDEN = ["prima","rechazo","reconciliacion","densidad","factoring_ie",
-               "comparables_ratios","riesgo_nubes"];
+               "comparables_ratios","riesgo_nubes","observaciones_es"];
 ORDEN.forEach(k=>{ if(!L[k]) throw new Error("lamina desconocida: "+k); L[k](); });
 const sobran = Object.keys(L).filter(k=>!ORDEN.includes(k));
 if(sobran.length) throw new Error("laminas sin colocar: "+sobran.join(", "));

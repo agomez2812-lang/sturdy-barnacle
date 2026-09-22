@@ -1109,20 +1109,20 @@ L.conclusiones = () => {const s=nueva();
 /* 19b2 — conclusiones del bloque Espana */
 L.conclusiones_es = () => {const s=nueva();
  const B=D.bancos, CB=D.cb, CE=D.cesgar;
- titulo(s,"Conclusiones: España","Lo que añade el bloque español, que no se ve en el agregado europeo");
+ titulo(s,"Observaciones: España","Lo que se observa en el bloque español y no se ve en el agregado europeo · Hechos medidos; lo que se deriva de ellos va en la lámina de recomendaciones");
  const C=[
-  ["1","El problema no es el acceso, es el precio",
-   `El ${n1(CE.concedida,1)} % de las pymes que pide financiación la obtiene y la acepta, y solo al ${n1(CE.denegada,1)} % no se le concede. Entre las que sí ven obstáculos, el primero es el precio (${n1(CE.obstaculos[1][1],1)} %). Un entrante que compita por disponibilidad se equivoca de eje.`],
-  ["2","La pyme pequeña tiene 2,1 puntos de colchón, y ese es el techo",
-   `Gana un ${n1(CB.roa[0])} % con su activo y paga un ${n1(CB.coste[0])} % por su deuda. Por encima de esa diferencia, endeudarse deja de crearle valor y la demanda se corta sola. La mediana tiene ${n1(CB.dif[1])} puntos: es otro cliente, no el mismo más grande.`],
-  ["3","La demanda va al circulante, que es el producto peor medido",
+  ["1","El crédito se concede; lo que las pymes señalan es el precio",
+   `El ${n1(CE.concedida,1)} % de las pymes que pide financiación la obtiene y la acepta, y solo al ${n1(CE.denegada,1)} % no se le concede. Preguntadas por obstáculos, el ${n1(CE.obstaculos[0][1],1)} % no señala ninguno y el ${n1(CE.obstaculos[1][1],1)} % señala el precio, que es el más citado. Ese ${n1(CE.obstaculos[1][1],1)} % es el porcentaje de empresas que lo menciona sobre el total encuestado, NO un tipo de interés.`],
+  ["2","La pyme pequeña tiene 2,1 puntos entre lo que gana y lo que paga",
+   `Gana un ${n1(CB.roa[0])} % con su activo y paga un ${n1(CB.coste[0])} % por su deuda: ${n1(CB.dif[0])} puntos de diferencia. La mediana tiene ${n1(CB.dif[1])} puntos, casi el triple, con un ROA del ${n1(CB.roa[1])} %. En la serie de la Central de Balances esa diferencia lleva en ${n1(CB.dif[0])} puntos desde 2023.`],
+  ["3","El destino declarado es el circulante, el producto con menos estadística",
    `El ${n1(CE.destino[0][1],1)} % de las pymes con necesidades lo quiere para circulante, frente al ${n1(CE.circ_2024,1)} % de 2024. De ese producto no existe comisión de disponibilidad ni tasa de disposición en ninguna estadística, y el tipo del BCE ni siquiera tiene tramo de importe.`],
-  ["4","Entre bancos españoles manda el capital, no la eficiencia",
-   `Sabadell tiene la peor eficiencia de los cinco (${n1(B.eficiencia[1])} %) y queda segundo en ROE, por una densidad de RWA del ${n1(B.densidad[1])} %. BBVA tiene la segunda mejor eficiencia (${n1(B.eficiencia[3])} %) y queda cuarto, con una densidad del ${n1(B.densidad[3])} %. Misma conclusión que en Europa, pero aquí sin diferencias de mercado que la expliquen.`],
-  ["5","La capacidad competitiva se mide en precio, no en ROE",
-   `Con su propio riesgo, capital y gastos, Bankinter necesita un ${n1(B.precio_eq[0],2)} % para un ROE del 15 % y BBVA un ${n1(B.precio_eq[3],2)} %. Son ${Math.round((B.precio_eq[3]-B.precio_eq[0])*100)} pb de margen de maniobra en precio, que es lo que de verdad se puede usar para ganar cliente.`],
-  ["6","El autónomo es un segmento aparte que la estadística esconde",
-   `Paga un ${n1(D.autonomos.auto,2)} %, ${D.autonomos.dif_vs_025} pb más que la sociedad del tramo ≤0,25 M€, y el SEC 2010 lo clasifica en hogares, así que no aparece en ninguna serie de empresas. Son 840 M€ al mes de nueva producción.`]];
+  ["4","Entre los cinco bancos españoles el orden lo marca el capital, no la eficiencia",
+   `Sabadell tiene la peor eficiencia de los cinco (${n1(B.eficiencia[1])} %) y queda segundo en ROE, con una densidad de RWA del ${n1(B.densidad[1])} %. BBVA tiene la segunda mejor eficiencia (${n1(B.eficiencia[3])} %) y queda cuarto, con una densidad del ${n1(B.densidad[3])} %. Es el mismo patrón del agregado europeo, y aquí los cinco operan en el mismo mercado.`],
+  ["5","Entre el primero y el último hay 119 pb de precio de equilibrio",
+   `Con su propio riesgo, capital y gastos, Bankinter necesita un ${n1(B.precio_eq[0],2)} % para un ROE del 15 % y BBVA un ${n1(B.precio_eq[3],2)} %: ${Math.round((B.precio_eq[3]-B.precio_eq[0])*100)} pb de diferencia. El precio y las comisiones del modelo son comunes a los cinco, así que la distancia es de estructura, no de política comercial.`],
+  ["6","El autónomo paga 115 pb más y está fuera de las series de empresas",
+   `Paga un ${n1(D.autonomos.auto,2)} %, ${D.autonomos.dif_vs_025} pb más que la sociedad del tramo ≤0,25 M€. El SEC 2010 lo clasifica en hogares, así que no aparece en ninguna serie de sociedades no financieras. Son 840 M€ al mes de nueva producción.`]];
  let y=1.66;
  C.forEach((c,i)=>{
    s.addShape(pres.ShapeType.ellipse,{x:M, y:y+0.04, w:0.36, h:0.36, fill:{color:BLUE}, line:{color:BLUE}});
@@ -1133,7 +1133,7 @@ L.conclusiones_es = () => {const s=nueva();
    s.addText(c[2], {x:M+0.55, y:y+0.30, w:11.6, h:0.50, fontFace:BF, fontSize:9,
      color:G1, isTextBox:true, margin:0});
    y+=0.845;});
- fuente(s,"Las conclusiones 1 y 3 salen de la encuesta CESGAR y son porcentajes de empresas, no niveles. La 2 sale de la Central de Balances del Banco de España, ejercicio 2024. Las 4 y 5 salen del modelo por banco, cuyo precio y comisiones son comunes a los cinco porque ninguno los publica por segmento: comparan estructura de riesgo, capital y coste, no habilidad comercial.");
+ fuente(s,"Las observaciones 1 y 3 salen de la encuesta CESGAR: son PORCENTAJES DE EMPRESAS sobre el total encuestado, no niveles de tipo de interés ni saldos netos de respuesta. En la pregunta de obstáculos las categorías se miden sobre esa misma base, la de «ninguno» incluida; sobre las pymes que sí señalan alguno, el precio sería el 42,5 %. La 2 sale de la Central de Balances Integrada del Banco de España, ejercicio 2024, ratios por tamaño según la Recomendación 2003/361/CE. Las 4 y 5 salen del modelo por banco, cuyo precio y comisiones son comunes a los cinco porque ninguno los publica por segmento: comparan estructura de riesgo, capital y coste, no habilidad comercial.");
 };
 
 /* 19c — recomendaciones accionables */
@@ -1366,7 +1366,7 @@ L.es_demanda = () => {const s=nueva();
    rectRadius:0.05, line:{color:YEL2}});
  s.addText("El precio es el obstáculo, y el destino es el circulante",{x:M+0.16, y:5.74, w:11.8, h:0.24,
    fontFace:HF, fontSize:11.5, bold:true, color:DARK, isTextBox:true, margin:0});
- s.addText(`El ${n1(C.destino[0][1],1)} % de las pymes que necesitan financiación la quiere para circulante, frente al ${n1(C.circ_2024,1)} % de 2024: es el uso que más crece y el producto cuyo precio peor se conoce. Entre las que sí ven obstáculos, el primero es el precio (${n1(C.obstaculos[1][1],1)} %), muy por delante de la falta de comprensión del negocio por la entidad (${n1(C.obstaculos[2][1],1)} %). El crédito se concede: el problema no es el acceso, es a cuánto.`,
+ s.addText(`El ${n1(C.destino[0][1],1)} % de las pymes que necesitan financiación la quiere para circulante, frente al ${n1(C.circ_2024,1)} % de 2024: es el uso que más crece y el producto cuyo precio peor se conoce. Preguntadas por los obstáculos, el ${n1(C.obstaculos[0][1],1)} % no señala ninguno y el ${n1(C.obstaculos[1][1],1)} % señala el precio: es el más citado, por delante de la falta de comprensión del negocio por la entidad (${n1(C.obstaculos[2][1],1)} %). Ese ${n1(C.obstaculos[1][1],1)} % es el porcentaje de empresas que lo menciona, NO un tipo de interés. El crédito se concede: lo que se señala es a cuánto.`,
    {x:M+0.16, y:6.00, w:11.8, h:0.56, fontFace:BF, fontSize:9, color:DARK, isTextBox:true, margin:0});
  fuente(s,"Fuente: CESGAR, XV Informe «La financiación de la pyme en España», resultados anuales de 2025, elaborado con Abay Analistas Económicos. Gráficos 9, 10, 13, 17 y 18. Son porcentajes de empresas encuestadas: no deben agregarse ni compararse con los niveles de tipo del MIR ni con volúmenes. Los porcentajes de destino y de uso de productos no suman 100 porque una misma empresa puede señalar varios.");
 };
