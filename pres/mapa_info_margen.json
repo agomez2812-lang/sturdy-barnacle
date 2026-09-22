@@ -1,0 +1,85 @@
+{
+ "puntos": [
+  {
+   "pais": "España",
+   "info": 64.4,
+   "margen": 3.52,
+   "cor": 0.59,
+   "neto": 2.93,
+   "esperado": 4.29,
+   "residuo": -0.77,
+   "cuadrante": "informacion alta, margen bajo"
+  },
+  {
+   "pais": "Alemania",
+   "info": 75.0,
+   "margen": 4.17,
+   "cor": 0.4,
+   "neto": 3.77,
+   "esperado": 4.54,
+   "residuo": -0.37,
+   "cuadrante": "informacion alta, margen bajo"
+  },
+  {
+   "pais": "Francia",
+   "info": 16.7,
+   "margen": 3.43,
+   "cor": 0.68,
+   "neto": 2.75,
+   "esperado": 3.16,
+   "residuo": 0.27,
+   "cuadrante": "informacion baja, margen bajo"
+  },
+  {
+   "pais": "Italia",
+   "info": 79.2,
+   "margen": 4.39,
+   "cor": 0.8,
+   "neto": 3.59,
+   "esperado": 4.64,
+   "residuo": -0.25,
+   "cuadrante": "informacion alta, margen alto"
+  },
+  {
+   "pais": "Portugal",
+   "info": 64.5,
+   "margen": 4.07,
+   "cor": 0.5,
+   "neto": 3.57,
+   "esperado": 4.29,
+   "residuo": -0.22,
+   "cuadrante": "informacion alta, margen bajo"
+  },
+  {
+   "pais": "P. Bajos",
+   "info": 53.8,
+   "margen": 4.34,
+   "cor": 0.35,
+   "neto": 3.99,
+   "esperado": 4.04,
+   "residuo": 0.3,
+   "cuadrante": "informacion baja, margen alto"
+  },
+  {
+   "pais": "Irlanda",
+   "info": 87.5,
+   "margen": 5.87,
+   "cor": 0.4,
+   "neto": 5.47,
+   "esperado": 4.84,
+   "residuo": 1.03,
+   "cuadrante": "informacion alta, margen alto"
+  }
+ ],
+ "media_info": 63.0,
+ "media_margen": 4.26,
+ "r2": 0.47,
+ "rho": 0.68,
+ "pendiente10": 0.24,
+ "rho_min": 0.18,
+ "rho_max": 0.89,
+ "res_es_min": -0.92,
+ "res_es_max": -0.11,
+ "rho_info_cor": -0.24,
+ "rho_rec_cor": -0.72
+}

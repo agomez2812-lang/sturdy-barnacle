@@ -2783,6 +2783,65 @@ que quedan en `n/d`.
 `comparables_bancos/comparables_ratios.csv`, extractor
 `scripts/comparables_ratios.py`.
 
+### 2.72 Mapa información / margen / coste del riesgo
+
+Lámina de dispersión que cruza los tres ejes que el deck trataba por
+separado: **eje X** el índice de información para la selección (0–100,
+§2.44), **eje Y** el margen bruto del préstamo PYME (lámina 7) y
+**tamaño y color de la burbuja** el coste del riesgo PD × LGD.
+
+| País | Información | Margen bruto | CoR | Margen esperado | Residuo |
+|---|---|---|---|---|---|
+| **España** | 64,4 | **3,52 %** | 0,59 % | 4,29 % | **−0,77 pp** |
+| Alemania | 75,0 | 4,17 % | 0,40 % | 4,54 % | −0,37 pp |
+| Francia | 16,7 | 3,43 % | 0,68 % | 3,16 % | +0,27 pp |
+| Italia | 79,2 | 4,39 % | 0,80 % | 4,64 % | −0,25 pp |
+| Portugal | 64,5 | 4,07 % | 0,50 % | 4,29 % | −0,22 pp |
+| P. Bajos | 53,8 | 4,34 % | 0,35 % | 4,04 % | +0,30 pp |
+| Irlanda | 87,5 | 5,87 % | 0,40 % | 4,84 % | +1,03 pp |
+
+**El resultado que aguanta.** España está en el cuadrante de *mucha
+información y poco margen*: información por encima de la media (64,4 frente
+a 63,0) y el segundo margen más bajo de los siete. Su residuo frente al
+ajuste es **−0,77 pp**, el mayor de los siete. Se probaron las **22
+especificaciones** que salen de quitar uno y dos países (siempre con España
+dentro): el residuo español es **negativo en las 22**, entre −0,92 y
+−0,11 pp, mediana −0,69. Tiene con qué seleccionar y no lo cobra.
+
+**El resultado que NO aguanta, y por eso la lámina no lleva recta de
+ajuste.** La correlación información–margen de los siete es **+0,68**
+(R² 0,47; pendiente +0,24 pp de margen por cada 10 puntos de índice), y se
+mantiene por encima de +0,40 en 21 de las 22 especificaciones. Pero la
+excepción es reveladora: quitando **Irlanda y Francia a la vez** —los dos
+extremos, arriba a la derecha y abajo a la izquierda— cae a **+0,18** y el
+R² a **0,03**. Con siete puntos, una recta invitaría a leer una pendiente
+que descansa sobre dos observaciones. Se dibujan **cuadrantes sobre las
+medias**, que son un hecho descriptivo, y la fragilidad va escrita en la
+propia lámina.
+
+**Lo que el mapa tampoco dice.** Que la información compre coste del
+riesgo: la correlación información–CoR es **−0,24**, prácticamente nula. El
+eje que sí lo explica es el de **recobro (−0,72)**, que ya estaba en la
+lámina de los dos ejes. La información y el recobro hacen cosas distintas y
+el mapa no las confunde.
+
+**Por qué se dibuja a mano y no con `addChart`.** Con siete puntos hace
+falta decidir uno a uno el color, el tamaño y el lado de cada etiqueta, y
+el motor de gráficos de pptxgenjs comparte el eje X entre series, de modo
+que no permite un color por punto con su propia X. La lámina se compone con
+formas: marco, rejilla, líneas de media, elipses y cajas de texto. El
+desplazamiento de cada etiqueta se mide desde el **borde** de su burbuja y
+no desde el centro, porque con un desplazamiento fijo la etiqueta de Italia
+—la burbuja más grande, CoR 0,80 %— se metía dentro de su propio círculo y
+llegaba a invadir el panel derecho. Nombre y coste del riesgo van en dos
+líneas por lo mismo.
+
+Comprobación de maquetación: además del QA habitual, se verifica por
+geometría que ninguna etiqueta pisa una burbuja, que ninguna se sale del
+área de dibujo y que no se solapan entre sí.
+`transversal/mapa_info_margen.csv`, extractor
+`scripts/mapa_info_margen.py`.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

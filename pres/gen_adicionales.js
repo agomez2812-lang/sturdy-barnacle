@@ -8,6 +8,7 @@
    4. Densidad de RWA: estandar frente a IRB        -> bloque 1 (capital)
    5. Irlanda en factoring: el dato esta congelado  -> anexos (limites)
    6. Comparables en % de la inversion               -> sustituye a la lamina 16
+   7. Mapa informacion / margen / coste del riesgo   -> bloque 1, tras la 18
 
    Todos los numeros salen de pres/adicionales.json, que a su vez lo
    construye scripts/datos_adicionales.py desde los CSV del repositorio.
@@ -16,6 +17,7 @@ const pptxgen = require("pptxgenjs");
 const {sistema} = require("./visual.js");
 const A = require("./adicionales.json");
 const CR = require("./comparables_ratios.json");
+const MP = require("./mapa_info_margen.json");
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";
@@ -315,8 +317,104 @@ L.comparables_ratios = () => {const s=hoja();
  fuente(s,"Comunicado Q2 2026 de Commerzbank; informe intermedio Q2 2026 de ABN AMRO; resultados 1S26 de Intesa Sanpaolo e informe semestral a 30-jun-2026 (p. 72) para los préstamos de Banca dei Territori; Actividad y Resultados 1S26 de CaixaBank; resultados 1S26 de BPER e informe intermedio consolidado a 30-jun-2026 (p. 34) para los préstamos. Denominador: cartera media en Commerzbank; media de los dos cierres en Intesa y BPER; saldo final en ABN AMRO y CaixaBank. CaixaBank lo publica BRUTO y el resto NETO: con su mora del 1,78 %, el neto subiría sus ratios uno o dos puntos básicos. Datos en comparables_bancos/comparables_ratios.csv.", 7);
 };
 
+/* ------------------------------------------------------------------ 7 */
+/* Dispersion dibujada a mano con formas, no con addChart: con siete
+   puntos hace falta controlar color, tamano y colocacion de cada etiqueta
+   una por una, y el motor de graficos de pptxgenjs no deja hacerlo.
+   Se dibujan CUADRANTES sobre las medias y NO una recta de ajuste: la
+   pendiente no es robusta (ver el pie y notas.md 2.72). */
+L.mapa_info_margen = () => {const s=hoja();
+ titulo(s,"Información, margen y riesgo de los siete mercados",
+   "Cada burbuja es un país · Eje horizontal: cuánto se puede saber del cliente antes de conceder · Eje vertical: margen bruto del préstamo PYME · Tamaño y color: coste del riesgo PD × LGD");
+
+ /* ---- marco del area de dibujo ---- */
+ const X0=1.62, X1=8.52, Y0=1.92, Y1=5.72;          // area util
+ const XMIN=8, XMAX=96, YMIN=3.2, YMAX=6.2;
+ const px = v => X0 + (v-XMIN)/(XMAX-XMIN)*(X1-X0);
+ const py = v => Y1 - (v-YMIN)/(YMAX-YMIN)*(Y1-Y0);
+ s.addShape(pres.ShapeType.rect,{x:X0, y:Y0, w:X1-X0, h:Y1-Y0,
+   fill:{color:"FFFFFF"}, line:{color:G3, width:0.75}});
+ /* rejilla */
+ [3.5,4.0,4.5,5.0,5.5,6.0].forEach(v=>{
+   s.addShape(pres.ShapeType.rect,{x:X0, y:py(v), w:X1-X0, h:0.008,
+     fill:{color:LIGHT}, line:{color:LIGHT}});
+   s.addText(n1(v,1)+" %",{x:X0-0.88, y:py(v)-0.11, w:0.80, h:0.22,
+     fontFace:BF, fontSize:8.5, color:MUT, align:"right", isTextBox:true, margin:0});});
+ [20,40,60,80].forEach(v=>{
+   s.addText(String(v),{x:px(v)-0.30, y:Y1+0.06, w:0.60, h:0.22, fontFace:BF,
+     fontSize:8.5, color:MUT, align:"center", isTextBox:true, margin:0});});
+
+ /* ---- lineas de media = cuadrantes ---- */
+ s.addShape(pres.ShapeType.rect,{x:px(MP.media_info), y:Y0, w:0.012, h:Y1-Y0,
+   fill:{color:G2}, line:{color:G2}});
+ s.addShape(pres.ShapeType.rect,{x:X0, y:py(MP.media_margen), w:X1-X0, h:0.012,
+   fill:{color:G2}, line:{color:G2}});
+ s.addText("media "+n1(MP.media_info,0),{x:px(MP.media_info)+0.06, y:Y1-0.24,
+   w:0.80, h:0.20, fontFace:BF, fontSize:7.5, color:G2, isTextBox:true, margin:0});
+ s.addText("media "+n1(MP.media_margen,2)+" %",{x:X0+0.06, y:py(MP.media_margen)-0.22,
+   w:1.10, h:0.20, fontFace:BF, fontSize:7.5, color:G2,
+   isTextBox:true, margin:0});
+ /* rotulos de cuadrante, en esquinas libres */
+ s.addText("mucha información\npoco margen",{x:X1-1.55, y:Y1-0.52,
+   w:1.45, h:0.42, fontFace:BF, fontSize:7.5, color:ACC, bold:true, align:"right",
+   isTextBox:true, margin:0, lineSpacingMultiple:1.05});
+
+ /* ---- burbujas: tamano y color por coste del riesgo ---- */
+ const cors = MP.puntos.map(p=>p.cor), cmin=Math.min(...cors), cmax=Math.max(...cors);
+ const dia = c => 0.24 + (c-cmin)/(cmax-cmin)*0.28;
+ const col = c => c<0.45 ? BLUE : (c<=0.65 ? ORA2 : MAG);
+ /* colocacion de cada etiqueta, decidida a mano para que no se pisen */
+ const ET = {"España":[-0.24,-0.11,"right"], "Alemania":[ 0.24, 0.02,"left" ],
+             "Francia":[ 0.24,-0.20,"left" ], "Italia":[ 0.24,-0.24,"left" ],
+             "Portugal":[-0.24,-0.13,"right"], "P. Bajos":[-0.24,-0.45,"right"],
+             "Irlanda":[-0.24,-0.20,"right"]};
+ MP.puntos.forEach(p=>{
+   const cx=px(p.info), cy=py(p.margen), d=dia(p.cor), es=p.pais==="España";
+   s.addShape(pres.ShapeType.ellipse,{x:cx-d/2, y:cy-d/2, w:d, h:d,
+     fill:{color:col(p.cor)}, line:{color: es?DARK:col(p.cor), width: es?1.75:0.5}});
+   /* el desplazamiento se mide desde el BORDE de la burbuja, no desde el
+      centro: Italia tiene el circulo mas grande y con un offset fijo la
+      etiqueta le entraba dentro. */
+   const e=ET[p.pais], ancho=0.85, dx=(d/2+0.09)*(e[0]<0?-1:1);
+   /* nombre y coste del riesgo en DOS lineas: en una sola, la etiqueta de
+      Italia se salia del area de dibujo y se metia en el panel derecho. */
+   s.addText([{text:p.pais, options:{bold:true, color: es?ACC:DARK}},
+              {text:"\n"+n1(p.cor,2)+" %", options:{color:MUT, fontSize:8}}],
+     {x: e[2]==="left" ? cx+dx : cx+dx-ancho, y: cy+e[1],
+      w:ancho, h:0.40, fontFace:BF, fontSize:9, align:e[2],
+      isTextBox:true, margin:0, lineSpacingMultiple:0.95});});
+
+ /* ---- rotulos de eje ---- */
+ s.addText("Índice de información para la selección (0–100)",
+   {x:X0, y:Y1+0.28, w:X1-X0, h:0.24, fontFace:BF, fontSize:9, color:TXT,
+    align:"center", isTextBox:true, margin:0});
+ s.addText("Margen bruto, % del saldo",{x:X0-1.02, y:Y0-0.30, w:2.40, h:0.24,
+   fontFace:BF, fontSize:8.5, color:TXT, isTextBox:true, margin:0});
+ [["coste del riesgo < 0,45 %",BLUE],["0,45 a 0,65 %",ORA2],["> 0,65 %",MAG]]
+  .forEach((l,i)=>{
+   const x=X0+i*2.35;
+   s.addShape(pres.ShapeType.ellipse,{x:x, y:6.34, w:0.18, h:0.18,
+     fill:{color:l[1]}, line:{color:l[1]}});
+   s.addText(l[0],{x:x+0.26, y:6.30, w:2.05, h:0.24, fontFace:BF, fontSize:8,
+     color:MUT, isTextBox:true, margin:0});});
+
+ /* ---- panel de lectura ---- */
+ const es=MP.puntos[0];
+ nota(s,8.82,1.92,3.83,2.38,"España está en el cuadrante malo",
+   "Tiene información por encima de la media ("+n1(es.info,1)+" frente a "+n1(MP.media_info,0)+
+   ") y el segundo margen más bajo de los siete ("+n1(es.margen,2)+" %). Gana "+
+   n1(Math.abs(es.residuo),2)+" pp menos de margen del que le correspondería por su nivel de información: la mayor brecha de los siete. Tiene con qué seleccionar y no lo cobra.");
+ nota(s,8.82,4.38,3.83,1.98,"Lo que el mapa NO dice",
+   "Que más información dé más margen. La correlación de los siete es "+
+   MP.rho.toFixed(2).replace(".",",")+", pero descansa en los dos extremos: quitando Irlanda y Francia a la vez baja a "+
+   MP.rho_min.toFixed(2).replace(".",",")+". Por eso hay cuadrantes y no recta de ajuste. Tampoco compra riesgo: información contra coste del riesgo es "+
+   MP.rho_info_cor.toFixed(2).replace(".",",")+"; el eje que sí lo explica es el de recobro ("+
+   MP.rho_rec_cor.toFixed(2).replace(".",",")+").", ORA3);
+ fuente(s,"Información: índice propio 0–100 de cuatro componentes (profundidad de información crediticia y cobertura del bureau, Banco Mundial Doing Business 2020; utilidad del registro público para PYME y disponibilidad de cuentas depositadas, ordinales propios sobre normativa vigente). Margen bruto: ingreso total menos coste de los recursos, lámina 7. Coste del riesgo: PD × LGD de la clase IRB de PYME, EBA COREP C 9.02 2026-Q1 — es pérdida esperada anual, no el stock de dudosos. El residuo de España es negativo en las 22 especificaciones probadas (de −0,92 a −0,11 pp). Siete puntos: lectura descriptiva, no causal. Datos en transversal/mapa_info_margen.csv.", 7);
+};
+
 const ORDEN = ["prima","rechazo","reconciliacion","densidad","factoring_ie",
-               "comparables_ratios"];
+               "comparables_ratios","mapa_info_margen"];
 ORDEN.forEach(k=>{ if(!L[k]) throw new Error("lamina desconocida: "+k); L[k](); });
 const sobran = Object.keys(L).filter(k=>!ORDEN.includes(k));
 if(sobran.length) throw new Error("laminas sin colocar: "+sobran.join(", "));
