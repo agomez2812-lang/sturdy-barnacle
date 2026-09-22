@@ -154,7 +154,27 @@ def main():
         print("  %-34s %+.2f" % (et, pearson(a, c)))
     print("\n%d filas -> %s" % (n, SALIDA))
 
-    json.dump({"puntos": puntos, "media_info": round(mi, 1),
+    # --- robustez de las dos nubes de la lamina: coste del riesgo contra
+    #     margen y contra informacion, quitando uno y dos paises ---
+    import itertools as it
+    robust = {}
+    for clave, xs in (("margen", margen), ("info", info)):
+        sub = []
+        for k in (1, 2):
+            for fuera in it.combinations(range(len(P)), k):
+                idx = [i for i in range(len(P)) if i not in fuera]
+                sub.append(pearson([xs[i] for i in idx], [cor[i] for i in idx]))
+        robust[clave] = {
+            "rho": round(pearson(xs, cor), 2),
+            "min": round(min(sub), 2), "max": round(max(sub), 2),
+            "n": len(sub), "positivos": sum(1 for v in sub if v > 0)}
+        print("\n%s vs coste del riesgo: rho %+.2f · quitando uno y dos paises "
+              "(%d casos) de %+.2f a %+.2f, positivo en %d"
+              % (clave, robust[clave]["rho"], robust[clave]["n"],
+                 robust[clave]["min"], robust[clave]["max"],
+                 robust[clave]["positivos"]))
+
+    json.dump({"puntos": puntos, "robust": robust, "media_info": round(mi, 1),
                "media_margen": round(mm, 2), "r2": round(r2, 2),
                "rho": round(pearson(info, margen), 2),
                "pendiente10": round(b * 10, 2),

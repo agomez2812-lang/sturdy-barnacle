@@ -71,6 +71,22 @@
    "cuadrante": "informacion alta, margen alto"
   }
  ],
+ "robust": {
+  "margen": {
+   "rho": -0.42,
+   "min": -0.97,
+   "max": -0.02,
+   "n": 28,
+   "positivos": 0
+  },
+  "info": {
+   "rho": -0.24,
+   "min": -0.9,
+   "max": 0.64,
+   "n": 28,
+   "positivos": 6
+  }
+ },
  "media_info": 63.0,
  "media_margen": 4.26,
  "r2": 0.47,
