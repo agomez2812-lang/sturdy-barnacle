@@ -10,6 +10,7 @@
    6. Comparables en % de la inversion               -> sustituye a la lamina 16
    7. Se paga el riesgo? Dos nubes                   -> bloque 1, tras la 18
    8. Observaciones: Espana                          -> sustituye a la lamina 50
+   9. Densidad de RWA abierta en PD y LGD            -> bloque 1, tras la 10
 
    Todos los numeros salen de pres/adicionales.json, que a su vez lo
    construye scripts/datos_adicionales.py desde los CSV del repositorio.
@@ -18,10 +19,11 @@ const pptxgen = require("pptxgenjs");
 const {sistema} = require("./visual.js");
 const A = require("./adicionales.json");
 /* toFixed devuelve un guion ASCII; el resto del deck usa el menos «−» */
-const men = (v,d)=>v.toFixed(d).replace(".",",").replace("-","−");
+const men = (v,d)=>(v>0?"+":"")+v.toFixed(d).replace(".",",").replace("-","−");
 const CR = require("./comparables_ratios.json");
 const MP = require("./mapa_info_margen.json");
 const D  = require("./datos.json");
+const DR = require("./descomposicion_rwa.json");
 
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE";
@@ -432,8 +434,62 @@ L.observaciones_es = () => {const s=hoja();
  fuente(s,"Las observaciones 1 y 3 salen de la encuesta CESGAR: son PORCENTAJES DE EMPRESAS sobre el total encuestado, no niveles de tipo de interés ni saldos netos de respuesta. En la pregunta de obstáculos las categorías se miden sobre esa misma base, la de «ninguno» incluida; sobre las pymes que sí señalan alguno, el precio sería el 42,5 %. La 2 sale de la Central de Balances Integrada del Banco de España, ejercicio 2024, ratios por tamaño según la Recomendación 2003/361/CE. Las 4 y 5 salen del modelo por banco, cuyo precio y comisiones son comunes a los cinco porque ninguno los publica por segmento: comparan estructura de riesgo, capital y coste, no habilidad comercial.");
 };
 
+/* ------------------------------------------------------------------ 9 */
+/* Por que la densidad de un pais es la que es. Se mete su PD y su LGD
+   observadas en la formula IRB del art. 153 CRR y se compara con la
+   densidad que de verdad se observa. Separa tres cosas: seleccion (PD),
+   garantia y recobro (LGD) y lo que la formula no explica. */
+L.descomposicion_rwa = () => {const s=hoja();
+ titulo(s,"De dónde sale el capital: selección, garantía y modelo",
+   "Ponderación que predice la fórmula IRB del art. 153 CRR con la PD y la LGD observadas de cada país, frente a la densidad IRB que realmente se observa · Junio 2025");
+
+ const F=DR.filas, sup=DR.supuestos;
+ const cab=["País","PD","LGD","RW que da\nla fórmula","Densidad IRB\nobservada","Residuo",
+            "Tasa de\nrecuperación","NPL PYME"];
+ const tb=[cab.map((c,i)=>({text:c, options:Object.assign({},hdr,
+    {fontSize:8.5, align:i?"center":"left",
+     fill:{color: c==="Residuo"?DARK:PRIM}})}))];
+ F.forEach(r=>{
+   const es=r.pais==="España", nl=r.pais==="P. Bajos";
+   const marca = es?YEL3 : (nl?YEL:"FFFFFF");
+   const cres = Math.abs(r.residuo)<3 ? BLUE3 : (Math.abs(r.residuo)<15 ? ORA3 : MAG3);
+   tb.push([
+    {text:r.pais, options:cel(null,{align:"left", fontSize:10, bold:es||nl,
+       color: es?ACC:DARK, fill:{color:marca}})},
+    {text:n1(r.pd,2)+" %",  options:cel(null,{fontSize:10})},
+    {text:n1(r.lgd,1)+" %"+(r.fibr?" *":""), options:cel(null,{fontSize:10})},
+    {text:n1(r.formula,1)+" %", options:cel(null,{fontSize:10, color:MUT})},
+    {text:n1(r.irb,1)+" %", options:cel(null,{fontSize:10, bold:true, fill:{color:marca}})},
+    {text:men(r.residuo,1)+" pp", options:cel(null,{fontSize:10, bold:true,
+       color:DARK, fill:{color:cres}})},
+    {text:n1(r.recuperacion,1)+" %", options:cel(null,{fontSize:10, color:MUT})},
+    {text:n1(r.npl,2)+" %", options:cel(null,{fontSize:10, color:MUT})}]);});
+ s.addTable(tb,{x:M, y:1.82, w:W-2*M,
+   colW:[1.62,1.10,1.15,1.68,1.68,1.40,1.62,1.72], rowH:0.34,
+   fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false});
+
+ const nl=F.find(r=>r.pais==="P. Bajos");
+ nota(s,M,4.70,5.82,1.82,"Países Bajos: mitad garantía, mitad selección",
+   "Consume "+n1(Math.abs(nl.brecha),1)+" pp menos que España: "+nl.pct_lgd+" % por la LGD y "+
+   nl.pct_pd+" % por la PD. El reparto aguanta el tamaño de empresa ("+DR.sens[2].pct_lgd+" a "+
+   DR.sens[1].pct_lgd+" % la LGD) y solo se mueve con el vencimiento ("+DR.sens[3].pct_lgd+" % a un año, "+
+   DR.sens[4].pct_lgd+" % a cinco). Los dos inputs están corroborados fuera del modelo: tasa de recuperación concursal del "+
+   n1(nl.recuperacion,1)+" %, la más alta de los siete, y el NPL de PYME más bajo ("+n1(nl.npl,2)+
+   " %). Bajo IRB la garantía no compite con el modelo: entra dentro, por la LGD.");
+
+ const esp=F.find(r=>r.pais==="España");
+ nota(s,M+6.15,4.70,5.82,1.82,"Lo que la fórmula no explica",
+   "España es el único país donde la densidad observada coincide con la que da la fórmula ("+
+   n1(esp.irb,1)+" % frente a "+n1(esp.formula,1)+" %). En los demás el agregado pondera hasta "+
+   n1(Math.abs(Math.min(...F.map(r=>r.residuo))),0)+" pp por debajo. Cuidado al leerlo: la PD y la LGD son MEDIANAS de entidades y la densidad es media ponderada por volumen, así que parte del residuo es esa asimetría y no comportamiento del modelo. No se puede separar con lo publicado.",
+   ORA3);
+
+ fuente(s,"PD y LGD: EBA, COREP C 9.02, clase «Corporates – of which SME», mediana de entidades declarantes, 2026-Q1. Densidad IRB observada: EBA, EU-wide Transparency Exercise, junio 2025, Portfolio = 2. Fórmula del art. 153 CRR con ajuste PYME del 153.4 y factor de apoyo del art. 501 (0,7619); SUPUESTOS declarados y no observados: facturación "+n1(sup.S,0)+" M€ y vencimiento efectivo "+n1(sup.M,1)+" años — la sensibilidad a los dos está en el CSV. Tasa de recuperación: Banco Mundial, Doing Business 2020 — céntimos por dólar que recupera el acreedor garantizado en un concurso, no un tipo de interés. NPL PYME: EBA Risk Dashboard 2026-Q1. (*) LGD de exactamente 40,00 %: es el valor supervisor del IRB BÁSICO (art. 161 CRR), donde el banco no estima su propia severidad. Datos en transversal/descomposicion_rwa.csv.", 7);
+};
+
+
 const ORDEN = ["prima","rechazo","reconciliacion","densidad","factoring_ie",
-               "comparables_ratios","riesgo_nubes","observaciones_es"];
+               "comparables_ratios","riesgo_nubes","observaciones_es","descomposicion_rwa"];
 ORDEN.forEach(k=>{ if(!L[k]) throw new Error("lamina desconocida: "+k); L[k](); });
 const sobran = Object.keys(L).filter(k=>!ORDEN.includes(k));
 if(sobran.length) throw new Error("laminas sin colocar: "+sobran.join(", "));

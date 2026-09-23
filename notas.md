@@ -2905,6 +2905,88 @@ como la paleta: si se toca uno, hay que tocar el otro.
 **Pendiente de decidir.** La lámina europea equivalente sigue llamándose
 «Conclusiones». O se convierten las dos o el deck queda incoherente.
 
+### 2.75 Por qué la densidad de RWA es la que es: PD, LGD y residuo
+
+Pregunta del usuario: la densidad tan baja de Países Bajos, ¿viene de los
+modelos IRB o de las garantías reales? La pregunta tiene una trampa
+—**bajo IRB la garantía no compite con el modelo, entra dentro, por la
+LGD**— así que lo separable no es «modelo o garantía» sino **PD o LGD**.
+
+Se mete la PD y la LGD observadas de cada país en la fórmula IRB de
+empresas del **art. 153 CRR**, con el ajuste PYME del 153.4 y el factor de
+apoyo del art. 501 (0,7619), y se compara con la densidad IRB observada:
+
+| País | PD | LGD | RW fórmula | IRB observada | Residuo | Recuperación | NPL PYME |
+|---|---|---|---|---|---|---|---|
+| España | 1,73 % | 34,4 % | 56,0 % | 55,4 % | **−0,6** | 77,5 % | 5,38 % |
+| Alemania | 1,26 % | 31,4 % | 46,6 % | 30,1 % | −16,5 | 79,8 % | 4,32 % |
+| Francia | 2,15 % | 31,5 % | 54,5 % | 35,3 % | −19,2 | 74,8 % | 5,12 % |
+| Italia | 2,26 % | 35,6 % | 62,3 % | 37,7 % | **−24,6** | 65,6 % | 4,90 % |
+| Portugal | 1,26 % | **40,0 %** | 59,3 % | 47,5 % | −11,8 | 64,8 % | 4,22 % |
+| P. Bajos | 1,18 % | 29,7 % | 43,1 % | 34,9 % | −8,2 | **90,1 %** | **3,13 %** |
+| Irlanda | 1,08 % | 37,3 % | 52,7 % | 64,7 % | **+12,0** | 86,1 % | 3,77 % |
+
+**Respuesta a la pregunta.** Países Bajos consume 12,9 pp menos que España
+en la fórmula, y el reparto es **53 % LGD y 41 % PD** (6 % de interacción).
+Aguanta el tamaño de empresa (52–54 % la LGD con facturación de 5 a 50 M€)
+y solo se mueve con el vencimiento (47 % a un año, 60 % a cinco).
+
+**Los dos inputs están corroborados fuera del modelo**, que es lo que evita
+que esto sea una lectura circular: la LGD más baja de los siete va con la
+**tasa de recuperación concursal más alta** (90,1 % frente al 77,5 %
+español) y la PD segunda más baja va con el **NPL de PYME más bajo**
+(3,13 % frente al 5,38 %). Los parámetros holandeses son bajos de verdad,
+no solo en el modelo.
+
+**El residuo, y por qué hay que leerlo con cuidado.** España es el único
+país donde la densidad observada coincide con la que da la fórmula (55,4
+frente a 56,0). En los demás el agregado pondera hasta 24,6 pp por debajo
+(Italia). Tentador concluir que los modelos de los demás «ganan» frente a
+la fórmula y el español no, pero **no se puede afirmar**: la PD y la LGD
+son **medianas de entidades declarantes** (COREP C 9.02) y la densidad es
+una **media ponderada por volumen** (Transparency Exercise). Parte del
+residuo es esa asimetría —una cartera concentrada en exposiciones mejores
+que la entidad mediana— y no comportamiento del modelo. No es separable
+con lo publicado, y así se dice en la lámina.
+
+**Cuándo el reparto porcentual NO se publica.** Solo tiene sentido cuando
+los dos canales empujan en el mismo sentido que la brecha. En Francia,
+Portugal e Irlanda se compensan entre sí —Francia llega casi a la misma
+ponderación que España con una PD mucho peor y una LGD mucho mejor— y el
+porcentaje se dispara a cifras absurdas (−195 % y +313 %). En esos casos el
+CSV publica los canales en **puntos** y deja el porcentaje vacío.
+
+**Hallazgo lateral: la LGD de Portugal es exactamente 40,00 %.** Es el
+valor **supervisor del IRB básico** (art. 161 CRR) para exposiciones
+corporativas senior no garantizadas. Portugal está mayoritariamente en
+F-IRB, donde el banco **no estima su propia severidad** y por tanto no
+puede reconocer su garantía en el parámetro. Explica que tenga la segunda
+peor densidad IRB (47,5 %) teniendo la PD más baja empatada de los siete.
+Va marcado con asterisco en la lámina.
+
+**Contraprueba que apunta al modelo y no a la garantía.** La densidad
+**estándar** holandesa es 69,9 %, la segunda más alta de los siete (España
+63,0 %). Bajo el reglamento —donde la garantía también reduce, vía técnicas
+de mitigación— la cartera PYME holandesa no sale barata. Es indicio y no
+prueba, porque el 6,5 % del libro holandés que va por estándar no es la
+misma cartera que el 93,5 % que va por IRB.
+
+**Supuestos que no son datos**, declarados en el pie de la lámina:
+facturación de 25 M€ y vencimiento efectivo de 2,5 años. La sensibilidad a
+los dos está en la salida del extractor.
+
+**Hueco: la vía directa no existe.** El Transparency Exercise trae una
+plantilla de valoración de garantías (partidas 2521701 a 2521707: colateral
+hasta el valor de la exposición, del cual inmueble, y garantías
+financieras) que contestaría esto sin pasar por la LGD. **No sirve**: solo
+reportan Alemania, Francia, Italia y Portugal —España, Países Bajos e
+Irlanda no aparecen—, la muestra es parcial (el importe alemán son
+35.972 M€, imposible para un sistema entero) y **no hay desglose por PYME**:
+las partidas de colateral solo existen con `Exposure = 0`, el total de
+préstamos y anticipos.
+`transversal/descomposicion_rwa.csv`, extractor
+`scripts/descomposicion_rwa.py`.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
