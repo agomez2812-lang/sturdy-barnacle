@@ -3104,6 +3104,52 @@ definición del art. 501. Era **inexacto**: en todo lo IRB la definición es
 la interna de cada banco. Corregidas las dos filas y el pie, que ahora
 dice las tres definiciones.
 
+### 2.78 Sí existe una definición europea estándar; casi ninguna estadística bancaria la usa entera
+
+Pregunta del usuario tras §2.77: ¿no hay una definición estándar de PYME
+europea? **Sí: la Recomendación 2003/361/CE.** Umbrales según la página
+oficial de la Comisión (DG GROW, *SME definition*, copia en
+`raw/normativa/`):
+
+| | Micro | Pequeña | Mediana |
+|---|---|---|---|
+| Empleados | < 10 | < 50 | < 250 |
+| Facturación | ≤ 2 M€ | ≤ 10 M€ | ≤ 50 M€ |
+| **o** balance | ≤ 2 M€ | ≤ 10 M€ | ≤ 43 M€ |
+
+Empleados **siempre**, más facturación **o** balance. Y los umbrales se
+aplican a la empresa sola **salvo que forme parte de un grupo**, en cuyo
+caso hay que sumar los datos de las empresas asociadas o vinculadas.
+
+**Por qué no la usa todo el mundo.** Es una **recomendación**, no una norma
+vinculante: obliga solo donde un acto jurídico la adopta (ayudas de Estado,
+programas de financiación de la UE). La regulación bancaria la adoptó a
+medias: el CRR se queda solo con la facturación (art. 501) y el IRB deja a
+cada banco su definición interna. La razón práctica habitual —no una
+justificación oficial que se haya leído— es que el recuento de empleados y
+la agregación con las empresas del grupo son difíciles de verificar para
+un prestamista, que en su expediente de riesgo tiene la facturación.
+
+**Mapa de las fuentes del deck frente a la definición estándar:**
+
+| Fuente | ¿Usa la 2003/361/CE? |
+|---|---|
+| Central de Balances (Banco de España) | Sí, completa |
+| NPL de PYME (EBA, FINREP) | Sí, completa |
+| SAFE (BCE) | No: solo empleados (< 250) |
+| Densidad, parte estándar (COREP C 07.00) | Solo el criterio de facturación (≤ 50 M€) |
+| Coste del riesgo y densidad, parte IRB | No: definición interna de cada banco |
+| Precio (MIR) | No: tamaño del **préstamo**, no de la empresa |
+
+De las fuentes de la cuenta del ROE, **ninguna** usa la definición estándar
+completa: la única que la usa y entra en el deck como riesgo es el NPL, que
+el modelo no utiliza (usa PD × LGD).
+
+**Novedad en curso.** La Comisión está introduciendo una categoría nueva,
+la **small mid-cap (SMC)**, para empresas que superan los umbrales de PYME
+(ficha de 2025 en la misma página). Aún sin umbrales publicados en esa
+página a la fecha de consulta.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
