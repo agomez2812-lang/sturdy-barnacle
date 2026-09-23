@@ -124,7 +124,7 @@ def main():
                     unidad=unidad, periodo_referencia=anio,
                     fuente="Banco de Espana, Central de Balances Integrada",
                     url=URL, fecha_publicacion=HOY,
-                    criterio_segmentacion="tamano_empresa_empleados",
+                    criterio_segmentacion="definicion_ue_2003_361",
                     tipo_de_dato="ratio", ponderacion="media_ponderada_volumen",
                     notas="ratio %s de la CBI; tamano segun la Recomendacion "
                           "2003/361/CE. %s" % (ratio,

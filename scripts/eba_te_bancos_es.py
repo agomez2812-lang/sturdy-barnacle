@@ -187,9 +187,15 @@ def main():
                  "de PYME, contraparte espanola. Es un ratio de STOCK, no "
                  "una PD de flujo"))
         for metrica, valor, unidad, td, nota in filas:
+            # Las filas de la cartera PYME llevan la definicion con que el
+            # Transparency Exercise delimita la PYME (estandar por facturacion,
+            # IRB interna). CET1 y eficiencia son del banco entero.
+            crit = ("pyme_mixta_estandar_e_irb" if "PYME" in metrica
+                    else "entidad")
             w.writerow(schema.row(metrica=metrica, valor="%.4f" % valor,
                                   unidad=unidad, tipo_de_dato=td,
-                                  notas=nota, **base))
+                                  notas=nota,
+                                  **dict(base, criterio_segmentacion=crit)))
             n += 1
     fh.close()
     print()
@@ -224,7 +230,8 @@ def main():
                             periodo_referencia=per,
                             fuente="EBA, EU-wide Transparency Exercise",
                             url=URL, fecha_publicacion=HOY,
-                            criterio_segmentacion="entidad",
+                            # mora y cobertura de la cartera PYME
+                            criterio_segmentacion="pyme_mixta_estandar_e_irb",
                             tipo_de_dato="ratio", ponderacion="dato_unico")
                 for metrica, valor, nota in (
                         ("Mora de la cartera PYME en Espana", mora,

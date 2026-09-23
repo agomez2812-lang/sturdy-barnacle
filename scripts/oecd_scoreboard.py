@@ -79,7 +79,7 @@ def main():
             periodo_referencia=x["TIME_PERIOD"],
             fuente="OCDE, Financing SMEs and Entrepreneurs (Scoreboard)",
             url=PORTAL, fecha_publicacion=hoy,
-            criterio_segmentacion="tamano_empresa_empleados",
+            criterio_segmentacion="definicion_nacional",
             tipo_de_dato=td, ponderacion="dato_unico",
             notas="medida %s; definicion nacional de PYME, no armonizada "
                   "entre paises; unidad original %s"

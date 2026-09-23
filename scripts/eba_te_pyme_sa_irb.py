@@ -96,7 +96,11 @@ def main():
                     periodo_referencia=a.periodo,
                     fuente="EBA, EU-wide Transparency Exercise 2025 (tr_cre.csv)",
                     url=URL, fecha_publicacion=hoy,
-                    criterio_segmentacion="tamano_empresa_definicion_crr",
+                    # el metodo estandar define PYME por facturacion (art. 501
+                    # CRR); el IRB, con la definicion interna de cada banco
+                    criterio_segmentacion=("pyme_crr_facturacion"
+                                           if met.startswith("estandar")
+                                           else "pyme_interna_banco"),
                     tipo_de_dato="ratio" if uni == "pct_rwa" else "volumen",
                     ponderacion="media_ponderada_volumen",
                     notas=nota)); n += 1
@@ -122,7 +126,7 @@ def main():
                 valor="%.2f" % val, unidad=uni, periodo_referencia=a.periodo,
                 fuente="EBA, EU-wide Transparency Exercise 2025 (tr_cre.csv)",
                 url=URL, fecha_publicacion=hoy,
-                criterio_segmentacion="tamano_empresa_definicion_crr",
+                criterio_segmentacion="pyme_mixta_estandar_e_irb",
                 tipo_de_dato="ratio", ponderacion="media_ponderada_volumen",
                 notas=nota)); n += 1
         res[CORTO.get(pais, pais)] = {
@@ -180,7 +184,7 @@ def main():
                 fuente="EBA, EU-wide Transparency Exercise 2025 (tr_cre.csv), "
                        "descomposicion propia",
                 url=URL, fecha_publicacion=hoy,
-                criterio_segmentacion="tamano_empresa_definicion_crr",
+                criterio_segmentacion="pyme_mixta_estandar_e_irb",
                 tipo_de_dato="ratio", ponderacion="media_ponderada_volumen",
                 notas=nota)); n += 1
     fh.close()

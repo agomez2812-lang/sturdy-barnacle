@@ -90,7 +90,7 @@ def main():
                 valor="%.4f" % valor, unidad=unidad, periodo_referencia=per,
                 fuente="EBA, EU-wide Transparency Exercise 2025 (tr_cre.csv)",
                 url=URL, fecha_publicacion=hoy,
-                criterio_segmentacion="tamano_empresa_empleados",
+                criterio_segmentacion="pyme_mixta_estandar_e_irb",
                 tipo_de_dato=td, ponderacion="media_ponderada_volumen",
                 notas=nota)); n += 1
     fh2.close()

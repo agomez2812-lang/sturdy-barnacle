@@ -117,7 +117,7 @@ def main():
         base = dict(pais=LARGO.get(p, p), producto="pyme_total",
                     periodo_referencia="2026-Q1", url=URL,
                     fecha_publicacion=hoy,
-                    criterio_segmentacion="tamano_empresa_definicion_crr",
+                    criterio_segmentacion="pyme_interna_banco",
                     tipo_de_dato="ratio", ponderacion="dato_unico")
         for met, val, fu, nota in [
             ("Ponderacion IRB que predice la formula del art. 153 CRR", pred,
@@ -174,7 +174,7 @@ def main():
                 fuente="Calculo propio sobre EBA (COREP C 9.02), formula del "
                        "art. 153 CRR",
                 url=URL, fecha_publicacion=hoy,
-                criterio_segmentacion="tamano_empresa_definicion_crr",
+                criterio_segmentacion="pyme_interna_banco",
                 tipo_de_dato="ratio", ponderacion="dato_unico",
                 notas=nota)); n += 1
     fh.close()

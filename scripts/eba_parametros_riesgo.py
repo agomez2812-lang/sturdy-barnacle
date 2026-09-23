@@ -73,7 +73,7 @@ def main():
                     periodo_referencia="2026-Q1",
                     fuente="EBA, anexo de parametros de riesgo (COREP C 9.02)",
                     url=URL, fecha_publicacion=hoy,
-                    criterio_segmentacion="tamano_empresa_empleados",
+                    criterio_segmentacion="pyme_interna_banco",
                     tipo_de_dato="ratio", ponderacion=(
                         "media_ponderada_volumen" if etiqueta == "media ponderada"
                         else "media_simple"),
@@ -99,7 +99,7 @@ def main():
             valor="%.4f" % cor, unidad="pct_cartera", periodo_referencia="2026-Q1",
             fuente="EBA, anexo de parametros de riesgo (COREP C 9.02), calculo propio",
             url=URL, fecha_publicacion=hoy,
-            criterio_segmentacion="tamano_empresa_empleados", tipo_de_dato="ratio",
+            criterio_segmentacion="pyme_interna_banco", tipo_de_dato="ratio",
             ponderacion="media_simple",
             notas="PD ajustada %.2f%% por LGD %.1f%%, ambas mediana de "
                   "entidades declarantes" % (pd_, lgd))); n += 1

@@ -3186,6 +3186,76 @@ clase de importe disponible, excluye empresarios individuales) y OCDE
 completa —Central de Balances y FINREP— y ninguna de las dos entra en la
 cuenta del ROE. Va en el subtítulo.
 
+### 2.80 La columna `criterio_segmentacion` estaba mal en 15 ficheros, y ya no
+
+Al preparar el inventario de datos (§2.81) se vio que la columna que el
+encargo exige en cada fila —el criterio con que se segmenta— tenía
+etiquetas que contradecían lo leído en la normativa (§2.77). Corregido en
+dos pasos, sin tocar ningún valor.
+
+**1. Definiciones de PYME mal atribuidas (1.909 filas, 12 ficheros).**
+
+| Fichero | Decía | Dice ahora |
+|---|---|---|
+| Mora de PYME (Risk Dashboard, FINREP) | empleados | `definicion_ue_2003_361` |
+| Central de Balances | empleados | `definicion_ue_2003_361` |
+| PD, LGD y coste del riesgo (COREP C 9.02) | empleados | `pyme_interna_banco` |
+| Descomposición de la densidad | «definición CRR» | `pyme_interna_banco` |
+| Densidad de RWA de PYME (total) | empleados | `pyme_mixta_estandar_e_irb` |
+| Densidad por método | «definición CRR» | estándar `pyme_crr_facturacion`, IRB `pyme_interna_banco`, resto mixta |
+| OCDE Scoreboard (tres ficheros) | empleados | `definicion_nacional` |
+| Cartera PYME de los 5 bancos españoles (y su serie) | entidad | `pyme_mixta_estandar_e_irb`; CET1 y eficiencia siguen `entidad` |
+| Capital de empresas por país | entidad | es agregado por país: PYME y gran empresa `pyme_mixta…`, total `n/a` |
+
+**2. Filas sin tramo etiquetadas «por importe» (12.443 filas, 3 ficheros).**
+El recolector del MIR ponía al bloque entero el criterio del bloque. Pero
+los **totales** de todas las cuantías, el **circulante** y los
+**depósitos** no tienen tramo de importe: no están segmentados. Ahora
+`tamano_prestamo` solo va en filas con tramo; el resto, `n/a`.
+
+**Cómo se hizo.** Se corrigió cada extractor (y la regla del recolector
+del MIR) y se aplicó el mismo cambio a los CSV **en el sitio, solo en esa
+columna**, para no reescribir la fecha de extracción de miles de filas.
+Tres comprobaciones:
+
+- en los 15 ficheros tocados **no cambia ninguna otra columna** ni el
+  formato de ninguna línea;
+- los nueve extractores que corren sin red, ejecutados en una copia aparte,
+  generan **exactamente las mismas etiquetas** que el parche, fila a fila;
+  y una descarga real del BCE (bloque de circulante) da también `n/a`;
+- `pres/datos.json` regenerado es **idéntico**: ninguna cifra del deck se
+  mueve.
+
+**Para que no vuelva a pasar**, `schema.CRITERIOS` define los diez valores
+válidos, cada uno con lo que significa, y `schema.row()` rechaza cualquier
+otro. El valor impreciso `tamano_empresa_definicion_crr` desaparece.
+
+---
+
+### 2.81 Inventario de datos en Excel
+
+`pres/inventario_datos_pyme.xlsx`, generado por
+`scripts/inventario_datos.py`. Tres hojas:
+
+- **Inventario**: 43 datos, con las tres columnas pedidas —dato, fuente,
+  definición de PYME usada— y detrás si coincide con la estándar de la UE,
+  un matiz, el bloque, el código de la columna `criterio_segmentacion`, el
+  fichero, el periodo, los países y el número de filas.
+- **Definiciones**: los diez códigos con su significado y cuántas filas de
+  los CSV llevan cada uno, más los umbrales de la Recomendación
+  2003/361/CE.
+- **Fuentes**: glosario de siglas (MIR, BSI, FM, SAFE, COREP, FINREP…).
+
+Periodo, países y filas se leen de los CSV, no se escriben. Y el script
+**falla** si un dato del inventario apunta a un fichero que no existe o le
+atribuye un código que ese fichero no contiene: así se detectó que los
+depósitos y el circulante estaban mal etiquetados (punto 2 de §2.80).
+
+Recuento: de 43 datos, **2** usan la definición estándar completa (mora de
+PYME y Central de Balances), **5** solo uno de sus criterios, **16** otra
+definición o ninguna de tamaño de empresa, y **20** no son datos de
+segmento.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

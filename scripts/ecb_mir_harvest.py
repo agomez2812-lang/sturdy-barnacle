@@ -181,7 +181,11 @@ def normaliza(texto_csv, pais, producto, metrica_base, unidad, criterio,
             url=PORTAL + clave if dataset == "MIR" else
                 "https://data.ecb.europa.eu/data/datasets/%s" % dataset,
             fecha_publicacion=hoy,
-            criterio_segmentacion=criterio,
+            # Una fila sin tramo de importe (el total de todas las cuantias,
+            # o productos que el MIR no desglosa: circulante, depositos) no
+            # esta segmentada por importe aunque el bloque si lo este.
+            criterio_segmentacion=(criterio if tramo not in ("", "Total")
+                                   else "n/a"),
             tipo_de_dato="nivel" if unidad == "pct_anual" else "volumen",
             ponderacion="media_ponderada_volumen" if unidad == "pct_anual"
                         else "dato_unico",

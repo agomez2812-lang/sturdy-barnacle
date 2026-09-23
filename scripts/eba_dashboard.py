@@ -127,7 +127,7 @@ def main():
                 periodo_referencia=per_txt(per),
                 fuente="EBA, Risk Dashboard (anexo de datos)", url=URL,
                 fecha_publicacion=hoy,
-                criterio_segmentacion=("tamano_empresa_empleados"
+                criterio_segmentacion=("definicion_ue_2003_361"
                                        if suf == "5" else "n/a"),
                 tipo_de_dato=td, ponderacion="media_ponderada_volumen",
                 notas="hoja %s, %s; muestra de bancos del EBA" % (hoja, lbl)))

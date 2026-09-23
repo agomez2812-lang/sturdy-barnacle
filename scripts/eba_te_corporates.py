@@ -126,9 +126,16 @@ def main():
                  "PD x LGD de PYME y de gran empresa, ponderados por su "
                  "exposicion respectiva en el Transparency Exercise"))
         for metrica, valor, unidad, td, nota in filas:
+            # Agregado por pais, no por banco: "entidad" era incorrecto. Las
+            # filas que separan PYME de gran empresa llevan la definicion del
+            # Transparency Exercise; las de la cartera completa, ninguna.
+            crit = ("pyme_mixta_estandar_e_irb"
+                    if ("SME" in metrica or "PYME" in metrica
+                        or "gran empresa" in metrica) else "n/a")
             w.writerow(schema.row(metrica=metrica, valor="%.4f" % valor,
                                   unidad=unidad, tipo_de_dato=td,
-                                  notas=nota, **base))
+                                  notas=nota,
+                                  **dict(base, criterio_segmentacion=crit)))
             n += 1
     fh.close()
     print()
