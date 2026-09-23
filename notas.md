@@ -3032,6 +3032,78 @@ modelo**: pasar a contraparte local bajaría el capital de todos los países
 y subiría todos los ROE unos puntos, lo que movería cifras en varias
 láminas. Queda como decisión pendiente del usuario.
 
+### 2.77 La definición de PYME en los datos del EBA: no hay una, hay tres
+
+Pregunta del usuario: para los datos de PYME del EBA, ¿cuál es la
+definición de PYME? Se contestó **leyendo la normativa**, no de memoria, y
+la respuesta dejó inexacta una frase que el propio deck afirmaba.
+
+Fuentes leídas (copias en `raw/normativa/`, no versionadas):
+- **CRR**, Reglamento (UE) 575/2013, texto original (CELEX 32013R0575).
+- **Reglamento de Ejecución (UE) 2021/451**, normas técnicas de reporting:
+  Anexo II (instrucciones COREP) y Anexo V (instrucciones FINREP).
+
+**1. Mora por segmento — FINREP (lo que usa el Risk Dashboard).** Anexo V,
+Parte 1, punto 5(i): *«‘SME’: micro, small and medium-sized enterprises as
+defined in Commission Recommendation C(2003)1422»*, es decir, la
+**Recomendación 2003/361/CE completa**: menos de 250 empleados **y**
+facturación hasta 50 M€ **o** balance hasta 43 M€. Las plantillas FINREP
+lo citan como «SME Art 1 2(a)».
+
+**2. Capital por método estándar — COREP C 07.00.** La fila 0020
+*«of which: SME»* dice solo *«All exposures to SME shall be reported
+here»*, sin definir PYME. El CRR de la UE no tiene definición general de
+PYME en su art. 4; la única que da es la del **art. 501.2.b**, a efectos
+del factor de apoyo: *«an SME is defined in accordance with Commission
+Recommendation 2003/361/EC […] only the annual turnover shall be taken
+into account»*, es decir, **solo facturación hasta 50 M€**, sin el
+criterio de empleados. **No verificado**: que los bancos apliquen esa
+misma definición a la fila 0020 (y no solo a la 0030, la del factor de
+apoyo) es la lectura natural, pero las instrucciones no lo dicen.
+
+**3. Todo lo IRB — COREP C 08.01 y C 09.02.** Clase *«Corporate – SME»*
+(y *«Retail – SME»*): *«For the purpose of classification to this
+sub-exposure class the reporting entities shall use their **internal
+definition of SME** as applied in internal risk management processes»*.
+**Cada banco usa la suya.** No hay definición común.
+
+Y aparte, la fórmula IRB tiene su propio umbral de tamaño (art. 153.4):
+*«total annual sales for the consolidated group […] less than EUR 50
+million»* — **grupo consolidado**, no la empresa sola.
+
+**Qué dato del deck usa cada definición:**
+
+| Dato del deck | Fuente | Definición de PYME |
+|---|---|---|
+| NPL de PYME | Risk Dashboard (FINREP) | Recomendación 2003/361/CE completa |
+| Densidad de RWA, parte estándar | Transparency Exercise (COREP C 07.00) | CRR art. 501: facturación ≤ 50 M€ (lectura natural, no explícita) |
+| Densidad de RWA, parte IRB | Transparency Exercise (COREP C 08.01) | Interna de cada banco |
+| Coste del riesgo, PD × LGD | COREP C 09.02, IRB | Interna de cada banco |
+| Factor de apoyo 0,7619 | CRR art. 501 | Facturación ≤ 50 M€ |
+| Ajuste por tamaño de la fórmula | CRR art. 153.4 | Ventas del grupo consolidado < 50 M€ |
+
+**Tres consecuencias para el deck.**
+
+1. **El coste del riesgo de PYME no es comparable al milímetro entre
+   países**, porque cada banco clasifica como PYME lo que su gestión de
+   riesgos llama PYME. La PD y la LGD de «PYME» de un banco alemán y de uno
+   español pueden cubrir empresas distintas. Es el dato de PYME más
+   específico que existe, pero no está armonizado.
+2. **La densidad de RWA mezcla dos definiciones** en una sola cifra (la
+   estándar y la interna, en la proporción de cartera IRB de cada país), y
+   además incluye **PYME minorista** (exposiciones pequeñas tratadas como
+   retail, que ponderan menos) y **PYME con garantía hipotecaria**, porque
+   la partida del Transparency Exercise es «SME — by exposure class».
+3. **La mora de PYME y el capital de PYME no miden el mismo colectivo.** La
+   mora exige además menos de 250 empleados; el capital, no.
+
+**Corrección aplicada.** La lámina de supuestos del ROE (la décima suelta)
+decía «De PYME según el CRR (facturación hasta 50 M€)» en el coste del
+riesgo y en la densidad, y el pie decía que «PYME» significaba la
+definición del art. 501. Era **inexacto**: en todo lo IRB la definición es
+la interna de cada banco. Corregidas las dos filas y el pie, que ahora
+dice las tres definiciones.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

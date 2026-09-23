@@ -128,3 +128,15 @@ sin bloqueo:
   netos a la clientela, p. 34.
   `https://group.bper.it/en/investor-relations/group-results/financial-statements-reports`
 Copias en `raw/bancos/` (no versionadas: `raw/` está en .gitignore).
+
+### Normativa leída para la definición de PYME  [DESCARGA DIRECTA]
+- CRR, Reglamento (UE) 575/2013 (texto original):
+  `https://publications.europa.eu/resource/celex/32013R0575.ENG.xhtml`
+  Art. 501.2.b (definición de PYME para el factor de apoyo) y art. 153.4
+  (umbral de ventas del grupo en la fórmula IRB).
+- Reglamento de Ejecución (UE) 2021/451, reporting supervisor:
+  `https://publications.europa.eu/resource/celex/32021R0451` (pedir
+  `Accept: application/xhtml+xml`). Anexo II = instrucciones COREP;
+  Anexo V = instrucciones FINREP.
+EUR-Lex devuelve 202 sin contenido desde este entorno; el repositorio de la
+Oficina de Publicaciones sí sirve el texto. Copias en `raw/normativa/`.

@@ -516,11 +516,11 @@ L.supuestos_roe = () => {const s=hoja();
    "PROXY","2026-07"],
   ["Coste del riesgo",
    "EBA, COREP C 9.02: PD × LGD de la clase IRB «Corporates – of which SME»",
-   "De PYME según el CRR (facturación hasta 50 M€). Matices: solo la cartera IRB, mediana de entidades y pérdida esperada, no dotación contable.",
+   "De PYME, pero con la definición INTERNA de cada banco: en IRB el reporting no impone una común. Además, solo cartera IRB, mediana de entidades y pérdida esperada, no dotación contable.",
    "PYME","2026-Q1"],
   ["Densidad de RWA",
    "EBA, Transparency Exercise: RWA sobre valor de exposición de la cartera PYME, estándar más IRB",
-   "De PYME según el CRR, con el factor de apoyo del art. 501. Pero se agrega por supervisor e incluye PYME extranjera (el 46 % en España). Con solo la local, la densidad baja entre 1,7 y 4,4 pp en seis de los siete; el orden entre países no cambia.",
+   "De PYME, con dos definiciones: estándar, facturación hasta 50 M€; IRB, la interna de cada banco. Incluye PYME extranjera (46 % en España): sin ella la densidad baja de 1,7 a 4,4 pp en seis de los siete, sin cambiar el orden.",
    "PYME","2025-06"],
   ["Gastos de explotación",
    "EBA Risk Dashboard: ratio de eficiencia (cost-to-income), grupo consolidado",
@@ -563,7 +563,7 @@ L.supuestos_roe = () => {const s=hoja();
     s.addText(l[1],{x:x+1.02, y:6.14, w:1.95, h:0.22, fontFace:BF, fontSize:7.5,
       color:MUT, valign:"middle", isTextBox:true, margin:0});});
 
- fuente(s,"«PYME» significa aquí la definición del CRR (art. 501: facturación hasta 50 M€), que no coincide con la de la Recomendación 2003/361/CE ni con los tramos de importe del MIR. Las tres fuentes que dicen «PYME» miden, por tanto, tres perímetros distintos. El detalle de cada supuesto y su sensibilidad está en notas.md.");
+ fuente(s,"No hay UNA definición de PYME en los datos del EBA. Mora (FINREP): Recomendación 2003/361/CE completa, menos de 250 empleados y hasta 50 M€ de facturación o 43 M€ de balance. Capital por método estándar: el CRR solo define PYME en el art. 501, por facturación hasta 50 M€. Todo lo IRB —PD, LGD y la parte IRB de la densidad—: la definición interna de cada banco. Ninguna coincide con los tramos de importe del MIR. Detalle en notas.md.");
 };
 
 
