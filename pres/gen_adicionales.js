@@ -11,6 +11,7 @@
    7. Se paga el riesgo? Dos nubes                   -> bloque 1, tras la 18
    8. Observaciones: Espana                          -> sustituye a la lamina 50
    9. Densidad de RWA abierta en PD y LGD            -> bloque 1, tras la 10
+  10. Supuestos del ROE: fuente y perimetro          -> anexos, junto a Fuentes
 
    Todos los numeros salen de pres/adicionales.json, que a su vez lo
    construye scripts/datos_adicionales.py desde los CSV del repositorio.
@@ -488,8 +489,86 @@ L.descomposicion_rwa = () => {const s=hoja();
 };
 
 
+/* ----------------------------------------------------------------- 10 */
+/* Mismo formato que la lamina de Fuentes, pero una fila por PARTIDA de la
+   cuenta del ROE, diciendo si el dato es de PYME o no:
+     PYME      el dato es del segmento (definicion CRR, facturacion <=50 M)
+     PROXY     el dato existe pero de otro perimetro que se usa en su lugar
+     SUPUESTO  no hay dato: se aplica un valor de otro sitio
+     BANCO     es del banco entero por diseno; no tiene sentido por segmento
+   Las cifras de la fila de densidad salen de tr_cre.csv (ver notas.md). */
+L.supuestos_roe = () => {const s=hoja();
+ titulo(s,"Supuestos del ROE",
+   "De dónde sale cada línea de la cuenta del préstamo PYME, y si el dato es de verdad de PYME o un proxy");
+ const TIPO = {PYME:[BLUE,"PYME"], PROXY:[ORA2,"PROXY"], SUPUESTO:[MAG,"SUPUESTO"], BANCO:[G3,"DEL BANCO"]};
+ const F = [
+  ["Precio del préstamo",
+   "BCE, MIR: tipo de nueva producción a sociedades no financieras, tramo ≤1 M€, fijación total, sin comisiones",
+   "Segmenta por IMPORTE DEL PRÉSTAMO, no por tamaño de empresa: una gran empresa que pide 800.000 € entra, y una mediana que pide 3 M€ no. Deja fuera al autónomo, que está en hogares.",
+   "PROXY","2026-07"],
+  ["Comisiones",
+   "Banco de España, Boletín Estadístico, cap. 19: cuña TAE − tipo sin comisiones, tramo ≤1 M€",
+   "Solo España publica un tipo con comisiones para empresas; su cuña de 87 pb se aplica a los siete. Fuera de España no es un dato. Contraste: los segmentos de empresas que se publican cobran de 99 a 122 pb.",
+   "SUPUESTO","2026-07"],
+  ["Coste de los recursos",
+   "BCE, MIR: depósitos a la vista y a plazo del sector 2240, ponderados por los saldos del BSI",
+   "Depósito de SOCIEDADES NO FINANCIERAS, no de PYME: incluye la tesorería de la gran empresa. Supone además que el préstamo se financia con depósito de empresa y no en mercado.",
+   "PROXY","2026-07"],
+  ["Coste del riesgo",
+   "EBA, COREP C 9.02: PD × LGD de la clase IRB «Corporates – of which SME»",
+   "De PYME según el CRR (facturación hasta 50 M€). Matices: solo la cartera IRB, mediana de entidades y pérdida esperada, no dotación contable.",
+   "PYME","2026-Q1"],
+  ["Densidad de RWA",
+   "EBA, Transparency Exercise: RWA sobre valor de exposición de la cartera PYME, estándar más IRB",
+   "De PYME según el CRR, con el factor de apoyo del art. 501. Pero se agrega por supervisor e incluye PYME extranjera (el 46 % en España). Con solo la local, la densidad baja entre 1,7 y 4,4 pp en seis de los siete; el orden entre países no cambia.",
+   "PYME","2025-06"],
+  ["Gastos de explotación",
+   "EBA Risk Dashboard: ratio de eficiencia (cost-to-income), grupo consolidado",
+   "Eficiencia del banco entero aplicada al margen del préstamo. Supone que la PYME cuesta lo mismo por euro de margen que el resto del negocio.",
+   "BANCO","2026-Q1"],
+  ["CET1",
+   "EBA Risk Dashboard: ratio CET1, grupo consolidado",
+   "Solvencia del banco: el capital que se exige a cada euro de RWA, venga del segmento que venga.",
+   "BANCO","2026-Q1"],
+  ["Tipo impositivo",
+   "Legislación de cada país: España 30 % (art. 29 LIS, entidades de crédito), Irlanda 15 % (mínimo de Pilar Dos)",
+   "Tipo NOMINAL aplicable a bancos, no el efectivo. El resto de países, tipo combinado estatal más local.",
+   "BANCO","2026"]];
+
+ const cab=["Partida","Fuente","Qué se usa y por qué es, o no, de PYME","Tipo","Último dato"];
+ const tb=[cab.map((c,i)=>({text:c, options:Object.assign({},hdr,
+    {fontSize:9.5, align: (i===3||i===4)?"center":"left"})}))];
+ F.forEach((f,i)=>{
+   const par = i%2 ? "F4F4F4" : "FFFFFF";
+   const t = TIPO[f[3]];
+   tb.push([
+    {text:f[0], options:cel(null,{align:"left", fontSize:9.5, bold:true, fill:{color:par}})},
+    {text:f[1], options:cel(null,{align:"left", fontSize:7.5, color:MUT, fill:{color:par}})},
+    {text:f[2], options:cel(null,{align:"left", fontSize:7.5, color:TXT, fill:{color:par}})},
+    {text:t[1], options:cel(null,{fontSize:8, bold:true, color:DARK, fill:{color:t[0]}})},
+    {text:f[4], options:cel(null,{fontSize:9, fill:{color:par}})}]);});
+ s.addTable(tb,{x:M, y:1.66, w:W-2*M, colW:[1.62,3.05,4.83,1.12,1.35],
+   rowH:[0.32].concat(F.map(()=>0.50)), fontFace:BF,
+   border:{pt:0.5,color:G3}, valign:"middle", autoPage:false, margin:[2,5,2,5]});
+
+ /* leyenda */
+ [["PYME","el dato es del segmento"],["PROXY","otro perímetro en su lugar"],
+  ["SUPUESTO","no hay dato: se importa"],["DEL BANCO","del banco entero, por diseño"]]
+  .forEach((l,i)=>{
+    const x=M+i*3.0, c=TIPO[l[0]==="DEL BANCO"?"BANCO":l[0]][0];
+    s.addShape(pres.ShapeType.roundRect,{x:x, y:6.14, w:0.95, h:0.22, fill:{color:c},
+      rectRadius:0.08, line:{color:c}});
+    s.addText(l[0],{x:x, y:6.14, w:0.95, h:0.22, fontFace:BF, fontSize:7, bold:true,
+      color:DARK, align:"center", valign:"middle", isTextBox:true, margin:0});
+    s.addText(l[1],{x:x+1.02, y:6.14, w:1.95, h:0.22, fontFace:BF, fontSize:7.5,
+      color:MUT, valign:"middle", isTextBox:true, margin:0});});
+
+ fuente(s,"«PYME» significa aquí la definición del CRR (art. 501: facturación hasta 50 M€), que no coincide con la de la Recomendación 2003/361/CE ni con los tramos de importe del MIR. Las tres fuentes que dicen «PYME» miden, por tanto, tres perímetros distintos. El detalle de cada supuesto y su sensibilidad está en notas.md.");
+};
+
+
 const ORDEN = ["prima","rechazo","reconciliacion","densidad","factoring_ie",
-               "comparables_ratios","riesgo_nubes","observaciones_es","descomposicion_rwa"];
+               "comparables_ratios","riesgo_nubes","observaciones_es","descomposicion_rwa","supuestos_roe"];
 ORDEN.forEach(k=>{ if(!L[k]) throw new Error("lamina desconocida: "+k); L[k](); });
 const sobran = Object.keys(L).filter(k=>!ORDEN.includes(k));
 if(sobran.length) throw new Error("laminas sin colocar: "+sobran.join(", "));

@@ -2987,6 +2987,51 @@ préstamos y anticipos.
 `transversal/descomposicion_rwa.csv`, extractor
 `scripts/descomposicion_rwa.py`.
 
+### 2.76 Lámina de supuestos del ROE: qué es de PYME y qué es proxy
+
+A petición del usuario, una lámina con el formato de la de fuentes pero una
+fila por **partida de la cuenta del ROE**, clasificada en cuatro tipos:
+
+| Partida | Fuente | Tipo | Por qué |
+|---|---|---|---|
+| Precio | BCE, MIR, tramo ≤1 M€ | **PROXY** | Segmenta por importe del préstamo, no por tamaño de empresa; deja fuera al autónomo |
+| Comisiones | Banco de España, cuña TAE − TEDR | **SUPUESTO** | Solo España la publica; su cuña de 87 pb se aplica a los siete |
+| Coste de los recursos | BCE, MIR + BSI, sector 2240 | **PROXY** | Depósito de sociedades no financieras, no de PYME |
+| Coste del riesgo | EBA, COREP C 9.02 | **PYME** | Clase «of which SME»; solo IRB, mediana, pérdida esperada |
+| Densidad de RWA | EBA, Transparency Exercise | **PYME** | Pero agregada por supervisor: incluye PYME extranjera |
+| Gastos | EBA Risk Dashboard | **DEL BANCO** | Eficiencia de grupo aplicada al margen |
+| CET1 | EBA Risk Dashboard | **DEL BANCO** | Solvencia del grupo |
+| Tipo impositivo | Legislación nacional | **DEL BANCO** | Nominal aplicable a bancos, no efectivo |
+
+Solo dos de las ocho líneas son de PYME, y las dos por la definición del
+CRR (facturación hasta 50 M€), que no coincide ni con la Recomendación
+2003/361/CE ni con los tramos de importe del MIR. **Las tres fuentes que
+dicen «PYME» miden tres perímetros distintos**, y así se dice en el pie.
+
+**Hallazgo al hacerla: la densidad de RWA incluye PYME extranjera.** El
+extractor (`eba_te_pyme.py`) suma, para las entidades de cada supervisor,
+la contraparte **total** (`Country = 0`). Para los bancos españoles eso
+mete la PYME de Santander y BBVA fuera de España: solo el **53,8 %** de su
+exposición PYME es española. Comparación con solo contraparte local:
+
+| Supervisor | Densidad total (la del modelo) | Solo contraparte local | Diferencia | % local |
+|---|---|---|---|---|
+| España | 59,5 % | 55,7 % | −3,8 | 53,8 % |
+| Alemania | 35,3 % | 32,5 % | −2,9 | 55,9 % |
+| Francia | 43,0 % | 39,8 % | −3,2 | 82,4 % |
+| Italia | 46,3 % | 41,9 % | −4,4 | 51,2 % |
+| Portugal | 61,3 % | 58,0 % | −3,3 | 82,9 % |
+| P. Bajos | 37,2 % | 35,5 % | −1,7 | 56,5 % |
+| Irlanda | 70,0 % | 70,1 % | +0,1 | 79,9 % |
+
+**Material en nivel, inmaterial en orden.** La densidad local es 1,7–4,4 pp
+más baja en seis de los siete, pero el sesgo es casi uniforme y el ranking
+queda **idéntico**. España está en la media del sesgo, así que no sale
+especialmente penalizada frente a los demás. **No se ha cambiado el
+modelo**: pasar a contraparte local bajaría el capital de todos los países
+y subiría todos los ROE unos puntos, lo que movería cifras en varias
+láminas. Queda como decisión pendiente del usuario.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
