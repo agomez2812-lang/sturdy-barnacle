@@ -3150,6 +3150,42 @@ la **small mid-cap (SMC)**, para empresas que superan los umbrales de PYME
 (ficha de 2025 en la misma página). Aún sin umbrales publicados en esa
 página a la fecha de consulta.
 
+### 2.79 Definición de PYME por fuente: columna en la tabla de supuestos y lámina propia
+
+A petición del usuario:
+
+1. **La tabla de supuestos del ROE** (lámina suelta 10) lleva ahora una
+   columna **«Definición de PYME»** para cada partida: ninguna (préstamo
+   ≤1 M€) en precio y comisiones; ninguna (todas las empresas) en coste de
+   los recursos; interna de cada banco en coste del riesgo; dos en la
+   densidad (estándar: facturación ≤50 M€; IRB: interna); «no aplica» en
+   gastos, CET1 e impuesto. Los textos de la columna «qué se usa» se
+   acortaron para que la tabla siga cabiendo (fondo estimado 5,98").
+
+2. **Lámina nueva, «Qué es una PYME depende de a quién se pregunte»**
+   (suelta 11): una fila por fuente de la presentación, con qué datos del
+   deck salen de ella, qué criterio usa, qué llama PYME y si coincide con
+   la estándar. Trece filas, la primera la propia Recomendación como
+   referencia.
+
+**Verificado en su texto de origen en esta sesión**: Recomendación
+2003/361/CE (página de la Comisión), FINREP y COREP (Reglamento de
+Ejecución 2021/451), CRR arts. 153.4 y 501, y **CESGAR**, cuyo informe dice
+literalmente que su universo son empresas *«también personas físicas, con
+menos de 250 empleados»*: es por empleados y **añade al autónomo**, al
+revés que las estadísticas de sociedades no financieras.
+
+**Tomado del propio repositorio, no releído hoy**: la SAFE (menos de 250
+empleados; la etiqueta del extractor desde el principio del proyecto; las
+series del BCE no traen los tramos en su metadato y la página de
+metodología da 404), Banca d'Italia (cabecera de `bancaditalia_taeg.py`:
+clase de importe disponible, excluye empresarios individuales) y OCDE
+(definición nacional, `oecd_scoreboard.py`).
+
+**Lectura de la lámina**: solo dos fuentes usan la definición estándar
+completa —Central de Balances y FINREP— y ninguna de las dos entra en la
+cuenta del ROE. Va en el subtítulo.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

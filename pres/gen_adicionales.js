@@ -12,6 +12,7 @@
    8. Observaciones: Espana                          -> sustituye a la lamina 50
    9. Densidad de RWA abierta en PD y LGD            -> bloque 1, tras la 10
   10. Supuestos del ROE: fuente y perimetro          -> anexos, junto a Fuentes
+  11. Las definiciones de PYME de cada fuente        -> anexos, tras la 10
 
    Todos los numeros salen de pres/adicionales.json, que a su vez lo
    construye scripts/datos_adicionales.py desde los CSV del repositorio.
@@ -503,51 +504,55 @@ L.supuestos_roe = () => {const s=hoja();
  const TIPO = {PYME:[BLUE,"PYME"], PROXY:[ORA2,"PROXY"], SUPUESTO:[MAG,"SUPUESTO"], BANCO:[G3,"DEL BANCO"]};
  const F = [
   ["Precio del préstamo",
-   "BCE, MIR: tipo de nueva producción a sociedades no financieras, tramo ≤1 M€, fijación total, sin comisiones",
-   "Segmenta por IMPORTE DEL PRÉSTAMO, no por tamaño de empresa: una gran empresa que pide 800.000 € entra, y una mediana que pide 3 M€ no. Deja fuera al autónomo, que está en hogares.",
-   "PROXY","2026-07"],
+   "BCE, MIR: tipo de nueva producción a sociedades no financieras, tramo ≤1 M€, sin comisiones",
+   "Mide el tamaño del PRÉSTAMO, no de la empresa: una gran empresa que pide 800.000 € entra y una mediana que pide 3 M€ no. Deja fuera al autónomo.",
+   "Ninguna: préstamo ≤1 M€", "PROXY","2026-07"],
   ["Comisiones",
    "Banco de España, Boletín Estadístico, cap. 19: cuña TAE − tipo sin comisiones, tramo ≤1 M€",
-   "Solo España publica un tipo con comisiones para empresas; su cuña de 87 pb se aplica a los siete. Fuera de España no es un dato. Contraste: los segmentos de empresas que se publican cobran de 99 a 122 pb.",
-   "SUPUESTO","2026-07"],
+   "Solo España publica un tipo con comisiones para empresas; su cuña de 87 pb se aplica a los siete. Los segmentos de empresas que se publican cobran de 99 a 122 pb.",
+   "Ninguna: préstamo ≤1 M€", "SUPUESTO","2026-07"],
   ["Coste de los recursos",
-   "BCE, MIR: depósitos a la vista y a plazo del sector 2240, ponderados por los saldos del BSI",
-   "Depósito de SOCIEDADES NO FINANCIERAS, no de PYME: incluye la tesorería de la gran empresa. Supone además que el préstamo se financia con depósito de empresa y no en mercado.",
-   "PROXY","2026-07"],
+   "BCE, MIR: depósitos a la vista y a plazo del sector 2240, ponderados por saldos del BSI",
+   "Depósito de todas las sociedades no financieras, incluida la tesorería de la gran empresa. Supone que el préstamo se financia con depósito y no en mercado.",
+   "Ninguna: todas las empresas", "PROXY","2026-07"],
   ["Coste del riesgo",
    "EBA, COREP C 9.02: PD × LGD de la clase IRB «Corporates – of which SME»",
-   "De PYME, pero con la definición INTERNA de cada banco: en IRB el reporting no impone una común. Además, solo cartera IRB, mediana de entidades y pérdida esperada, no dotación contable.",
-   "PYME","2026-Q1"],
+   "Es del segmento, pero no está armonizado entre bancos. Además: solo cartera IRB, mediana de entidades y pérdida esperada, no dotación contable.",
+   "Interna de cada banco", "PYME","2026-Q1"],
   ["Densidad de RWA",
-   "EBA, Transparency Exercise: RWA sobre valor de exposición de la cartera PYME, estándar más IRB",
-   "De PYME, con dos definiciones: estándar, facturación hasta 50 M€; IRB, la interna de cada banco. Incluye PYME extranjera (46 % en España): sin ella la densidad baja de 1,7 a 4,4 pp en seis de los siete, sin cambiar el orden.",
-   "PYME","2025-06"],
+   "EBA, Transparency Exercise: RWA sobre exposición de la cartera PYME, estándar más IRB",
+   "Mezcla dos definiciones en la proporción IRB de cada país. Incluye PYME extranjera (46 % en España): sin ella baja 1,7–4,4 pp, sin cambiar el orden.",
+   "Estándar: facturación ≤50 M€\nIRB: interna de cada banco", "PYME","2025-06"],
   ["Gastos de explotación",
    "EBA Risk Dashboard: ratio de eficiencia (cost-to-income), grupo consolidado",
-   "Eficiencia del banco entero aplicada al margen del préstamo. Supone que la PYME cuesta lo mismo por euro de margen que el resto del negocio.",
-   "BANCO","2026-Q1"],
+   "Eficiencia del banco entero aplicada al margen. Supone que la PYME cuesta lo mismo por euro de margen que el resto del negocio.",
+   "No aplica", "BANCO","2026-Q1"],
   ["CET1",
    "EBA Risk Dashboard: ratio CET1, grupo consolidado",
    "Solvencia del banco: el capital que se exige a cada euro de RWA, venga del segmento que venga.",
-   "BANCO","2026-Q1"],
+   "No aplica", "BANCO","2026-Q1"],
   ["Tipo impositivo",
-   "Legislación de cada país: España 30 % (art. 29 LIS, entidades de crédito), Irlanda 15 % (mínimo de Pilar Dos)",
-   "Tipo NOMINAL aplicable a bancos, no el efectivo. El resto de países, tipo combinado estatal más local.",
-   "BANCO","2026"]];
+   "Legislación nacional: España 30 % (art. 29 LIS), Irlanda 15 % (mínimo de Pilar Dos)",
+   "Tipo NOMINAL aplicable a bancos, no el efectivo. El resto, tipo combinado estatal más local.",
+   "No aplica", "BANCO","2026"]];
 
- const cab=["Partida","Fuente","Qué se usa y por qué es, o no, de PYME","Tipo","Último dato"];
+ const cab=["Partida","Fuente","Qué se usa y por qué es, o no, de PYME","Definición de PYME","Tipo","Último"];
  const tb=[cab.map((c,i)=>({text:c, options:Object.assign({},hdr,
-    {fontSize:9.5, align: (i===3||i===4)?"center":"left"})}))];
+    {fontSize:9, align: (i>=4)?"center":"left",
+     fill:{color: c==="Definición de PYME"?DARK:PRIM}})}))];
  F.forEach((f,i)=>{
    const par = i%2 ? "F4F4F4" : "FFFFFF";
-   const t = TIPO[f[3]];
+   const t = TIPO[f[4]];
+   const na = f[3]==="No aplica";
    tb.push([
-    {text:f[0], options:cel(null,{align:"left", fontSize:9.5, bold:true, fill:{color:par}})},
+    {text:f[0], options:cel(null,{align:"left", fontSize:9, bold:true, fill:{color:par}})},
     {text:f[1], options:cel(null,{align:"left", fontSize:7.5, color:MUT, fill:{color:par}})},
     {text:f[2], options:cel(null,{align:"left", fontSize:7.5, color:TXT, fill:{color:par}})},
-    {text:t[1], options:cel(null,{fontSize:8, bold:true, color:DARK, fill:{color:t[0]}})},
-    {text:f[4], options:cel(null,{fontSize:9, fill:{color:par}})}]);});
- s.addTable(tb,{x:M, y:1.66, w:W-2*M, colW:[1.62,3.05,4.83,1.12,1.35],
+    {text:f[3], options:cel(null,{align:"left", fontSize:7.5, bold:!na, color: na?MUT:DARK,
+       fill:{color: na?par:YEL3}})},
+    {text:t[1], options:cel(null,{fontSize:7.5, bold:true, color:DARK, fill:{color:t[0]}})},
+    {text:f[5], options:cel(null,{fontSize:8, fill:{color:par}})}]);});
+ s.addTable(tb,{x:M, y:1.66, w:W-2*M, colW:[1.40,2.62,3.75,2.10,1.08,1.02],
    rowH:[0.32].concat(F.map(()=>0.50)), fontFace:BF,
    border:{pt:0.5,color:G3}, valign:"middle", autoPage:false, margin:[2,5,2,5]});
 
@@ -567,8 +572,66 @@ L.supuestos_roe = () => {const s=hoja();
 };
 
 
+/* ----------------------------------------------------------------- 11 */
+/* Una fila por fuente de la presentacion: que datos del deck salen de ella
+   y que llama PYME, frente a la definicion estandar de la UE. Cada
+   definicion esta leida en su texto de origen (notas.md 2.77 a 2.79). */
+L.definiciones_pyme = () => {const s=hoja();
+ titulo(s,"Qué es una PYME depende de a quién se pregunte",
+   "La definición de PYME de cada fuente de esta presentación, frente a la estándar de la UE · Solo dos fuentes la usan completa, y ninguna de las dos entra en la cuenta del ROE");
+ const V = {REF:[YEL,"Es la referencia"], SI:[BLUE3,"Sí, completa"],
+            PARCIAL:[ORA3,"Solo un criterio"], NO:[MAG3,"No"]};
+ const F=[
+  ["Recomendación 2003/361/CE","La definición estándar de la UE","Empleados, y facturación o balance",
+   "Menos de 250 empleados y hasta 50 M€ de facturación o 43 M€ de balance. En un grupo, se suman las empresas vinculadas","REF",""],
+  ["Banco de España, Central de Balances","Capacidad de pago por tamaño","Igual que la estándar",
+   "Clasificación por tamaño de la Recomendación","SI",""],
+  ["EBA, FINREP (Risk Dashboard)","Mora de PYME","Igual que la estándar",
+   "Anexo V del reglamento de reporting remite a la Recomendación","SI",""],
+  ["BCE, encuesta SAFE","Tasa de rechazo, tipo del circulante, brecha de financiación","Empleados",
+   "Menos de 250 empleados; no mira facturación ni balance","PARCIAL",""],
+  ["CESGAR","Demanda, obstáculos y destino de la financiación","Empleados",
+   "Menos de 250 empleados, e INCLUYE personas físicas (autónomos)","PARCIAL","añade autónomos"],
+  ["EBA, COREP, método estándar","Densidad de RWA, parte estándar","Facturación",
+   "Hasta 50 M€ (CRR art. 501, único que la define); sin empleados ni balance","PARCIAL",""],
+  ["CRR, art. 153.4","Fórmula IRB de la descomposición de la densidad","Ventas del grupo",
+   "Ventas del grupo consolidado por debajo de 50 M€","PARCIAL","grupo, no empresa"],
+  ["EBA, COREP, IRB","Coste del riesgo (PD × LGD) y densidad, parte IRB","Interna",
+   "La que cada banco usa en su gestión de riesgos: no hay una común","NO",""],
+  ["BCE, MIR","Precio, prima PYME, cuña y coste de los recursos","Importe del préstamo",
+   "Préstamo hasta 1 M€ (hasta 0,25 M€ en la prima). Los depósitos: todas las empresas","NO","mide el préstamo"],
+  ["Banco de España, Boletín","Comisiones, autónomos","Importe del préstamo",
+   "Tramos de importe, como el MIR. El autónomo va aparte, como persona física","NO",""],
+  ["Banca d'Italia, STACORIS","TAEG de empresas en Italia","Importe disponible",
+   "Clase de importe del crédito; excluye empresarios individuales","NO",""],
+  ["OCDE, Scoreboard","Spread PYME","Nacional",
+   "La definición de cada país: no está armonizada","NO",""],
+  ["Bancos, cuentas por segmento","Comparables banco a banco","Segmento de gestión",
+   "«Corporate Clients», «Banca dei Territori»…: mezclan PYME y gran empresa","NO",""]];
+
+ const cab=["Fuente","Qué datos del deck salen de ella","Criterio","Qué llama PYME","¿Es la estándar?"];
+ const tb=[cab.map((c,i)=>({text:c, options:Object.assign({},hdr,
+    {fontSize:8.5, align: i===4?"center":"left"})}))];
+ F.forEach((f,i)=>{
+   const ref=f[4]==="REF", par = ref ? YEL3 : (i%2 ? "F4F4F4" : "FFFFFF");
+   const v=V[f[4]];
+   tb.push([
+    {text:f[0], options:cel(null,{align:"left", fontSize:8, bold:true, fill:{color:par}})},
+    {text:f[1], options:cel(null,{align:"left", fontSize:7.5, color:TXT, fill:{color:par}})},
+    {text:f[2], options:cel(null,{align:"left", fontSize:7.5, bold:true, color:DARK, fill:{color:par}})},
+    {text:f[3], options:cel(null,{align:"left", fontSize:7.5, color:TXT, fill:{color:par}})},
+    {text:v[1]+(f[5]?"\n("+f[5]+")":""), options:cel(null,{fontSize:7.5, bold:true,
+       color:DARK, fill:{color:v[0]}})}]);});
+ s.addTable(tb,{x:M, y:1.70, w:W-2*M, colW:[2.10,2.80,1.50,3.95,1.62],
+   rowH:[0.30].concat(F.map(()=>0.335)), fontFace:BF,
+   border:{pt:0.5,color:G3}, valign:"middle", autoPage:false, margin:[1,5,1,5]});
+
+ fuente(s,"Recomendación 2003/361/CE: umbrales de la página oficial de la Comisión (DG GROW). FINREP y COREP: Reglamento de Ejecución (UE) 2021/451, anexos V y II; en el método estándar las instrucciones no definen PYME y se toma la del art. 501 del CRR, que es la única que da. CRR: Reglamento (UE) 575/2013, arts. 153.4 y 501. CESGAR: XV Informe, universo DIRCE. Banca d'Italia: STACORIS, tavola TRI30951. Detalle y citas literales en notas.md.", 7);
+};
+
+
 const ORDEN = ["prima","rechazo","reconciliacion","densidad","factoring_ie",
-               "comparables_ratios","riesgo_nubes","observaciones_es","descomposicion_rwa","supuestos_roe"];
+               "comparables_ratios","riesgo_nubes","observaciones_es","descomposicion_rwa","supuestos_roe","definiciones_pyme"];
 ORDEN.forEach(k=>{ if(!L[k]) throw new Error("lamina desconocida: "+k); L[k](); });
 const sobran = Object.keys(L).filter(k=>!ORDEN.includes(k));
 if(sobran.length) throw new Error("laminas sin colocar: "+sobran.join(", "));
