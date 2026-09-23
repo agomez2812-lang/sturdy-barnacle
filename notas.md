@@ -3286,6 +3286,42 @@ segmento.
   comisiones de un segmento de empresas. CaixaBank y BPER aparecen en gris,
   como grupo.
 
+### 2.83 Tamaño del mercado PYME: saldo de préstamos del Risk Dashboard
+
+Lámina nueva en la presentación descriptiva (sección EBA Risk Dashboard).
+
+- **Dato.** Saldo bruto de préstamos a sociedades no financieras «of which
+  SMEs», 2026-Q1: FINREP, hoja Loans_1, T20_5, del anexo del Risk
+  Dashboard.
+- **Criterio.** `definicion_ue_2003_361`.
+- **Cifras, en M€.** Los siete suman 1.964.385 M€, el 76 % de la muestra de
+  la UE (2.587.170 M€).
+
+  | País | Saldo PYME (M€) | Cuota de los siete |
+  |---|---|---|
+  | Francia | 911.017 | 46,4 % |
+  | España | 272.692 | 13,9 % |
+  | Italia | 260.114 | 13,2 % |
+  | Alemania | 249.005 | 12,7 % |
+  | P. Bajos | 215.864 | 11,0 % |
+  | Portugal | 36.823 | 1,9 % |
+  | Irlanda | 18.870 | 1,0 % |
+
+- **Salvedades.**
+  - Es el saldo de los bancos de la muestra EBA con sede en cada país, en
+    base consolidada. Incluye su PYME en el extranjero y no cubre el
+    sistema entero.
+  - La muestra puede variar entre trimestres. España cae 25.984 M€
+    (−8,7 %) de 2025-Q4 a 2026-Q1. En dos años, P. Bajos sube un 25 % e
+    Irlanda baja un 26 %. Estos saltos deben leerse con cautela.
+- **Contraste.** El Transparency Exercise (exposición PYME, junio 2025)
+  mide exposición, no solo préstamo, y mezcla definición estándar e IRB.
+  Da cifras parecidas, pero pone a Alemania (316.561) por delante de
+  España (308.378).
+- **Cobertura de otras fuentes.** Ni la OCDE ni el MIR dan un saldo
+  comparable. La OCDE no publica el stock en los datos extraídos, y el MIR
+  es flujo de nueva producción por importe.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

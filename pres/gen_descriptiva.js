@@ -274,7 +274,7 @@ L.mapa = () => { const s=nueva();
     "Orden de la presentación · Solo dos usan la definición estándar completa");
   const F=[["1","BCE · MIR y BSI","Precio del crédito y coste de los depósitos","importe"],
    ["2","BCE · SAFE","Rechazo, resultado de la solicitud, brecha de financiación","empl"],
-   ["3","EBA · Risk Dashboard","Mora por segmento, incluida la PYME","ue"],
+   ["3","EBA · Risk Dashboard","Tamaño del crédito PYME y mora por segmento","ue"],
    ["4","EBA · COREP, parámetros IRB","Probabilidad de impago y severidad de la PYME","interna"],
    ["5","EBA · Transparency Exercise","Densidad de RWA de la PYME; cartera de 5 bancos españoles","mixta"],
    ["6","OCDE · Scoreboard","Spread PYME frente a gran empresa, 2011–2022","nacional"],
@@ -424,11 +424,35 @@ L.safe_brecha = () => { const s=nueva();
 /* ================================================================== */
 L.f_rd = () => ficha({nombre:"Risk Dashboard", inst:"Autoridad Bancaria Europea (EBA) · indicadores de riesgo trimestrales, con datos contables FINREP", def:"ue",
   que:"Publicación trimestral de la EBA con los indicadores de riesgo de la banca europea, agregados por país a partir del reporting contable (FINREP) de los bancos de su muestra.",
-  datos:["Tasa de mora (NPL) por segmento: hogares, empresas, PYME e inmueble comercial",
+  datos:["Saldo de préstamos a PYME por país: el tamaño del mercado",
+         "Tasa de mora (NPL) por segmento: hogares, empresas, PYME e inmueble comercial",
          "Evolución de la mora de la PYME, del primer trimestre de 2024 al primero de 2026",
          "Peso de la PYME dentro del crédito a empresas"],
   porque:"Es una de las dos fuentes que usan la definición estándar COMPLETA: el anexo V del reglamento de reporting remite a la Recomendación 2003/361/CE, con empleados y facturación o balance. Es, por tanto, el dato de PYME más limpio que tenemos. Límite: cubre la muestra de bancos de la EBA, no el sistema entero.",
   cobertura:"Siete países · trimestral · 2024-Q1 a 2026-Q1 · muestra de bancos supervisados por la EBA"});
+
+L.rd_tamano = () => { const s=nueva();
+  const T=X.eba_rd.saldo_pyme, te=X.eba_rd.te_exposicion, pe=X.eba_rd.peso_pyme_empresas;
+  const tot=T.valores.reduce((a,b)=>a+b,0), mx=P.map((p,i)=>i).sort((a,b)=>T.valores[b]-T.valores[a]);
+  const cuota=v=>100*v/tot, mm=v=>Math.round(v).toLocaleString("es-ES");
+  const es=P.indexOf(FOCO), rk=mx.indexOf(es)+1, ord=["","primer","segundo","tercer","cuarto","quinto","sexto","séptimo"];
+  cab(s,`${P[mx[0]]} tiene casi la mitad del crédito a PYME de los siete; España es el ${ord[rk]} mercado`,
+    "Saldo bruto de préstamos a PYME de los bancos de la muestra de la EBA, miles de millones de euros · Primer trimestre de 2026","ue");
+  barFoco(s,{x:M, y:1.70, w:6.15, h:4.55, values:T.valores.map(v=>v/1000), max:1000, fmt:'0.0', fmtEje:'0',
+    tit:"Préstamos a PYME, miles de millones de €"});
+  const hd=t=>({text:t,options:Object.assign({},hdr,{fontSize:8,fill:{color:DARK}})});
+  const filas=[[hd("País"),hd("Crédito PYME\nM€, 2026-Q1"),hd("Cuota de\nlos siete"),hd("Peso en crédito\na empresas"),hd("Contraste TE\nM€, jun. 2025")]];
+  P.forEach((p,i)=>{ const f=p===FOCO, o=x=>cel(null,Object.assign({fontSize:8.5,bold:f,color:f?PRIM:TXT,fill:{color:f?YEL3:"FFFFFF"}},x||{}));
+    filas.push([{text:p,options:o({align:"left"})},{text:mm(T.valores[i]),options:o()},
+      {text:n1(cuota(T.valores[i]),1)+" %",options:o()},{text:n1(pe[i],1)+" %",options:o()},
+      {text:mm(te[i]),options:o({color:f?PRIM:MUT})}]);});
+  s.addTable(filas,{x:7.05, y:1.70, w:5.60, colW:[1.10,1.15,1.00,1.20,1.15], rowH:0.30,
+    fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false, margin:[1,4,1,4]});
+  const sEs=T.serie[FOCO], n=sEs.length;
+  tarjeta(s, 7.05, 4.45, 5.60, 1.80, "Cómo leerlo",
+    `Los siete suman ${n1(tot/1e6,2)} billones, el ${n1(100*tot/T.ue,0)} % del crédito PYME de la muestra de la UE. Es el saldo de los bancos con sede en cada país, en base consolidada: incluye su negocio PYME fuera de él. España cae ${mm(sEs[n-2]-sEs[n-1])} M€ (${n1(100*(1-sEs[n-1]/sEs[n-2]),1)} %) en el último trimestre. El Transparency Exercise, que mide exposición y no solo préstamo, da cifras parecidas, pero con Alemania por delante de España.`, "F2F4F6", 9);
+  fuente(s,"EBA, Risk Dashboard, anexo de datos del primer trimestre de 2026, hoja Loans_1: saldo bruto de préstamos y anticipos a sociedades no financieras, «of which SMEs» (FINREP, Recomendación 2003/361/CE). Contraste: EBA Transparency Exercise 2025, exposición PYME, junio 2025. La muestra de bancos puede variar entre trimestres.");
+};
 
 L.rd_segmentos = () => { const s=nueva();
   const S=X.eba_rd.segmentos;
@@ -784,7 +808,7 @@ L.posicion = () => { const s=nueva();
   const altos=I.filter((r,j)=>rank[j]<=2).map(r=>r[0].charAt(0).toLowerCase()+r[0].slice(1));
   const bajos=I.filter((r,j)=>rank[j]===7).map(r=>r[0].charAt(0).toLowerCase()+r[0].slice(1));
   s.addText("España está entre los dos valores más altos en: "+altos.join("; ")+". Tiene el más bajo de los siete en: "+bajos.join("; ")+".",
-    {x:M, y:6.40, w:W-2*M, h:0.22, fontFace:BF, fontSize:9, bold:true, color:DARK, isTextBox:true, margin:0});
+    {x:M, y:6.20, w:W-2*M, h:0.40, fontFace:BF, fontSize:9, bold:true, color:DARK, isTextBox:true, margin:0});
   fuente(s,"Mismos nueve indicadores y fuentes que la lámina anterior. La posición es relativa a los siete países: el extremo derecho es el valor más alto, no el mejor.");
 };
 
@@ -865,7 +889,7 @@ L.cierre = () => { const s=nueva({limpia:true});
 const ORDEN = ["portada","guia","mapa",
   "f_mir","mir_tramos","mir_prima","mir_circ","mir_depositos",
   "f_safe","safe_rechazo","safe_brecha",
-  "f_rd","rd_segmentos","rd_serie",
+  "f_rd","rd_tamano","rd_segmentos","rd_serie",
   "f_corep","corep_pd_lgd",
   "f_te","te_densidad","te_bancos",
   "f_ocde","ocde_spread",

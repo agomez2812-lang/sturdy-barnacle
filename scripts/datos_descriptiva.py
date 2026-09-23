@@ -83,6 +83,7 @@ def main():
     serie = collections.defaultdict(dict)
     saldo = collections.defaultdict(dict)
     nplimp = collections.defaultdict(dict)
+    saldo_serie = collections.defaultdict(dict)
     # el inmueble comercial lo escribe el mismo extractor en hipotecas/
     for r in lee("transversal/eba_cartera.csv") + lee("hipotecas/eba_cartera.csv"):
         met, _, seg = r["metrica"].partition(" | ")
@@ -91,6 +92,8 @@ def main():
                 npl[r["pais"]][seg] = float(r["valor"])
             if seg == "Sociedades no financieras, PYME":
                 serie[r["pais"]][r["periodo_referencia"]] = float(r["valor"])
+        if met == "Saldo bruto" and seg == "Sociedades no financieras, PYME":
+            saldo_serie[r["pais"]][r["periodo_referencia"]] = float(r["valor"])
         if r["periodo_referencia"] == "2026-Q1":
             if met == "Saldo bruto":
                 saldo[r["pais"]][seg] = float(r["valor"])
@@ -107,6 +110,15 @@ def main():
         "clientela": [round(100 * (nplimp[p][H] + nplimp[p][E]) / (saldo[p][H] + saldo[p][E]), 2)
                       for p in ORDEN],
         "peso_pyme_empresas": [round(100 * saldo[p][E + ", PYME"] / saldo[p][E], 1) for p in ORDEN],
+        # tamano del mercado: saldo bruto de prestamos a PYME (FINREP), M EUR
+        "saldo_pyme": {
+            "periodo": "2026-Q1",
+            "valores": [round(saldo[p][E + ", PYME"]) for p in ORDEN],
+            "ue": round(saldo["Union Europea"][E + ", PYME"]),
+            "empresas": [round(saldo[p][E]) for p in ORDEN],
+            "serie": {NOMBRE.get(p, p): [round(saldo_serie[p][q]) for q in qs] for p in ORDEN}},
+        # contraste: exposicion PYME del Transparency Exercise (junio 2025)
+        "te_exposicion": D["eu_desc"]["exposicion"],
         "serie": {"trimestres": qs,
                   "valores": {NOMBRE.get(p, p): [serie[p][q] for q in qs] for p in ORDEN}},
     }
