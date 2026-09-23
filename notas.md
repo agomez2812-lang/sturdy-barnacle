@@ -3256,6 +3256,36 @@ PYME y Central de Balances), **5** solo uno de sus criterios, **16** otra
 definición o ninguna de tamaño de empresa, y **20** no son datos de
 segmento.
 
+### 2.82 Presentación descriptiva del mercado PYME, fuente por fuente
+
+`pres/mercado_pyme_europa.pptx` (40 láminas), generada por
+`pres/gen_descriptiva.js` a partir de `pres/descriptiva.json`, que produce
+`scripts/datos_descriptiva.py` leyendo los CSV del repositorio.
+
+- **Estructura.** Doce fuentes, cada una con una ficha: qué es, qué se ha
+  obtenido, qué llama PYME y hasta dónde aplica. Después, sus gráficos.
+  Cierra con un análisis descriptivo: cuadro de nueve indicadores, posición
+  de España, seis observaciones y una lámina de límites.
+- **Solo datos observados.** No hay ROE, margen bruto, capital ni la
+  comisión supuesta de 87 pb. Lo único calculado son medias ponderadas,
+  diferencias y correlaciones entre siete países; estas últimas se rotulan
+  como descriptivas, no causales.
+- **Etiqueta de definición en cada lámina de datos**, con el mismo criterio
+  que `criterio_segmentacion` (§2.79–2.80).
+- **Titulares calculados desde los datos**, no escritos a mano: el número
+  de países donde el préstamo pequeño es el más caro, la racha negativa de
+  la brecha SAFE, los años sin cambio del factoring irlandés y los extremos
+  de España en la lámina de posición.
+- **Serie de la Central de Balances** (diferencia entre rentabilidad y
+  coste de la deuda, pequeñas empresas, 2015–2024): reconstruida desde
+  `transversal/cb_pymes.csv`. Coincide con la que antes se escribía a mano
+  en `datos.json`.
+- **Doing Business** se incluye como contexto del país, no como dato PYME.
+  Es de 2019 y no tiene sucesor que cubra los siete países.
+- **Informes de bancos:** solo Commerzbank y ABN AMRO publican las
+  comisiones de un segmento de empresas. CaixaBank y BPER aparecen en gris,
+  como grupo.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
