@@ -123,6 +123,36 @@ def main():
                   "valores": {NOMBRE.get(p, p): [serie[p][q] for q in qs] for p in ORDEN}},
     }
 
+    # ---------------- EBA, Risk Dashboard: eficiencia del sistema ----------------
+    # cost-to-income (PFT_23), acumulado del ano: el cuarto trimestre es el
+    # ano completo; el primero carga contribuciones anuales y se evita
+    ef = collections.defaultdict(dict)
+    for r in lee("transversal/eba_indicadores.csv"):
+        if r["metrica"] == "Ratio de eficiencia (cost-to-income)":
+            ef[r["pais"]][r["periodo_referencia"]] = round(float(r["valor"]), 1)
+    qe = sorted(ef["Espana"])
+    out["eficiencia"] = {
+        "anios": ["2024", "2025"],
+        "valores": {"2024": [ef[p]["2024-Q4"] for p in ORDEN],
+                    "2025": [ef[p]["2025-Q4"] for p in ORDEN]},
+        "ue": {"2024": ef["Union Europea"]["2024-Q4"], "2025": ef["Union Europea"]["2025-Q4"]},
+        "q1_2026": [ef[p]["2026-Q1"] for p in ORDEN],
+        "trimestres": qe,
+        "serie": {NOMBRE.get(p, p): [ef[p][q] for q in qe] for p in ORDEN + ["Union Europea"]}}
+
+    # ---------------- Informacion crediticia ----------------
+    mr = collections.defaultdict(dict)
+    for r in lee("transversal/marco_riesgo.csv"):
+        mr[r["metrica"]][r["pais"]] = float(r["valor"])
+    g = lambda m: [mr[m][p] for p in ORDEN]
+    out["info"] = {
+        "registro": g("Cobertura del registro publico de credito"),
+        "bureau": g("Cobertura del bureau privado de credito"),
+        "profundidad": g("Profundidad de la informacion crediticia"),
+        "util_registro": g("Utilidad del registro publico para PYME"),
+        "cuentas": g("Disponibilidad de cuentas depositadas"),
+        "indice": [round(v, 1) for v in g("Indice de informacion para la seleccion")]}
+
     # ---------------- EBA, COREP C 9.02 (IRB) ----------------
     out["corep"] = {k: D["irb"][k] for k in ("pd", "lgd", "cor")}
 

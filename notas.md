@@ -3322,6 +3322,35 @@ Lámina nueva en la presentación descriptiva (sección EBA Risk Dashboard).
   comparable. La OCDE no publica el stock en los datos extraídos, y el MIR
   es flujo de nueva producción por importe.
 
+### 2.84 Eficiencia del sistema e información crediticia en la presentación descriptiva
+
+Tres láminas nuevas, generadas también sueltas en
+`pres/laminas_eficiencia_informacion.pptx`
+(`SOLO=rd_eficiencia,bm_bureaus,info_pyme SALIDA=... node gen_descriptiva.js`).
+
+- **Eficiencia** (`rd_eficiencia`). Cost-to-income del EBA Risk Dashboard
+  (PFT_23), del año completo (2024-Q4 y 2025-Q4).
+  - 2025: Portugal 33,1 %, España 42,5 %, Italia 50,1 %, Irlanda 51,5 %,
+    P. Bajos 55,2 %, Alemania 58,7 %, Francia 66,3 %; UE 53,2 %.
+  - Se usa el cuarto trimestre, que acumula el año completo, y no 2026-Q1,
+    porque el primer trimestre suele cargar contribuciones anuales.
+    Irlanda sube del 51,5 % al 57,4 %.
+  - **No es de PYME**: es el grupo consolidado. El único dato de segmento
+    de empresas es ABN AMRO Corporate Banking, con 49,5 % en el primer
+    semestre de 2026.
+- **Registro público frente a bureau privado** (`bm_bureaus`). Doing
+  Business 2020 (mayo de 2019): cobertura en % de adultos, más el índice
+  de profundidad de 0 a 8. España: registro 68,6 %, bureau 7,5 %. Es
+  contexto del país, no PYME.
+- **Qué se sabe de una PYME** (`info_pyme`). Ordinales de 0 a 3,
+  elaborados sobre la normativa vigente (`marco_riesgo.csv`): utilidad del
+  registro público para PYME y acceso a las cuentas depositadas. Incluye
+  el índice de información de 0 a 100, cuya correlación con la PD de la
+  PYME es −0,41.
+- **Límite.** Doing Business se dejó de publicar en 2021. No hay un dato
+  comparable más reciente de cobertura de los bureaus para los siete
+  países.
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |

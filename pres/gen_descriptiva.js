@@ -75,7 +75,7 @@ function tarjeta(s, x, y, w, h, tit, txt, fondo, tam){
       {x:x+0.22, y:y+0.06, w:w-0.44, h:h-0.12, fontSize:tam||9.5, isTextBox:true, margin:0, valign:"middle"});
     return;}
   /* titulo a dos lineas si no cabe en una (~0,105" por caracter a 11,5 pt) */
-  const th = tit.length*0.105 > w-0.44 ? 0.52 : 0.30;
+  const th = tit.length*0.097 > w-0.44 ? 0.52 : 0.30;
   s.addText(tit,{x:x+0.22, y:y+0.14, w:w-0.44, h:th, fontFace:HF, fontSize:11.5, bold:true,
     color:DARK, isTextBox:true, margin:0, valign:"top"});
   s.addText(txt,{x:x+0.22, y:y+0.18+th, w:w-0.44, h:h-0.30-th, fontFace:BF, fontSize:tam||9.5,
@@ -736,6 +736,82 @@ L.bancos = () => { const s=nueva();
   fuente(s,"Informes de resultados del primer semestre de 2026 e informes semestrales de Intesa y BPER para la inversión. Commerzbank publica trimestre (×4), el resto semestre (×2). Intesa no desglosa comisiones por división.");
 };
 
+
+/* ================================================================== */
+/* Eficiencia del sistema y calidad de la informacion                  */
+/* ================================================================== */
+L.rd_eficiencia = () => { const s=nueva();
+  const E=X.eficiencia, v=E.valores["2025"], v0=E.valores["2024"];
+  const ord=P.map((p,i)=>i).sort((a,b)=>v[a]-v[b]);
+  const abn=X.bancos_ue.find(b=>b.banco==="ABN AMRO");
+  cab(s,`${P[ord[0]]} y ${P[ord[1]]}, los sistemas más eficientes; ${P[ord[6]]}, el que más gasta por euro de ingreso`,
+    "Ratio de eficiencia (gastos de explotación sobre ingresos) de los bancos de la muestra de la EBA · Año 2025 completo","ninguna");
+  barFoco(s,{x:M, y:1.70, w:6.60, h:4.55, values:v, max:80, fmt:'0.0"%"', fmtEje:'0"%"',
+    tit:"Ratio de eficiencia 2025: cuanto más bajo, más eficiente"});
+  const hd=t=>({text:t,options:Object.assign({},hdr,{fontSize:8.5,fill:{color:DARK}})});
+  const filas=[[hd("País"),hd("2024"),hd("2025"),hd("Cambio, pp")]];
+  P.concat(["UE, muestra EBA"]).forEach((p,i)=>{
+    const f=p===FOCO, ue=i===7, a=ue?E.ue["2024"]:v0[i], b=ue?E.ue["2025"]:v[i];
+    const o=x=>cel(null,Object.assign({fontSize:9,bold:f||ue,color:f?PRIM:TXT,fill:{color:f?YEL3:(ue?"F2F4F6":"FFFFFF")}},x||{}));
+    filas.push([{text:p,options:o({align:"left"})},{text:n1(a,1)+" %",options:o()},
+      {text:n1(b,1)+" %",options:o()},{text:mas(b-a,1),options:o()}]);});
+  s.addTable(filas,{x:7.55, y:1.70, w:5.10, colW:[1.60,1.10,1.10,1.30], rowH:0.29,
+    fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false, margin:[1,4,1,4]});
+  tarjeta(s, 7.55, 4.50, 5.10, 1.75, "Es el banco entero, no la banca PYME",
+    `Grupo consolidado, todos los negocios. Ni la EBA ni el BCE la publican por segmento. El único dato de un segmento de empresas es el de ABN AMRO Corporate Banking: ${n1(abn.eficiencia,1)} % en el primer semestre de 2026.`, "F2F4F6", 9);
+  fuente(s,"EBA, Risk Dashboard, indicador PFT_23 (cost-to-income), acumulado del año al cuarto trimestre, muestra de bancos del EBA, base consolidada. Se usa el año completo porque el primer trimestre suele cargar contribuciones anuales (Irlanda pasa del 51,5 % en 2025 al 57,4 % en 2026-Q1).");
+};
+
+L.bm_bureaus = () => { const s=nueva();
+  const I=X.info;
+  cab(s,"Cada país se informa por un canal distinto: registro público o bureau privado",
+    "Cobertura de los sistemas de información crediticia, personas y empresas registradas en % de la población adulta · Doing Business 2020","entorno");
+  barras(s,{x:M, y:1.70, w:7.60, h:4.55, series:[["Registro público (banco central)",I.registro],["Bureau privado",I.bureau]],
+    colors:[AZUL,MAGE], max:110, fmt:'0'});
+  const hd=t=>({text:t,options:Object.assign({},hdr,{fontSize:8.5,fill:{color:DARK}})});
+  const filas=[[hd("País"),hd("Índice\n0-8")]];
+  P.forEach((p,i)=>{ const f=p===FOCO, o=x=>cel(null,Object.assign({fontSize:9,bold:f,color:f?PRIM:TXT,fill:{color:f?YEL3:"FFFFFF"}},x||{}));
+    filas.push([{text:p,options:o({align:"left"})},{text:n1(I.profundidad[i],0),options:o()}]);});
+  s.addTable(filas,{x:8.70, y:1.70, w:1.95, colW:[1.05,0.90], rowH:0.29,
+    fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false, margin:[1,4,1,4]});
+  tarjeta(s, 10.85, 1.70, 1.80, 2.32, "Profundidad", "Índice de 0 a 8 sobre qué datos circulan: positivos y negativos, de empresas y personas, historial de 2 años.", "F2F4F6", 8.5);
+  const es=P.indexOf(FOCO);
+  tarjeta(s, 8.70, 4.20, 3.95, 2.05, "España: sobre todo, registro público",
+    `La CIRBE cubre al ${n1(I.registro[es],1)} % y el bureau privado, al ${n1(I.bureau[es],1)} %. Portugal tiene el mismo patrón y Francia no tiene bureau. Alemania, Italia y Países Bajos se apoyan en el bureau privado, que cubre a casi todos.`, YEL3, 9);
+  fuente(s,"Banco Mundial, Doing Business 2020 (datos de mayo de 2019), indicadores «Getting Credit»: cobertura del registro público y del bureau privado, e índice de profundidad de la información crediticia (0-8). No distingue PYME: es el marco del país.");
+};
+
+L.info_pyme = () => { const s=nueva();
+  const I=X.info;
+  cab(s,"Lo que el banco puede saber de una PYME cambia mucho de un país a otro",
+    "Registro público de crédito y cuentas anuales depositadas, según la normativa vigente de cada país · Puntuación de 0 a 3","entorno");
+  const REG={"España":"CIRBE (Banco de España) · desde 1.000 €","Alemania":"Millionenkredite · desde 1 M€: no ve la PYME",
+    "Francia":"FIBEN y cotation (Banque de France) · sin umbral, requiere adhesión","Italia":"Centrale dei Rischi · desde 30.000 € (250 € si está deteriorada)",
+    "Portugal":"CRC (Banco de Portugal) · desde 50 €","P. Bajos":"No hay registro público de crédito a empresas",
+    "Irlanda":"Central Credit Register · desde 500 €; consulta obligatoria desde 2.000 €"};
+  const CTA={"España":"Registro Mercantil: depósito obligatorio y completo","Alemania":"Bundesanzeiger: depósito obligatorio",
+    "Francia":"Las micro pueden declarar confidenciales sus cuentas; las pequeñas, la cuenta de resultados","Italia":"Registro Imprese: depósito obligatorio",
+    "Portugal":"IES: depósito obligatorio","P. Bajos":"KvK: las pequeñas depositan cuentas abreviadas","Irlanda":"Companies Registration Office: depósito obligatorio"};
+  const hd=(t,al)=>({text:t,options:Object.assign({},hdr,{fontSize:8.5,fill:{color:DARK},align:al||"center"})});
+  const col=v=>v>=3?"D9EAF7":(v>=2?"F2F4F6":"FFD9E6");
+  const filas=[[hd("País","left"),hd("Registro público de crédito","left"),hd("0-3"),hd("Cuentas anuales de la PYME","left"),hd("0-3"),hd("Índice de\ninformación")]];
+  P.forEach((p,i)=>{ const f=p===FOCO, o=x=>cel(null,Object.assign({fontSize:8.5,bold:f,color:f?PRIM:TXT,fill:{color:f?YEL3:"FFFFFF"}},x||{}));
+    filas.push([{text:p,options:o({align:"left"})},{text:REG[p],options:o({align:"left",bold:false,color:TXT})},
+      {text:n1(I.util_registro[i],0),options:o({fill:{color:col(I.util_registro[i])},color:DARK})},
+      {text:CTA[p],options:o({align:"left",bold:false,color:TXT})},
+      {text:n1(I.cuentas[i],0),options:o({fill:{color:col(I.cuentas[i])},color:DARK})},
+      {text:n1(I.indice[i],0),options:o()}]);});
+  s.addTable(filas,{x:M, y:1.70, w:W-2*M, colW:[1.15,4.10,0.55,4.30,0.55,1.32], rowH:0.40,
+    fontFace:BF, border:{pt:0.5,color:G3}, valign:"middle", autoPage:false, margin:[1,5,1,5]});
+  tarjeta(s, M, 5.15, 3.85, 1.10, "Alemania y Países Bajos",
+    "Sin registro público útil para la PYME: el banco depende del bureau privado.", "FFD9E6", 9);
+  tarjeta(s, M+4.08, 5.15, 3.85, 1.10, "Francia",
+    "Registro sin umbral, pero la pequeña empresa puede ocultar su cuenta de resultados.", "F2F4F6", 9);
+  tarjeta(s, M+8.16, 5.15, 3.85, 1.10, "El índice",
+    `Media de profundidad, bureau, registro y cuentas, de 0 a 100 entre los siete. Correlación con la PD de la PYME: ${men(X.sintesis.rho_info_pd,2)}.`, YEL3, 9);
+  fuente(s,"Elaboración propia sobre la normativa vigente de cada registro y registro mercantil (2026): 3 = cubre a la PYME sin restricciones; 0 = no la cubre. Índice: media simple normalizada de profundidad (Doing Business), cobertura del bureau, registro y cuentas; 100 = el mejor de los siete, no un óptimo.");
+};
+
 /* ================================================================== */
 /* ANALISIS DESCRIPTIVO                                                */
 /* ================================================================== */
@@ -889,7 +965,7 @@ L.cierre = () => { const s=nueva({limpia:true});
 const ORDEN = ["portada","guia","mapa",
   "f_mir","mir_tramos","mir_prima","mir_circ","mir_depositos",
   "f_safe","safe_rechazo","safe_brecha",
-  "f_rd","rd_tamano","rd_segmentos","rd_serie",
+  "f_rd","rd_tamano","rd_segmentos","rd_serie","rd_eficiencia",
   "f_corep","corep_pd_lgd",
   "f_te","te_densidad","te_bancos",
   "f_ocde","ocde_spread",
@@ -897,10 +973,11 @@ const ORDEN = ["portada","guia","mapa",
   "f_cb","cb_capacidad",
   "f_cesgar","cesgar",
   "f_fact","factoring",
-  "f_bm","bm",
+  "f_bm","bm","bm_bureaus","info_pyme",
   "f_bancos","bancos",
   "div_sintesis","cuadro","posicion","obs1","obs2","limites","cierre"];
-ORDEN.forEach(k=>{ if(!L[k]) throw new Error("lamina desconocida: "+k); L[k](); });
+const SOLO = process.env.SOLO ? process.env.SOLO.split(",") : null;
+(SOLO||ORDEN).forEach(k=>{ if(!L[k]) throw new Error("lamina desconocida: "+k); L[k](); });
 const sobran=Object.keys(L).filter(k=>!ORDEN.includes(k));
 if(sobran.length) throw new Error("laminas sin colocar: "+sobran.join(", "));
-pres.writeFile({fileName:"mercado_pyme_europa.pptx"}).then(f=>console.log("escrito:",f,"|",ORDEN.length,"laminas"));
+pres.writeFile({fileName:process.env.SALIDA||"mercado_pyme_europa.pptx"}).then(f=>console.log("escrito:",f,"|",(SOLO||ORDEN).length,"laminas"));
