@@ -3351,6 +3351,78 @@ Tres láminas nuevas, generadas también sueltas en
   comparable más reciente de cobertura de los bureaus para los siete
   países.
 
+### 2.85 Inventario de fuentes oficiales de PYME: ¿se podía sacar todo de una sola fuente?
+
+Fichero: `pres/inventario_fuentes_pyme.xlsx`, generado por
+`scripts/inventario_fuentes.py`. Reúne 23 fuentes, los componentes del
+ROE, una matriz fuente × componente y la evidencia de la verificación.
+
+**Respuesta: no.** Ninguna fuente pública da todas las piezas del ROE de
+PYME.
+- **La familia más completa es la del supervisor** (EBA: FINREP y COREP).
+  Da volumen, mora, PD y LGD, RWA, eficiencia y CET1.
+- **Lo que no da:** precio, comisiones ni coste de recursos. Ni la EBA ni
+  la estadística supervisora del BCE publican ingresos por intereses de
+  PYME. El Transparency Exercise solo tiene la partida 2520303, de
+  préstamos totales.
+- **Ni siquiera dentro de la EBA hay una sola definición de PYME.** Hay
+  tres:
+  - FINREP: la Recomendación 2003/361/CE.
+  - COREP método estándar: facturación ≤50 M€.
+  - COREP IRB: la definición interna de cada banco.
+
+**Sobre el comentario «capital del Risk Dashboard».** La densidad de RWA
+sale del Transparency Exercise (COREP). Del Risk Dashboard solo sale el
+CET1, que es del banco entero.
+
+**Fuentes nuevas localizadas en esta revisión, no usadas hasta ahora:**
+1. **SAFE, pregunta Q8B** (BCE). Es el tipo de la línea de crédito o del
+   descubierto que declara la propia empresa, PYME (<250 empleados)
+   frente a gran empresa. Es el único precio armonizado por tamaño de
+   EMPRESA, pero se dejó de preguntar tras 2022-S1.
+   - Valores de 2022-S1, media ponderada:
+
+     | País | PYME | Gran empresa |
+     |---|---|---|
+     | España | 2,45 % | 1,71 % |
+     | Alemania | 3,43 % | 2,56 % |
+     | Francia | 1,81 % | 1,42 % |
+     | Italia | 3,04 % | 1,32 % |
+     | Portugal | 3,09 % | sin dato |
+     | Países Bajos | 2,91 % | sin dato |
+     | Irlanda | 6,04 % | sin dato |
+
+2. **Supervisory Banking Statistics** (BCE, dataflow `SUP`). Solo bancos
+   significativos.
+   - Por país, hasta 2026-Q2 (un trimestre más que el Risk Dashboard):
+     mora PYME (I7008), fase 2 PYME (I7530) y préstamos PYME (E0038).
+   - PD, LGD y ponderación IRB de PYME ponderadas por exposición: solo el
+     agregado del MUS (B01), no por país.
+3. **Consolidated Banking Data** (BCE, `CBD2`). Cubre todo el sistema
+   bancario. Tiene eficiencia y ROE del sistema completo, pero de PYME
+   solo la exposición IRB anual. Las partidas KSM08, KSM10, KS6_1 y
+   KS6_2 (PD, LGD y ponderación PYME) están en el catálogo pero sin datos
+   publicados.
+4. **Banque de France, Webstat.** Tipo de los créditos nuevos por tamaño
+   de empresa: micro, PYME, ETI y gran empresa, con criterio LME
+   (equivalente a la Recomendación 2003/361/CE). Es solo Francia. La API
+   abierta publica el catálogo pero no los valores; el archivo
+   descargable acaba en 2013.
+
+**Veredicto por componente.** Detalle en la hoja «Componentes ROE».
+- **Precio:** el MIR sigue siendo la única fuente armonizada y vigente
+  para los siete países.
+- **Riesgo:** los parámetros COREP son la única pérdida esperada por país,
+  con la limitación de ser una mediana.
+- **Capital:** el Transparency Exercise es la única fuente de RWA PYME por
+  país.
+- **Gastos y CET1:** solo existen a nivel de banco entero.
+
+**Pendiente.** No se ha verificado si el Bundesbank, el Banco de
+Portugal, el DNB o el Central Bank of Ireland publican el tipo por tamaño
+de empresa. Sí se verificó antes que no publican tipo con comisiones
+(§2.24).
+
 ## 3. Estado de las decisiones
 
 | # | Asunto | Estado |
